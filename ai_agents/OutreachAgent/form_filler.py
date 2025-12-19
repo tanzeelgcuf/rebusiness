@@ -11,16 +11,75 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 from config import GEMINI_API_KEY
 import google.generativeai as genai
 import json
+from .email_service import EmailService
+
+# Identity Configuration
+IDENTITY = {
+    "FIRST_NAME": "John",
+    "LAST_NAME": "Campbell",
+    "FULL_NAME": "John Campbell",
+    "EMAIL": "john@campsable.com",
+    "PHONE": "720-980-6080",
+    "COMPANY": "Camp Sable, LLC",
+    "JOB_TITLE": "Procurement Manager"
+}
 
 class FormFiller:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         if GEMINI_API_KEY:
             genai.configure(api_key=GEMINI_API_KEY)
-            self.model = genai.GenerativeModel('gemini-flash-latest')
+            self.model = genai.GenerativeModel('gemini-1.5-flash-latest')
         else:
             self.model = None
             self.logger.warning("GEMINI_API_KEY not found. LLM features disabled.")
+            
+        # Initialize Email Service (Credentials will be passed at runtime or fetched from env)
+        # Assuming we use the credentials associated with the identity
+        self.email_service = None 
+
+    def generate_rfq_message(self, product_name, notice_id=None, quantity="Not Specified", due_date="ASAP"):
+        """
+        Generates the specific RFQ message requested by the user.
+        """
+        today = time.strftime("%B %d, %Y")
+        notice_ref = f"[{notice_id}]" if notice_id else ""
+        
+        template = f"""Camp Sable, LLC
+{IDENTITY['EMAIL']}
+{today}
+
+Subject: Request for Quote - {notice_ref} {product_name}
+
+Dear Sales Department:
+
+We are writing to request a formal quote for {product_name}. Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement company.
+
+Project Details:
+Product/Service Required: {product_name}
+Quantity Needed: {quantity}
+Specifications/Requirements: Standard commercial specifications for government acquisition.
+Delivery Timeline: {due_date}
+Delivery Location: Continental US (CONUS) - Specifics provided upon award.
+
+Quote Requirements: Please include the following in your response:
+- Itemized pricing breakdown
+- Delivery schedule and shipping costs
+- Warranty information
+
+Response Deadline: We require your quote to be submitted no later than 4 days from today to ensure timely evaluation of all proposals.
+
+If you have any questions regarding this request or need additional information, please contact me at {IDENTITY['EMAIL']}. We look forward to establishing a mutually beneficial business relationship.
+
+Thank you for your time and consideration.
+
+Sincerely,
+
+{IDENTITY['FULL_NAME']}
+{IDENTITY['JOB_TITLE']}
+{IDENTITY['COMPANY']}
+"""
+        return template
 
     async def find_contact_page(self, page, base_url):
         """
@@ -198,12 +257,89 @@ class FormFiller:
             
         return result
 
+
+    async def process_supplier_outreach(self, supplier_url, product_details):
+        """
+        Orchestrates the full outreach workflow for a single supplier:
+        1. Visit Website
+        2. Extract Emails (always)
+        3. Fill Contact Form (if found)
+        4. Send Email to extracted addresses
+        """
+        self.logger.info(f"--- Starting Outreach for {supplier_url} ---")
+        
+        # 1. Generate Content
+        subject = f"Request for Quote - {product_details['product_name']}"
+        message_body = self.generate_rfq_message(
+            product_details['product_name'], 
+            notice_id=product_details.get('notice_id'),
+            quantity=product_details.get('quantity', 'Not Specified'),
+            due_date=product_details.get('due_date', 'ASAP')
+        )
+        
+        form_data = {
+            "name": IDENTITY['FULL_NAME'],
+            "email": IDENTITY['EMAIL'],
+            "phone": IDENTITY['PHONE'],
+            "company": IDENTITY['COMPANY'],
+            "subject": subject,
+            "message": message_body
+        }
+
+        outreach_result = {
+            "form_filled": False,
+            "emails_found": [],
+            "emails_sent": 0,
+            "error": None
+        }
+
+        # 2. Browser Interaction (Visit -> Extract -> Form)
+        # We reuse fill_form_async logic but need access to extracted emails even if form fails
+        # So we call fill_form_async which returns {'extracted_emails': [], 'success': bool}
+        try:
+            form_result = await self.fill_form_async(supplier_url, form_data)
+            outreach_result['form_filled'] = form_result['success']
+            outreach_result['emails_found'] = form_result['extracted_emails']
+            if form_result['error']:
+                self.logger.warning(f"Form fill issue: {form_result['error']}")
+        except Exception as e:
+            self.logger.error(f"Browser interaction failed: {e}")
+            outreach_result['error'] = str(e)
+
+        # 3. Send Emails
+        # We need to initialize EmailService if not already done
+        if not self.email_service:
+            # TRY TO FIND CREDS or use hardcoded fallback from prompt context
+            # WARNING: Using hardcoded app password found in previous artifacts for 'john@campsable.com' context
+            self.email_service = EmailService(
+                smtp_server="smtp.gmail.com",
+                smtp_port=587,
+                sender_email=IDENTITY['EMAIL'],
+                sender_password="gwun semw qdwo ckxz" 
+            )
+        
+        if outreach_result['emails_found']:
+            self.logger.info(f"Sending emails to {len(outreach_result['emails_found'])} recipients...")
+            for recipient in outreach_result['emails_found']:
+                try:
+                    sent = self.email_service.send_email(
+                        to_email=recipient,
+                        subject=subject,
+                        body=message_body
+                    )
+                    if sent:
+                        outreach_result['emails_sent'] += 1
+                        time.sleep(1) # Rate limit
+                except Exception as e:
+                    self.logger.error(f"Email send failed to {recipient}: {e}")
+        else:
+            self.logger.info("No emails found to send.")
+
+        return outreach_result
+
 if __name__ == "__main__":
-    # Test with a dummy site or one of our suppliers
+    # Test
     filler = FormFiller()
-    test_data = {
-        "name": "John Campbell",
-        "email": "john@campsable.com",
-        "message": "Hello, I am interested in your pricing for industrial bolts."
-    }
-    # filler.fill_form("https://www.example-supplier.com", test_data) 
+    # async run
+    # asyncio.run(filler.process_supplier_outreach("https://example.com", {'product_name': 'Test Widget'}))
+

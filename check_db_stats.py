@@ -1,42 +1,55 @@
-
 import sqlite3
+import os
+from database_manager import DatabaseManager
 
-DATABASE_NAME = "rebusiness_automation.db"
+def check_stats():
+    db = DatabaseManager()
+    conn = db._connect_db()
+    cursor = conn.cursor()
+    
+    print("\n=== Database Statistics ===")
+    
+    # 1. Solicitations Count
+    sol_count = cursor.execute("SELECT COUNT(*) FROM solicitations").fetchone()[0]
+    print(f"Total Solicitations: {sol_count}")
+    
+    # 2. Solicitations with Analysis
+    analyzed_count = cursor.execute("SELECT COUNT(*) FROM solicitations WHERE analysis_summary IS NOT NULL").fetchone()[0]
+    print(f"Analyzed Solicitations: {analyzed_count}")
+    
+    # 3. Products Count
+    prod_count = cursor.execute("SELECT COUNT(*) FROM products").fetchone()[0]
+    print(f"Total Extracted Products: {prod_count}")
+    
+    # 4. Sourcing Status
+    print("\n--- Product Sourcing Status ---")
+    status_counts = cursor.execute("""
+        SELECT 
+            COALESCE(s.status, 'pending') as status, 
+            COUNT(*) as count
+        FROM products p
+        LEFT JOIN product_sourcing_status s ON p.id = s.product_id
+        GROUP BY status
+    """).fetchall()
+    
+    if not status_counts:
+        print("No sourcing records found (All 'pending').")
+    else:
+        for status, count in status_counts:
+            print(f"  {status}: {count}")
 
-def check_counts():
-    try:
-        conn = sqlite3.connect(DATABASE_NAME)
-        cursor = conn.cursor()
-        
-        # Check Solicitations
-        cursor.execute("SELECT COUNT(*) FROM solicitations")
-        solicitation_count = cursor.fetchone()[0]
-        
-        # Check Products
-        # First check if the table exists
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='products'")
-        if cursor.fetchone():
-            cursor.execute("SELECT COUNT(*) FROM products")
-            product_count = cursor.fetchone()[0]
-        else:
-            product_count = "Table 'products' does not exist"
+    # 5. Suppliers Found
+    supplier_count = cursor.execute("SELECT COUNT(*) FROM product_suppliers").fetchone()[0]
+    print(f"\nTotal Suppliers Found: {supplier_count}")
+    
+    # 6. Sample Products (if any)
+    if prod_count > 0:
+        print("\n--- Sample Products (First 5) ---")
+        rows = cursor.execute("SELECT product_name, quantity FROM products LIMIT 5").fetchall()
+        for r in rows:
+            print(f"  - {r['product_name']} (Qty: {r['quantity']})")
 
-        print(f"Solicitation Count: {solicitation_count}")
-        print(f"Product Count: {product_count}")
-
-        # Check Manufacturers
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='manufacturers'")
-        if cursor.fetchone():
-            cursor.execute("SELECT COUNT(*) FROM manufacturers")
-            manufacturer_count = cursor.fetchone()[0]
-        else:
-            manufacturer_count = "Table 'manufacturers' does not exist"
-        
-        print(f"Manufacturer Count: {manufacturer_count}")
-        
-        conn.close()
-    except Exception as e:
-        print(f"Error checking database: {e}")
+    conn.close()
 
 if __name__ == "__main__":
-    check_counts()
+    check_stats()

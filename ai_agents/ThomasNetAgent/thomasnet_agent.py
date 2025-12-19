@@ -38,7 +38,7 @@ class ThomasNetAgent:
             except Exception as e:
                 print(f"Warning: Gemini import failed: {e}")
     
-    def find_suppliers_for_product(self, product, limit=30):
+    def find_suppliers_for_product(self, product, limit=40):
         """
         Find suppliers for a specific product using Direct Playwright Search on Thomasnet.
         """
@@ -51,8 +51,6 @@ class ThomasNetAgent:
         try:
             with sync_playwright() as p:
                 # Use PERSISTENT CONTEXT to save cookies/login state
-                # Use TEMP CONTEXT to avoid Singleton Lock errors in subprocesses
-                import shutil
                 import uuid
                 import tempfile
                 
@@ -63,7 +61,7 @@ class ThomasNetAgent:
                 # Launch options
                 browser_context = p.chromium.launch_persistent_context(
                     user_data_dir,
-                    headless=False, # Headed for manual interaction
+                    headless=False, # Headed for manual interaction if needed
                     args=['--disable-blink-features=AutomationControlled'],
                     viewport={'width': 1366, 'height': 768},
                     user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
@@ -87,10 +85,10 @@ class ThomasNetAgent:
                         time.sleep(1)
                 except: pass
 
-                # Selector based on user provided HTML
+                # Input Search
                 search_input_selector = 'input[data-ref="srp.DiscoverBox.input"]'
                 try:
-                    page.wait_for_selector(search_input_selector, state='visible', timeout=5000)
+                    page.wait_for_selector(search_input_selector, state='visible', timeout=10000)
                     page.click(search_input_selector)
                     page.fill(search_input_selector, product_name)
                     
@@ -98,18 +96,13 @@ class ThomasNetAgent:
                     print("  Clicking Search...")
                     search_btn_selector = 'button[aria-label="Search"]' 
                     
-                    # Attempt search, but don't hang if it fails -> Fallback is reliable
                     try:
-                         with page.expect_navigation(timeout=3000):
+                         with page.expect_navigation(timeout=10000):
                             page.click(search_btn_selector)
                     except:
                         print("  Search click timeout. Attempting Enter key...")
-                        try:
-                            page.press(search_input_selector, "Enter")
-                            page.wait_for_url(lambda u: "search" in u, timeout=3000)
-                        except:
-                            print("  Input interaction didn't trigger nav. Using direct URL.")
-                            raise Exception("Navigation failed")
+                        page.press(search_input_selector, "Enter")
+                        page.wait_for_load_state("networkidle", timeout=15000)
 
                 except Exception as e:
                     print(f"  Interactive search skipped/failed: {e}")
@@ -117,7 +110,7 @@ class ThomasNetAgent:
                     term = product_name.replace(' ', '+')
                     url = f"https://www.thomasnet.com/suppliers/search?searchterm={term}&search_type=search-supplier"
                     print(f"  Navigating directly to results: {url}")
-                    page.goto(url, timeout=60000)
+                    page.goto(url, timeout=60000, wait_until="networkidle")
                 
                 # CHECK FOR CAPTCHA / BLOCK
                 time.sleep(2) 
@@ -131,10 +124,14 @@ class ThomasNetAgent:
                         print("  Timed out waiting for manual CAPTCHA solution.")
                 
                 # Loop for Pagination until limit is reached
+                page_count = 1
                 while len(suppliers) < limit:
                     # Wait for results
+                    print(f"  Scraping Page {page_count}...")
                     try:
-                        page.wait_for_selector('li[data-sentry-component="SearchResultSupplier"]', timeout=10000)
+                        page.wait_for_selector('li[data-sentry-component="SearchResultSupplier"]', timeout=15000)
+                        # Explicit wait for content to settle
+                        time.sleep(3) 
                     except:
                         print(f"  No results found on this page. URL: {page.url}")
                         break
@@ -147,124 +144,69 @@ class ThomasNetAgent:
                     
                     for item in items:
                         if len(suppliers) >= limit: break
-                        print(f"  [{time.strftime('%H:%M:%S')}] processing item {len(suppliers)+1}/{limit}")
-                        
-                        name_tag = item.select_one('[data-testid="supplier-name-link"]')
-                        if not name_tag: continue
-                        
-                        company_name = name_tag.get_text(strip=True)
-                        if any(s['name'] == company_name for s in suppliers): continue
+                        try:
+                            name_el = item.select_one('h2 a')
+                            if not name_el: continue
+                            name = name_el.get_text(strip=True)
+                            
+                            # Extract links
+                            website = None
+                            links = item.select('a')
+                            for link in links:
+                                href = link.get('href', '')
+                                if 'navigator.thomasnet.com' in href or 'location' in href: continue 
+                                if href.startswith('http') and 'thomasnet.com' not in href:
+                                    website = href
+                                    break
+                            
+                            # Fallback: Profile Link (ThomasNet profile often has the real link)
+                            if not website:
+                                profile_href = name_el.get('href')
+                                if profile_href:
+                                     website = f"https://www.thomasnet.com{profile_href}" if profile_href.startswith('/') else profile_href
 
-                        # URLs from the result card
-                        website_tag = item.select_one('a[data-sentry-component="SupplierWebsite"]')
-                        tn_website = website_tag.get('href') if website_tag else None
-                        
-                        # Profile Link (always exists)
-                        profile_href = name_tag.get('href')
-                        if profile_href and not profile_href.startswith('http'):
-                            profile_href = "https://www.thomasnet.com" + profile_href
+                            if name and website:
+                                # Deduplicate
+                                if not any(s['name'] == name for s in suppliers):
+                                    suppliers.append({
+                                        'name': name,
+                                        'website': website,
+                                        'email': None, # To be filled by OutreachAgent
+                                        'phone': None, 
+                                        'location': None # Could extract address from card
+                                    })
+                        except Exception as e:
+                            print(f"Error parsing item: {e}")
 
-                        location_tag = item.select_one('[data-testid="srp.supplier-location-link"]')
-                        location = location_tag.get_text(strip=True) if location_tag else None
-
-                        print(f"  Processing: {company_name}")
-                        
-                        # Decide which URL to visit for scraping
-                        # Priority: Official Website -> ThomasNet Profile
-                        target_url = tn_website if tn_website else profile_href
-                        
-                        scraped_data = {
-                            'email': None, 'phone': None, 'website': tn_website or profile_href
-                        }
-
-                        if target_url:
-                            try:
-                                # Open a new page for the detail to avoid losing search context
-                                detail_page = browser_context.new_page()
-                                try:
-                                    print(f"    Visiting: {target_url}")
-                                    # Strict wait for dynamic content
-                                    # Optimized wait: domcontentloaded + short sleep is safer than networkidle
-                                    detail_page.goto(target_url, timeout=30000, wait_until='domcontentloaded')
-                                    time.sleep(2) # Reduced from 5s to 2s to prevent timeout
-                                    
-                                    # If we visited the ThomasNet Profile, try to extract the REAL website from it
-                                    if 'thomasnet.com' in target_url:
-                                        try:
-                                            real_site_link = detail_page.query_selector('a[title="Visit Website"]')
-                                            if real_site_link:
-                                                real_url = real_site_link.get_attribute('href')
-                                                if real_url:
-                                                    print(f"    Found Official Site on Profile: {real_url}")
-                                                    scraped_data['website'] = real_url
-                                                    # Visit the official site
-                                                    detail_page.goto(real_url, timeout=30000, wait_until='domcontentloaded')
-                                                    time.sleep(2)
-                                        except: pass
-
-                                    # Now scrape Email/Phone from whatever page we are on
-                                    content = detail_page.content()
-                                    
-                                    # Improved extraction
-                                    found_email = self._extract_email(content)
-                                    found_phone = self._extract_phone(content)
-                                    
-                                    if found_email: 
-                                        print(f"    Found Email: {found_email}")
-                                        scraped_data['email'] = found_email
-                                        
-                                    if found_phone:
-                                        print(f"    Found Phone: {found_phone}")
-                                        scraped_data['phone'] = found_phone
-                                        
-                                except Exception as e:
-                                    print(f"    Error visiting link: {e}")
-                                finally:
-                                    detail_page.close()
-                                    
-                            except Exception as e:
-                                print(f"    Page handling error: {e}")
-
-                        # Compile Final Data
-                        suppliers.append({
-                            'name': company_name,
-                            'website': scraped_data['website'], 
-                            'location': location,
-                            'source': 'ThomasNet Deep Scrape',
-                            'email': scraped_data['email'],
-                            'phone': scraped_data['phone'],
-                            'notes': f"Source: {target_url}"
-                        })
-
-                    if len(suppliers) >= limit:
-                        print(f"  Target limit {limit} reached.")
-                        break
-
-                    # Pagination: Click Next
-                    try:
+                    print(f"  Total Suppliers Found: {len(suppliers)}")
+                    
+                    # Pagination logic
+                    if len(suppliers) < limit:
                         next_btn = page.query_selector('a[aria-label="Next Page"]')
-                        if not next_btn:
-                            next_btn = page.query_selector('a.page-link[aria-label="Next"]')
-                        
-                        if next_btn:
-                            print("  Clicking Next Page...")
+                        if next_btn and next_btn.is_visible():
+                            print("  Navigating to Next Page...")
                             next_btn.click()
-                            time.sleep(3) # Wait for load
+                            page.wait_for_load_state("networkidle", timeout=15000)
+                            page_count += 1
                         else:
-                            print("  No Next button found. End of results.")
+                            print("  No 'Next Page' button found. End of results.")
                             break
-                    except Exception as e:
-                        print(f"  Pagination error: {e}")
+                    else:
                         break
-                
-                # Close context
+
                 browser_context.close()
+                try:
+                    import shutil
+                    shutil.rmtree(user_data_dir, ignore_errors=True)
+                except: pass
 
         except Exception as e:
-            print(f"  Direct search error: {e}")
-            return []
-            
+            print(f"Search failed: {e}")
+            import traceback
+            traceback.print_exc()
+        
         return suppliers
+
 
     def parse_thomasnet_html(self, html_file_path):
         """

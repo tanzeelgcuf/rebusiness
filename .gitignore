@@ -1,8 +1,18 @@
-data/
-selenium_profile/
-*.log
-*.pdf
-__pycache__/
-.env
+# Environments
 venv/
+.env
+__pycache__/
+*.pyc
+
+# Downloads / large files
+downloads/
+data/
+datasets/
+*.zip
+*.log
+
+# OS / IDE
 .DS_Store
+.vscode/
+.idea/
+selenium_profile/
