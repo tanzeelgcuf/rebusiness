@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ solicitation.title }} - Rebusiness Automation Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+</head>
+<body>
+    <main class="container">
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}"> &lt; Back to Dashboard</a></li>
+            </ul>
+        </nav>
+        <h1 style="text-align: center;">{{ solicitation.title }}</h1>
+
+        <article>
+            <header>
+                <h2>Solicitation Details</h2>
+            </header>
+            <p><strong>Contract ID:</strong> {{ solicitation.contract_id }}</p>
+            <p><strong>URL:</strong> <a href="{{ solicitation.url }}" target="_blank">{{ solicitation.url }}</a></p>
+            <p><strong>Description:</strong> {{ solicitation.description }}</p>
+            <p><strong>Location:</strong> {{ solicitation.location }}</p>
+        </article>
+        
+        <article>
+            <header>
+                <h2>Analysis Summary (AttachmentReaderAgent)</h2>
+            </header>
+            <pre><code>{{ solicitation.analysis_summary | tojson(indent=4) }}</code></pre>
+        </article>
+
+        <article>
+            <header>
+                <h2>Found Vendors (MappingAgent)</h2>
+            </header>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Vendor Name</th>
+                        <th>Website</th>
+                        <th>Email</th>
+                        <th>Confidence Score</th>
+                        <th>Gov Page?</th>
+                        <th>Past Performance?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vendor in vendors %}
+                    <tr>
+                        <td>{{ vendor.name }}</td>
+                        <td><a href="{{ vendor.website }}" target="_blank">{{ vendor.website }}</a></td>
+                        <td>{{ vendor.email }}</td>
+                        <td>{{ vendor.confidence_score }}%</td>
+                        <td>{{ 'Yes' if vendor.has_gov_page else 'No' }}</td>
+                        <td>{{ 'Yes' if vendor.past_performance_found else 'No' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </article>
+        
+        {% if proposal %}
+        <article>
+            <header>
+                <h2>Generated Proposal (ProposalWriterAgent & OutreachAgent)</h2>
+            </header>
+            <h3>Subject: {{ proposal.proposal_text | fromjson | get('subject') }}</h3>
+            <pre><code>{{ proposal.proposal_text | fromjson | get('body') }}</code></pre>
+        </article>
+        {% endif %}
+
+    </main>
+</body>
+</html>

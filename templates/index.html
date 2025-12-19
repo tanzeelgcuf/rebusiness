@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rebusiness Automation Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+</head>
+<body>
+    <main class="container">
+        <h1 style="text-align: center;">Rebusiness Automation Dashboard</h1>
+        
+        <article>
+            <header>
+                <h2>Processed Solicitations</h2>
+            </header>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Solicitation Title</th>
+                        <th>Contract ID</th>
+                        <th>Date Processed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sol in solicitations %}
+                    <tr>
+                        <td><a href="{{ url_for('solicitation', contract_id=sol.contract_id) }}">{{ sol.title }}</a></td>
+                        <td>{{ sol.contract_id }}</td>
+                        <td>{{ sol.created_at }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </article>
+    </main>
+</body>
+</html>

@@ -1,0 +1,389 @@
+img:is([sizes="auto" i], [sizes^="auto," i]) { contain-intrinsic-size: 3000px 1500px }
+Page not found - SAGE (Stratospheric Aerosol and Gas Experiment)
+{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://sage.nasa.gov/#organization","name":"National Aeronautics and Space Administration – Langley Research Center","url":"https://sage.nasa.gov/","sameAs":["https://www.youtube.com/user/SAGE3onISS","https://www.facebook.com/pages/SAGE-III-on-ISS/193213827385782"],"logo":{"@type":"ImageObject","inLanguage":"en-US","@id":"https://sage.nasa.gov/#/schema/logo/image/","url":"https://dev-sage-vm.larc.nasa.gov/wp/wp-content/uploads/2015/05/nasa-logo.png","contentUrl":"https://dev-sage-vm.larc.nasa.gov/wp/wp-content/uploads/2015/05/nasa-logo.png","width":110,"height":92,"caption":"National Aeronautics and Space Administration – Langley Research Center"},"image":{"@id":"https://sage.nasa.gov/#/schema/logo/image/"}},{"@type":"WebSite","@id":"https://sage.nasa.gov/#website","url":"https://sage.nasa.gov/","name":"SAGE (Stratospheric Aerosol and Gas Experiment)","description":"Stratospheric Aerosol and Gas Experiment","publisher":{"@id":"https://sage.nasa.gov/#organization"},"potentialAction":[{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://sage.nasa.gov/?s={search_term_string}"},"query-input":"required name=search_term_string"}],"inLanguage":"en-US"}]}
+/* <![CDATA[ */
+window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/16.0.1\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/16.0.1\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/sage.nasa.gov\/wp\/wp-includes\/js\/wp-emoji-release.min.js?ver=6.8.2"}};
+/*! This file is auto-generated */
+!function(s,n){var o,i,e;function c(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(o,JSON.stringify(t))}catch(e){}}function p(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data),a=(e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0),new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data));return t.every(function(e,t){return e===a[t]})}function u(e,t){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);for(var n=e.getImageData(16,16,1,1),a=0;a<n.data.length;a++)if(0!==n.data[a])return!1;return!0}function f(e,t,n,a){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\udde8\ud83c\uddf6","\ud83c\udde8\u200b\ud83c\uddf6")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!a(e,"\ud83e\udedf")}return!1}function g(e,t,n,a){var r="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):s.createElement("canvas"),o=r.getContext("2d",{willReadFrequently:!0}),i=(o.textBaseline="top",o.font="600 32px Arial",{});return e.forEach(function(e){i[e]=t(o,e,n,a)}),i}function t(e){var t=s.createElement("script");t.src=e,t.defer=!0,s.head.appendChild(t)}"undefined"!=typeof Promise&&(o="wpEmojiSettingsSupports",i=["flag","emoji"],n.supports={everything:!0,everythingExceptFlag:!0},e=new Promise(function(e){s.addEventListener("DOMContentLoaded",e,{once:!0})}),new Promise(function(t){var n=function(){try{var e=JSON.parse(sessionStorage.getItem(o));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+g.toString()+"("+[JSON.stringify(i),f.toString(),p.toString(),u.toString()].join(",")+"));",a=new Blob([e],{type:"text/javascript"}),r=new Worker(URL.createObjectURL(a),{name:"wpTestEmojiSupports"});return void(r.onmessage=function(e){c(n=e.data),r.terminate(),t(n)})}catch(e){}c(n=g(i,f,p,u))}t(n)}).then(function(e){for(var t in e)n.supports[t]=e[t],n.supports.everything=n.supports.everything&&n.supports[t],"flag"!==t&&(n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&n.supports[t]);n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&!n.supports.flag,n.DOMReady=!1,n.readyCallback=function(){n.DOMReady=!0}}).then(function(){return e}).then(function(){var e;n.supports.everything||(n.readyCallback(),(e=n.source||{}).concatemoji?t(e.concatemoji):e.wpemoji&&e.twemoji&&(t(e.twemoji),t(e.wpemoji)))}))}((window,document),window._wpemojiSettings);
+/* ]]> */
+img.wp-smiley, img.emoji {
+		display: inline !important;
+		border: none !important;
+		box-shadow: none !important;
+		height: 1em !important;
+		width: 1em !important;
+		margin: 0 0.07em !important;
+		vertical-align: -0.1em !important;
+		background: none !important;
+		padding: 0 !important;
+	}
+/*! This file is auto-generated */
+.wp-block-button__link{color:#fff;background-color:#32373c;border-radius:9999px;box-shadow:none;text-decoration:none;padding:calc(.667em + 2px) calc(1.333em + 2px);font-size:1.125em}.wp-block-file__button{background:#32373c;color:#fff;text-decoration:none}
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+:root :where(.wp-block-pullquote){font-size: 1.5em;line-height: 1.6;}
+.sharing-default-minimal .nectar-love.loved,
+  body .nectar-social[data-color-override="override"].fixed > a:before, 
+  body .nectar-social[data-color-override="override"].fixed .nectar-social-inner a,
+  .sharing-default-minimal .nectar-social[data-color-override="override"] .nectar-social-inner a:hover {
+    background-color: #ff4439;
+  }
+  .nectar-social.hover .nectar-love.loved,
+  .nectar-social.hover > .nectar-love-button a:hover,
+  .nectar-social[data-color-override="override"].hover > div a:hover,
+  #single-below-header .nectar-social[data-color-override="override"].hover > div a:hover,
+  .nectar-social[data-color-override="override"].hover .share-btn:hover,
+  .sharing-default-minimal .nectar-social[data-color-override="override"] .nectar-social-inner a {
+    border-color: #ff4439;
+  }
+  #single-below-header .nectar-social.hover .nectar-love.loved i,
+  #single-below-header .nectar-social.hover[data-color-override="override"] a:hover,
+  #single-below-header .nectar-social.hover[data-color-override="override"] a:hover i,
+  #single-below-header .nectar-social.hover .nectar-love-button a:hover i,
+  .nectar-love:hover i,
+  .hover .nectar-love:hover .total_loves,
+  .nectar-love.loved i,
+  .nectar-social.hover .nectar-love.loved .total_loves,
+  .nectar-social.hover .share-btn:hover, 
+  .nectar-social[data-color-override="override"].hover .nectar-social-inner a:hover,
+  .nectar-social[data-color-override="override"].hover > div:hover span,
+  .sharing-default-minimal .nectar-social[data-color-override="override"] .nectar-social-inner a:not(:hover) i,
+  .sharing-default-minimal .nectar-social[data-color-override="override"] .nectar-social-inner a:not(:hover) {
+    color: #ff4439;
+  }
+#error-404{
+		  text-align:center;
+		  padding: 10% 0;
+		  position: relative;
+		  z-index: 10;
+		}
+		body.error {
+		  padding: 0;
+		}
+		body #error-404[data-cc="true"] h1,
+		body #error-404[data-cc="true"] h2,
+		body #error-404[data-cc="true"] p {
+		  color: inherit;
+		}
+		body.error404 .error-404-bg-img,
+		body.error404 .error-404-bg-img-overlay {
+		  position: absolute;
+		  top: 0;
+		  left: 0;
+		  width: 100%;
+		  height: 100%;
+		  background-size: cover;
+		  background-position: 50%;
+		  z-index: 1;
+		}
+		body.error404 .error-404-bg-img-overlay {
+		  opacity: 0.8;
+		}
+		body #error-404 h1,
+		body #error-404 h2 {
+		  font-family: "Open Sans";
+		  font-weight:700
+		}
+		body #ajax-content-wrap #error-404 h1 {
+		  font-size:250px;
+		  line-height:250px;
+		}
+		body #ajax-content-wrap #error-404 h2 {
+		  font-size:54px;
+		}
+		body #error-404 .nectar-button {
+		  margin-top: 50px;
+		}
+
+		@media only screen and (max-width : 690px) {
+
+			body .row #error-404 h1,
+			body #ajax-content-wrap #error-404 h1 {
+				font-size: 150px;
+				line-height: 150px;
+			}
+
+			body #ajax-content-wrap #error-404 h2 {
+				font-size: 32px;
+			}
+
+			body .row #error-404 {
+				margin-bottom: 0;
+			}
+		}
+#header-space{background-color:#ffffff}@media only screen and (min-width:1000px){body #ajax-content-wrap.no-scroll{min-height:calc(100vh - 126px);height:calc(100vh - 126px)!important;}}@media only screen and (min-width:1000px){#page-header-wrap.fullscreen-header,#page-header-wrap.fullscreen-header #page-header-bg,html:not(.nectar-box-roll-loaded) .nectar-box-roll > #page-header-bg.fullscreen-header,.nectar_fullscreen_zoom_recent_projects,#nectar_fullscreen_rows:not(.afterLoaded) > div{height:calc(100vh - 125px);}.wpb_row.vc_row-o-full-height.top-level,.wpb_row.vc_row-o-full-height.top-level > .col.span_12{min-height:calc(100vh - 125px);}html:not(.nectar-box-roll-loaded) .nectar-box-roll > #page-header-bg.fullscreen-header{top:126px;}.nectar-slider-wrap[data-fullscreen="true"]:not(.loaded),.nectar-slider-wrap[data-fullscreen="true"]:not(.loaded) .swiper-container{height:calc(100vh - 124px)!important;}.admin-bar .nectar-slider-wrap[data-fullscreen="true"]:not(.loaded),.admin-bar .nectar-slider-wrap[data-fullscreen="true"]:not(.loaded) .swiper-container{height:calc(100vh - 124px - 32px)!important;}}.screen-reader-text,.nectar-skip-to-content:not(:focus){border:0;clip:rect(1px,1px,1px,1px);clip-path:inset(50%);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute!important;width:1px;word-wrap:normal!important;}
+#mobile-menu #mobile-search, #top nav ul #search-btn {
+    display: none;
+}
+
+/*#mobile-menu #mobile-search, header#top nav ul #search-btn {
+    display: none!important;
+}
+*/
+
+#home-nav {
+    position: relative;
+    width: 1000px;
+    height: 500px;
+    background: url('/wp/wp-content/uploads/2017/06/home_nav_sprite.png'),
+    url('/wp/wp-content/uploads/2016/01/sage_portal_background.jpg');
+}
+
+#home-nav li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    position: absolute;
+    top: 0;
+}
+
+#home-nav li, #home-nav a {
+    height: 500px;
+    display: block;
+}
+
+#home-sam {
+    left: 0px;
+    width: 218px;
+    background: url('/wp/wp-content/uploads/2017/06/home_nav_sprite.png') 0 0;
+/*  background-position: 0 10; */
+}
+
+#home-sage1 {
+    left: 218px;
+    width: 130px;
+/*  background-position: -218px 0; */
+    background: url('/wp/wp-content/uploads/2017/06/home_nav_sprite.png') -218px 0;
+}
+
+#home-sage2 {
+    left: 348px;
+    width: 152px;
+/*  background-position: -348px 0; */
+    background: url('/wp/wp-content/uploads/2017/06/home_nav_sprite.png') -348px 0;
+}
+
+#home-sage3m3m {
+    left: 500px;
+    width: 189px;
+/*  background-position: -500px 0; */
+    background: url('/wp/wp-content/uploads/2017/06/home_nav_sprite.png') -500px 0;
+}
+
+#home-sage3iss {
+    left: 689px;
+    width: 311px;
+/*  background-position: -689px 0; */
+    background: url('/wp/wp-content/uploads/2017/06/home_nav_sprite.png') -689px 0;
+}
+
+#home-sam a:hover {
+/*  background-position: 0 -500px; */
+    background: url('/wp/wp-content/uploads/2017/06/home_nav_sprite.png') 0 -500px;
+}
+
+#home-sage1 a:hover {
+/*  background-position: -218px -500px; */
+    background: url('/wp/wp-content/uploads/2017/06/home_nav_sprite.png') -218px -500px;
+}
+
+#home-sage2 a:hover {
+/*  background-position: -348px -500px; */
+    background: url('/wp/wp-content/uploads/2017/06/home_nav_sprite.png') -348px -500px;
+}
+
+#home-sage3m3m a:hover {
+/*  background-position: -500px -500px; */
+    background: url('/wp/wp-content/uploads/2017/06/home_nav_sprite.png') -500px -500px;
+}
+
+#home-sage3iss a:hover {
+/*  background-position: -689px -500px; */
+    background: url('/wp/wp-content/uploads/2017/06/home_nav_sprite.png') -689px -500px;
+}
+
+#navlist {
+    position: relative;
+    width: 1000px;
+    height: 188px;
+    background: url('/wp/wp-content/uploads/2017/06/sage3_sprite.png');
+}
+
+#navlist li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    position: absolute;
+    top: 0;
+}
+
+#navlist li, #navlist a {
+    height: 188px;
+    display: block;
+}
+
+#home {
+    left: 0px;
+    width: 90px;
+/*  background-position: 0 0; */
+    background: url('/wp/wp-content/uploads/2017/06/sage3_sprite.png') 0 0;
+}
+
+#sam {
+    left: 90px;
+    width: 140px;
+/*  background-position: -90px 0; */
+    background: url('/wp/wp-content/uploads/2017/06/sage3_sprite.png') -90px 0;
+}
+
+#sage1 {
+    left: 230px;
+    width: 120px;
+/*  background-position: -230px 0; */
+    background: url('/wp/wp-content/uploads/2017/06/sage3_sprite.png') -230px 0;
+}
+
+#sage2 {
+    left: 350px;
+    width: 150px;
+/*  background-position: -350px 0; */
+    background: url('/wp/wp-content/uploads/2017/06/sage3_sprite.png') -350px 0;
+}
+
+#sage3m3m {
+    left: 500px;
+    width: 270px;
+/*  background-position: -500px 0; */
+    background: url('/wp/wp-content/uploads/2017/06/sage3_sprite.png') -500px 0;
+}
+
+#sage3iss {
+    left: 770px;
+    width: 230px;
+/*  background-position: -770px 0; */
+    background: url('/wp/wp-content/uploads/2017/06/sage3_sprite.png') -770px 0;
+}
+
+#home a:hover {
+/*  background-position: 0 -188px; */
+    background: url('/wp/wp-content/uploads/2017/06/sage3_sprite.png') 0 -188px;
+}
+
+#sam a:hover {
+/*  background-position: -90px -188px; */
+    background: url('/wp/wp-content/uploads/2017/06/sage3_sprite.png') -90px -188px;
+}
+
+#sage1 a:hover {
+/*  background-position: -230px -188px; */
+    background: url('/wp/wp-content/uploads/2017/06/sage3_sprite.png') -230px -188px;
+}
+
+#sage2 a:hover {
+/*  background-position: -350px -188px; */
+    background: url('/wp/wp-content/uploads/2017/06/sage3_sprite.png') -350px -188px;
+}
+
+#sage3m3m a:hover {
+/*  background-position: -500px -188px; */
+    background: url('/wp/wp-content/uploads/2017/06/sage3_sprite.png') -500px -188px;
+}
+
+#sage3iss a:hover {
+/*  background-position: -770px -188px; */
+    background: url('/wp/wp-content/uploads/2017/06/sage3_sprite.png') -770px -188px;
+}
+/* <![CDATA[ */
+const simpleBannerScriptParams = {"pro_version_enabled":"","debug_mode":"","id":0,"version":"3.0.10","banner_params":[{"hide_simple_banner":"yes","simple_banner_prepend_element":"body","simple_banner_position":"","header_margin":"","header_padding":"","wp_body_open_enabled":"","wp_body_open":true,"simple_banner_z_index":"","simple_banner_text":"Due to the lapse in federal government funding, NASA is not updating this website. We sincerely regret this inconvenience.","disabled_on_current_page":false,"disabled_pages_array":[],"is_current_page_a_post":false,"disabled_on_posts":"","simple_banner_disabled_page_paths":"","simple_banner_font_size":"","simple_banner_color":"#1E73BE","simple_banner_text_color":"","simple_banner_link_color":"#F1633B","simple_banner_close_color":"","simple_banner_custom_css":"","simple_banner_scrolling_custom_css":"","simple_banner_text_custom_css":"","simple_banner_button_css":"","site_custom_css":"","keep_site_custom_css":"","site_custom_js":"","keep_site_custom_js":"","close_button_enabled":"","close_button_expiration":"","close_button_cookie_set":false,"current_date":{"date":"2025-11-18 19:31:13.879000","timezone_type":3,"timezone":"UTC"},"start_date":{"date":"2025-11-18 19:31:13.879004","timezone_type":3,"timezone":"UTC"},"end_date":{"date":"2025-11-18 19:31:13.879006","timezone_type":3,"timezone":"UTC"},"simple_banner_start_after_date":"","simple_banner_remove_after_date":"","simple_banner_insert_inside_element":""}]}
+/* ]]> */
+.simple-banner{display:none;}
+.simple-banner{background:#1E73BE;}
+.simple-banner .simple-banner-text{color: #ffffff;}
+.simple-banner .simple-banner-text a{color:#F1633B;}
+.simple-banner{z-index: 99999;}
+var root = document.getElementsByTagName( "html" )[0]; root.setAttribute( "class", "js" );
+.wpb_animate_when_almost_visible { opacity: 1; }
+(function(window, document) {
+
+		 if(navigator.userAgent.match(/(Android|iPod|iPhone|iPad|BlackBerry|IEMobile|Opera Mini)/)) {
+			 document.body.className += " using-mobile-browser ";
+		 }
+
+		 if( !("ontouchstart" in window) ) {
+
+			 var body = document.querySelector("body");
+			 var winW = window.innerWidth;
+			 var bodyW = body.clientWidth;
+
+			 if (winW > bodyW + 4) {
+				 body.setAttribute("style", "--scroll-bar-w: " + (winW - bodyW - 4) + "px");
+			 } else {
+				 body.setAttribute("style", "--scroll-bar-w: 0px");
+			 }
+		 }
+
+	 })(window, document);
+Skip to main content
+Close Search
+Menu
+Home
+Missions
+About SAM
+About SAGE I
+About SAGE II
+About SAGE III on Метеор-3М
+About SAGE III on ISS
+News & Outreach
+Science
+Predicts
+Quicklook
+Expedited
+Publications
+facebook
+youtube
+flickr
+404
+Page Not Found
+Back Home
+Page Curator: SAGE Web Development Team
+NASA Official: David E. Flittner
+Last updated: 12-January-2017
++ No Fear Act
++ Freedom of Information Act
++ Privacy
++ Accessibility
++ NASA Communications Policy
++ Agency Financial Reports
++ Office of Inspector General
++ Contact NASA
+NASA Langley Research Center
+facebook
+youtube
+flickr
+Close Menu
+Home
+Missions
+About SAM
+About SAGE I
+About SAGE II
+About SAGE III on Метеор-3М
+About SAGE III on ISS
+News & Outreach
+Science
+Predicts
+Quicklook
+Expedited
+Publications
+facebook
+youtube
+flickr
+{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"\/*"},{"not":{"href_matches":["\/wp\/wp-*.php","\/wp\/wp-admin\/*","\/wp\/wp-content\/uploads\/*","\/wp\/wp-content\/*","\/wp\/wp-content\/plugins\/*","\/wp\/wp-content\/themes\/salient-child\/*","\/wp\/wp-content\/themes\/salient\/*","\/*\\?(.+)"]}},{"not":{"selector_matches":"a[rel~=\"nofollow\"]"}},{"not":{"selector_matches":".no-prefetch, .no-prefetch a"}}]},"eagerness":"conservative"}]}
+/* <![CDATA[ */
+var nectarLove = {"ajaxurl":"https:\/\/sage.nasa.gov\/wp\/wp-admin\/admin-ajax.php","postID":" ","rooturl":"https:\/\/sage.nasa.gov","loveNonce":"77be351f63"};
+/* ]]> */
+/* <![CDATA[ */
+var nectarLove = {"ajaxurl":"https:\/\/sage.nasa.gov\/wp\/wp-admin\/admin-ajax.php","postID":"0","rooturl":"https:\/\/sage.nasa.gov","disqusComments":"false","loveNonce":"77be351f63","mapApiKey":""};
+var nectarOptions = {"quick_search":"false","mobile_header_format":"default","left_header_dropdown_func":"default","ajax_add_to_cart":"0","ocm_remove_ext_menu_items":"remove_images","woo_product_filter_toggle":"0","woo_sidebar_toggles":"true","woo_sticky_sidebar":"0","woo_minimal_product_hover":"default","woo_minimal_product_effect":"default","woo_related_upsell_carousel":"false","woo_product_variable_select":"default"};
+var nectar_front_i18n = {"next":"Next","previous":"Previous"};
+/* ]]> */

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="supplier-badge__icon icon"
+    viewBox="0 0 32 32">
+    <defs></defs>
+    <defs>
+        <linearGradient id="regLinearGradient-1" x1="50%" x2="50%" y1="0%" y2="100%">
+            <stop offset="0%" stop-color="#3DB4E7"></stop>
+            <stop offset="100%" stop-color="#28628F"></stop>
+        </linearGradient>
+        <linearGradient id="regLinearGradient-4" x1="50%" x2="50%" y1="100%" y2="0%">
+            <stop offset="0%" stop-color="#FFF" stop-opacity=".9"></stop>
+            <stop offset="90.2%" stop-color="#FFF" stop-opacity="0"></stop>
+        </linearGradient>
+        <path id="regPath-2" d="M3.5 26.125V1L16 2.5 28.5 1v25.125L16 31z"></path>
+    </defs>
+    <g id="ico-registered" fill="none" fill-rule="evenodd" stroke="none" stroke-width="1">
+        <mask id="regMask-3" fill="#fff">
+            <use xlink:href="#regPath-2"></use>
+        </mask>
+        <use id="registered-shield" fill="url(#regLinearGradient-1)" xlink:href="#regPath-2"></use>
+        <path id="Path" fill="url(#regLinearGradient-4)" fill-rule="nonzero"
+            d="M-.5 29s12.658-21.082 37-23.906V-3h-37v32z" mask="url(#regMask-3)"></path>
+        <path id="Path" fill="#FFF" d="M13 16.764L22 9l3 2.708L13 22l-6-5.236 3-2.708z" mask="url(#regMask-3)"></path>
+    </g>
+</svg>

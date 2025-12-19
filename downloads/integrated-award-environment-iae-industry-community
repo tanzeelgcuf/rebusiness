@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="utf-8">
+  <title>BUY.GSA.GOV</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="./assets/images/gsa-icon.jpg">
+  <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-W4SGTNW');</script>
+  <!-- End Google Tag Manager-->
+
+  <!--Font Awesome Pro -->
+  <!-- <script src="https://kit.fontawesome.com/a0e12e4a15.js" crossorigin="anonymous"></script> -->
+
+  <!-- Eloqua -->
+  <script type="text/javascript">
+    var _elqQ = _elqQ || [];
+    _elqQ.push(['elqSetSiteId', '1311950425']);
+    _elqQ.push(['elqUseFirstPartyCookie', 'gsasolutionssecure.gsa.gov']);
+    _elqQ.push(['elqTrackPageView', window.location.href]);
+
+    (function () {
+      function async_load() {
+        var s = document.createElement('script'); s.type = 'text/javascript';
+        s.async = true;
+        s.src = '//img.en25.com/i/elqCfg.min.js';
+        var x = document.getElementsByTagName('script')[0];
+        x.parentNode.insertBefore(s, x);
+      }
+      if (window.addEventListener) window.addEventListener('DOMContentLoaded', async_load, false);
+      else if (window.attachEvent) window.attachEvent('onload', async_load);
+    })();
+
+  </script>
+  <!-- End Eloqua -->
+
+  <!-- Salesforce Marketing Cloud-->
+  <script type="text/javascript" async="" src="https://cdn.evgnet.com/beacon/gsafederalacquisitionservice/gsa_prod/scripts/evergage.min.js"></script>
+
+  
+<!-- Live Chat code to site (Ask Anne) -->
+  <!-- chat deployment code -->
+  <script type="text/javascript" src="https://la1-c1-ttd.salesforceliveagent.com/content/g/js/54.0/deployment.js"></script>
+<!-- End Live Chat code to site (Ask Anne) -->
+<link rel="stylesheet" href="styles.3d66a8e751a647d8.css"></head>
+<body>
+  <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe title="Google Tag Manager (noscript)" src="https://www.googletagmanager.com/ns.html?id=GTM-W4SGTNW"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) --> 
+  <app-root></app-root>
+<script src="runtime.0761d9be3ec9b85a.js" type="module"></script><script src="polyfills.7d7761b7923cff89.js" type="module"></script><script src="scripts.cd0b6aa504cac697.js" defer></script><script src="main.d92c353f3c90b639.js" type="module"></script></body>
+</html>

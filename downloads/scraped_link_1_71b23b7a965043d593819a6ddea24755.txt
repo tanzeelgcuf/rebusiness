@@ -1,0 +1,129 @@
+Please enable Javascript.
+An official website of the United States government
+function MM_jumpMenu(targ, selObj, restore) { //v3.0
+            eval(targ + ".location='" + selObj.options[selObj.selectedIndex].value + "'");
+            if (restore) selObj.selectedIndex = 0;
+        }
+Home
+About IPP
+Agencies
+Vendors
+Knowledge Center
+Sign in as a:
+Disburser
+Collector
+SMART GOVERNMENT INVOICING
+$(function () {
+            $('#slides').slides({
+                preload: true,
+                preloadImage: '/Content/IPP/images/loading.gif',
+                preloadImage: '',
+                play: 7500,
+                pause: 2500,
+                hoverPause: true,
+                animationStart: function (current) {
+                    $('.caption').animate({
+                        bottom: -35
+                    }, 100);
+                    if (window.console && console.log) {
+                        // example return of current slide number
+                        console.log('animationStart on slide: ', current);
+                    };
+                },
+                animationComplete: function (current) {
+                    $('.caption').animate({
+                        bottom: 0
+                    }, 200);
+                    if (window.console && console.log) {
+                        // example return of current slide number
+                        console.log('animationComplete on slide: ', current);
+                    };
+                },
+                slidesLoaded: function () {
+                    $('.caption').animate({
+                        bottom: 0
+                    }, 200);
+                }
+            });
+        });
+The Invoice Processing Platform (IPP)
+Are you still processing paper invoices?
+There's a better way...
+The Invoice Processing Platform (IPP)
+DLT Solutions
+"
+IPP is great and easy way of submitting invoices to the government and payment is much quicker than submitting by mail. Quicker payments have positively impacted our Days Sale Outstanding (DSO). IPP is a very stress-free and a user-friendly business solution to get paid quicker by federal agencies. IPP is so easy that my grandmother could use it!
+"
+Anita Kelly, Credit and Collections Supervisor
+Department of the Interior
+"
+IPP has streamlined and standardized the DOI's invoicing process.
+"
+Becky Reilly
+IPP Project Lead
+Administrative Resource Center (ARC)
+"
+The people at IPP are very open to receiving feedback...It's nice to have such open lines of communication.
+"
+Yvette Dunbar
+Accounts Payable Branch Manager
+"
+I want to thank IPP Customer Support for its outstanding customer service. They are pleasant, patient, listened well, asked good questions, and gave detailed instructions. It is rare to get this kind of support nowadays and I want to commend the team for solving my problem in an efficient manner.
+"
+Wanda Willis
+Independent Management and Leadership Consultant
+Zonge International, Inc.
+"
+I just got off of the phone with Mary at your IPP Help Desk and wanted to let you know how enjoyable it was talking to her. Not only did she help me with my issues, she had me laughing at 7 o'clock in the morning.
+"
+Debbie Seager
+Shipping & Receiving Manager
+Agency Knowledge Center
+Vendor Knowledge Center
+Customer Support
+Overview
+The Invoice Processing Platform (IPP), is a secure, Web-based service that more efficiently manages government  invoicing from purchase order (PO) through payment notification, at no charge to federal agencies and their vendors.
+Find out more >
+IPP Benefits
+Secure, Web-based service
+Designed for federal agencies and their  vendors
+Saves time and money
+Improves financial management
+Makes it easier for vendors to do business  with the government
+Download Adobe Reader
+Features
+Electronic Purchase Orders
+Electronic Invoices
+Automated Workflow
+Payment Notification Service
+IPP is compliant with the Statement on Standards for Attestation Engagements No. 18 (SSAE 18), Reporting on Controls at a Service Organization (formerly, SAS 70 and SSAE 16)
+;
+Vendors
+How to Enroll
+Federal Agencies
+Schedule a Consultation
+Getting Started for Vendors
+Vendor MFA Quick Reference Guide
+MFA Vendor Troubleshooting Tips
+Vendor Webinars
+View upcoming monthly webinars>
+About IPP
+Our Agency Customers
+Benefits
+Features
+Success Stories
+Downloads
+Agencies
+Downloads
+News & Events
+Schedule a Consultation
+Vendors
+Vendor Enrollment
+Downloads
+News & Events
+Knowledge Center
+Notice
+Customer Support
+(866) 973-3131
+IPPCustomerSupport@
+fiscal.treasury.gov

@@ -1,0 +1,128 @@
+Home | Acquisition.GOV
+Skip to main content
+An official website of the United States Government
+Main navigation
+FAR Overhaul
+Regulations
+Row 1
+FAR
+Smart Matrix
+Chapter 99 (CAS)
+Row 2
+DFARS
+DFARSPGI
+AFARS
+DAFFARS
+DAFFARS MP
+DARS
+DLAD
+NMCARS
+SOFARS
+TRANSFARS
+Row 3
+AGAR
+AIDAR
+CAR
+DEAR
+DIAR
+DOLAR
+DOSAR
+DTAR
+Row 4
+EDAR
+EPAAR
+FEHBAR
+GSAM/R
+HHSAR
+HSAR
+HUDAR
+Row 5
+IAAR
+JAR
+LIFAR
+NFS
+NRCAR
+TAR
+VAAR
+Tools
+Archives
+Smart Matrix
+Regulations Search
+Acquisition Regulation Comparator (ARC)
+Policy Network
+CAOC
+CAAC
+FAR Council
+ISDC
+Access the Federal Acquisition Regulation
+Browse the FAR
+FAC Updates
+1.401 (c)
+Technical Amendment
+17.703 (f)
+Technical Amendment
+25.104 (a)
+FAR Case 2020-009
+33.105
+Technical Amendment
+See all updates
+Smart Matrix
+PSC Manual
+Acquisition Regulation Comparator (ARC)
+Procurement Forecasts
+News and Announcements
+Oct
+30
+FAR Overhaul | FAR Companion Guide
+Oct
+28
+FAR Overhaul Model Deviation Text Updates for Parts 2 and 52
+Oct
+14
+FAR Overhaul New Model Deviation Text for Parts 22, 23, 32 and 53
+Browse all news
+×
+FAR Overhaul
+Regulations
+Tools
+Archives
+Smart Matrix
+Regulations Search
+Acquisition Regulation Comparator (ARC)
+Policy Network
+CAO.gov
+CAO Home
+Council Member
+Council Defining Documents
+CAOC History
+CAOC Charter
+Civilian Agency Acquisition Council (CAAC)
+Federal Acquisition Regulatory Council
+Interagency Suspension and Debarment Committee (ISDC)
+Search
+˄ Top
+Sign up for FAR News
+Share the FAR
+Upper Footer Menu
+Useful Links
+FAR Resources
+Training
+Acquisition Systems
+Contact Us/FAQs
+Privacy and Security Notice
+Accessibility Aids
+Last Updated 11/17/2025
+ACQUISITION.GOV
+An official website of the
+General Services Administration
+About GSA
+Accessibility support
+FOIA requests
+No FEAR Act data
+Office of the Inspector General
+Performance reports
+Privacy policy
+Looking for U.S. government information and services?
+Visit USA.gov
+Tt
+{"path":{"baseUrl":"\/","pathPrefix":"","currentPath":"node","currentPathIsAdmin":false,"isFront":true,"currentLanguage":"en","themeUrl":"themes\/custom\/acquisition_gov"},"pluralDelimiter":"\u0003","suppressDeprecationErrors":true,"ajaxPageState":{"libraries":"eJx9jdEOgzAIRX-o2k9q0KLrpMUBnfPvV6MPy5bsgeSc3AvA-KhJkyUuYeanB1U0ddA4DMKboj-4I5ysy1jqn6gbiRXj2Zib1Hg2Tu7UdsLrduYIpKEKeWMmS6sayk_WJoy87g7u8ArEEFH8B_d2Ex6Gtokvo1QWH6WuQP2lLqeSWKDMGBQy-S_vDdWc7u159gMouqpb1HCgnwQybizLGzcCc38","theme":"acquisition_gov","theme_token":null},"ajaxTrustedUrl":[],"ajaxLoader":{"markup":"\u003Cdiv class=\u0022ajax-throbber sk-circle\u0022\u003E\n              \u003Cdiv class=\u0022sk-circle-dot\u0022\u003E\u003C\/div\u003E\n              \u003Cdiv class=\u0022sk-circle-dot\u0022\u003E\u003C\/div\u003E\n              \u003Cdiv class=\u0022sk-circle-dot\u0022\u003E\u003C\/div\u003E\n              \u003Cdiv class=\u0022sk-circle-dot\u0022\u003E\u003C\/div\u003E\n              \u003Cdiv class=\u0022sk-circle-dot\u0022\u003E\u003C\/div\u003E\n              \u003Cdiv class=\u0022sk-circle-dot\u0022\u003E\u003C\/div\u003E\n              \u003Cdiv class=\u0022sk-circle-dot\u0022\u003E\u003C\/div\u003E\n              \u003Cdiv class=\u0022sk-circle-dot\u0022\u003E\u003C\/div\u003E\n              \u003Cdiv class=\u0022sk-circle-dot\u0022\u003E\u003C\/div\u003E\n              \u003Cdiv class=\u0022sk-circle-dot\u0022\u003E\u003C\/div\u003E\n              \u003Cdiv class=\u0022sk-circle-dot\u0022\u003E\u003C\/div\u003E\n              \u003Cdiv class=\u0022sk-circle-dot\u0022\u003E\u003C\/div\u003E\n            \u003C\/div\u003E","hideAjaxMessage":false,"alwaysFullscreen":true,"throbberPosition":"body"},"data":{"extlink":{"extTarget":true,"extTargetAppendNewWindowLabel":"(opens in a new window)","extTargetNoOverride":false,"extNofollow":false,"extTitleNoOverride":false,"extNoreferrer":true,"extFollowNoOverride":false,"extClass":"ext","extLabel":"(link is external)","extImgClass":false,"extSubdomains":true,"extExclude":"","extInclude":"","extCssExclude":"#useful-links, #double-column","extCssInclude":"","extCssExplicit":"","extAlert":false,"extAlertText":"This link will take you to an external web site. We are not responsible for their content.","extHideIcons":false,"mailtoClass":"mailto","telClass":"","mailtoLabel":"(link sends email)","telLabel":"(link is a phone number)","extUseFontAwesome":false,"extIconPlacement":"append","extPreventOrphan":false,"extFaLinkClasses":"fa fa-external-link","extFaMailtoClasses":"fa fa-envelope-o","extAdditionalLinkClasses":"","extAdditionalMailtoClasses":"","extAdditionalTelClasses":"","extFaTelClasses":"fa fa-phone","whitelistedDomains":[],"extExcludeNoreferrer":""}},"miniorange_saml":{"base_url":"https:\/\/www.acquisition.gov"},"user":{"uid":0,"permissionsHash":"493423864df395a9ab6d6ef0246647e44ef424cc6bee0c7e89e3c1ba4fc7e262"}}
