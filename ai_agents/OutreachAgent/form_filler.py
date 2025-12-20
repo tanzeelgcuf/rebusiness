@@ -4,6 +4,7 @@ import logging
 import time
 from playwright.async_api import async_playwright
 import asyncio
+from bs4 import BeautifulSoup
 
 # Add parent directory to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
@@ -122,10 +123,17 @@ Sincerely,
                 'example.com', 'w3.org', 'sentry.io', 'domain.com', 'email.com',
                 'cloudflare.com', 'google.com', 'facebook.com', 'twitter.com',
                 'linkedin.com', 'youtube.com', 'instagram.com', 'github.com',
-                'wix.com', 'godaddy.com', 'wordpress.com'
+                'wix.com', 'godaddy.com', 'wordpress.com', 'amazonses.com',
+                'myshopify.com', 'shopify.com', '2x.png', '3x.png' # Common false positives
             ]
             
-            ignored_extensions = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.js', '.css']
+            ignored_patterns = [
+                'noreply', 'no-reply', 'donotreply', 'support-icon', 'user-icon',
+                'u-20', 'u-21', 'u-22', # hex codes often mistaken
+                'test@', 'me@', 'you@', 'user@', 'admin@domain', 'name@'
+            ]
+            
+            ignored_extensions = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.js', '.css', '.bmp', '.tif']
             
             valid_emails = []
             seen = set()
@@ -134,8 +142,18 @@ Sincerely,
                 seen.add(e)
                 
                 e_lower = e.lower()
-                if any(ign in e_lower.split('@')[1] for ign in ignored_domains): continue
+                user_part, domain_part = e_lower.split('@')
+
+                if any(ign in domain_part for ign in ignored_domains): continue
+                if any(pat in user_part for pat in ignored_patterns): continue
                 if any(e_lower.endswith(ext) for ext in ignored_extensions): continue
+                
+                # Filter out "u-1834..." style generated IDs
+                if re.match(r'^u-\d+', user_part): continue
+                
+                # Filter out pure numbers
+                if user_part.isdigit(): continue
+
                 if len(e) < 6: continue 
                 
                 valid_emails.append(e)
@@ -147,7 +165,68 @@ Sincerely,
         except Exception as e:
             self.logger.error(f"Error extracting emails: {e}")
             return []
+    def analyze_form(self, form_html):
+        """
+        Heuristic analysis of form HTML to identify field selectors.
+        Returns a mapping dict or None.
+        """
+        try:
+            soup = BeautifulSoup(form_html, 'html.parser')
+            mapping = {}
+            
+            def find_input(keywords, type_filter=None, tag='input'):
+                # Helper to find input by heuristics
+                elements = soup.find_all(tag)
+                for el in elements:
+                    attrs = (el.get('name', '') + ' ' + el.get('id', '') + ' ' + el.get('placeholder', '')).lower()
+                    if type_filter and el.get('type') != type_filter:
+                         if type_filter == 'email' and 'email' in attrs: pass # Allow if name has email
+                         else: continue
+                    
+                    for kw in keywords:
+                        if kw in attrs:
+                            # Return CSS selector
+                            if el.get('id'): return f"{tag}#{el.get('id')}"
+                            if el.get('name'): return f"{tag}[name='{el.get('name')}']"
+                            return None
+                return None
 
+            # Name
+            mapping['name_selector'] = find_input(['name', 'full name', 'first name', 'contact'], tag='input')
+            
+            # Email
+            mapping['email_selector'] = find_input(['email', 'e-mail'], type_filter='email')
+            if not mapping['email_selector']: # Fallback
+                mapping['email_selector'] = find_input(['email', 'e-mail'], tag='input')
+
+            # Company
+            mapping['company_selector'] = find_input(['company', 'business', 'organization'], tag='input')
+            
+            # Subject
+            mapping['subject_selector'] = find_input(['subject', 'topic'], tag='input')
+            
+            # Message
+            mapping['message_selector'] = find_input(['message', 'comment', 'detail', 'inquiry'], tag='textarea')
+            if not mapping['message_selector']:
+                 mapping['message_selector'] = find_input(['message', 'comment'], tag='input') # Sometimes input type=text
+            
+            # Submit
+            submit_btn = soup.find('button', type='submit') or soup.find('input', type='submit')
+            if submit_btn:
+                if submit_btn.get('id'): mapping['submit_selector'] = f"#{submit_btn.get('id')}"
+                elif submit_btn.get('name'): mapping['submit_selector'] = f"[name='{submit_btn.get('name')}']"
+                else: mapping['submit_selector'] = 'button[type="submit"]' # Generic fallback
+            else:
+                 mapping['submit_selector'] = 'button[type="submit"]'
+
+            # Valid if we have at least Email and Message? Or Name?
+            if mapping.get('email_selector'):
+                return mapping
+            return None
+            
+        except Exception as e:
+            self.logger.error(f"Heuristic analysis failed: {e}")
+            return None
     async def fill_form_async(self, url, data):
         """
         Attempt to fill a contact form at the given URL (Async).

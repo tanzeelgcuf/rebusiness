@@ -74,6 +74,11 @@ class ThomasNetAgent:
                 print(f"  Navigating to Search Page: https://www.thomasnet.com/suppliers")
                 page.goto("https://www.thomasnet.com/suppliers", timeout=60000, wait_until="networkidle")
                 
+                # Strict Wait for "Complete Load" (User Request)
+                print("  Waiting for page to initialize fully...")
+                page.wait_for_load_state("domcontentloaded")
+                time.sleep(5) # Explicit buffer for visual rendering
+                
                 # Wait for Input
                 print("  Typing search term...")
                 
@@ -145,19 +150,32 @@ class ThomasNetAgent:
                     for item in items:
                         if len(suppliers) >= limit: break
                         try:
-                            name_el = item.select_one('h2 a')
-                            if not name_el: continue
+                            # Try robust selector first, fallback to h2 a
+                            name_el = item.select_one('[data-testid="supplier-name-link"]')
+                            if not name_el:
+                                name_el = item.select_one('h2 a')
+                            
+                            if not name_el: 
+                                print("  Skipping item: No name element found.")
+                                continue
+                            
                             name = name_el.get_text(strip=True)
                             
                             # Extract links
                             website = None
-                            links = item.select('a')
-                            for link in links:
-                                href = link.get('href', '')
-                                if 'navigator.thomasnet.com' in href or 'location' in href: continue 
-                                if href.startswith('http') and 'thomasnet.com' not in href:
-                                    website = href
-                                    break
+                            # Try specific website button first
+                            website_btn = item.select_one('a[data-sentry-component="SupplierWebsite"]')
+                            if website_btn:
+                                website = website_btn.get('href')
+                            else:
+                                # Fallback loop
+                                links = item.select('a')
+                                for link in links:
+                                    href = link.get('href', '')
+                                    if 'navigator.thomasnet.com' in href or 'location' in href: continue 
+                                    if href.startswith('http') and 'thomasnet.com' not in href:
+                                        website = href
+                                        break
                             
                             # Fallback: Profile Link (ThomasNet profile often has the real link)
                             if not website:
@@ -165,7 +183,7 @@ class ThomasNetAgent:
                                 if profile_href:
                                      website = f"https://www.thomasnet.com{profile_href}" if profile_href.startswith('/') else profile_href
 
-                            if name and website:
+                            if name: # Website is optional (can use ThomasNet profile for outreach if needed, or skip)
                                 # Deduplicate
                                 if not any(s['name'] == name for s in suppliers):
                                     suppliers.append({

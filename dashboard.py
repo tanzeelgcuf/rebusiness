@@ -28,12 +28,17 @@ def get_data():
         SELECT m.name, p.product_name, r.status, r.request_date, r.response_date 
         FROM manufacturer_requests r
         JOIN manufacturers m ON r.manufacturer_id = m.id
-        JOIN products p ON r.product_id = p.product_id
+        JOIN products p ON r.product_id = p.id
         ORDER BY r.request_date DESC LIMIT 10
     """, conn) if "manufacturer_requests" in pd.read_sql_query("SELECT name FROM sqlite_master WHERE type='table'", conn)['name'].values else pd.DataFrame()
+
+    # 5. Sourcing Pipeline (New)
+    sourcing_df = pd.read_sql_query("SELECT status, count(*) as count FROM product_sourcing_status GROUP BY status", conn)
+    sourcing_sums = pd.read_sql_query("SELECT sum(suppliers_found_count) as found, sum(outreach_sent_count) as sent FROM product_sourcing_status", conn)
+    total_manufacturers = pd.read_sql_query("SELECT count(*) as count FROM manufacturers", conn).iloc[0]['count']
     
     conn.close()
-    return solicitations, products_count, detailed_products, requests, recent_reqs
+    return solicitations, products_count, detailed_products, requests, recent_reqs, sourcing_df, sourcing_sums, total_manufacturers
 
 # --- Layout ---
 
@@ -41,7 +46,7 @@ def get_data():
 col1, col2, col3, col4 = st.columns(4)
 
 try:
-    solicitations, prod_total, prod_detailed, requests_df, recent_activity = get_data()
+    solicitations, prod_total, prod_detailed, requests_df, recent_activity, sourcing_df, sourcing_sums, total_mfg = get_data()
     
     with col1:
         st.metric("Total Solicitations", len(solicitations))
@@ -50,7 +55,7 @@ try:
         st.metric("Products Found", prod_total)
         
     with col3:
-        st.metric("Detailed Specs Extracted", prod_detailed)
+        st.metric("Manufacturers Database", total_mfg, delta=int(sourcing_sums['found'].fillna(0).iloc[0]))
         
     with col4:
         total_outreach = requests_df['count'].sum() if not requests_df.empty else 0
@@ -62,6 +67,29 @@ try:
     tab1, tab2 = st.tabs(["🚀 Mission Control", "🚩 Review Queue"])
 
     with tab1:
+        # Sourcing Pipeline Section (New)
+        st.subheader("🏭 Sourcing Pipeline")
+        sc1, sc2, sc3 = st.columns(3)
+        
+        with sc1:
+            if not sourcing_df.empty:
+                fig_source = px.pie(sourcing_df, values='count', names='status', title='Product Sourcing Status', hole=0.4)
+                st.plotly_chart(fig_source, use_container_width=True)
+            else:
+                st.info("No sourcing data yet.")
+                
+        with sc2:
+            found_total = int(sourcing_sums['found'].fillna(0).iloc[0])
+            st.metric("Suppliers Sourced", found_total)
+            st.caption("Total suppliers found via ThomasNet pipeline")
+            
+        with sc3:
+            sent_total = int(sourcing_sums['sent'].fillna(0).iloc[0])
+            st.metric("Automated Forms Filled", sent_total)
+            st.caption("Successful form submissions via 'John Campbell' identity")
+            
+        st.markdown("---")
+
         # Main Content
         c1, c2 = st.columns([2, 1])
 

@@ -1,7 +1,15 @@
 import sys
+from unittest.mock import MagicMock
+
+# Mock-Shim to prevent google.generativeai import hang
+sys.modules['google.generativeai'] = MagicMock()
+sys.modules['google.ai.generativelanguage'] = MagicMock()
+sys.modules['google.api_core'] = MagicMock()
+
 import asyncio
 import os
 import json
+import sqlite3
 from database_manager import DatabaseManager
 from ai_agents.ThomasNetAgent.thomasnet_agent import ThomasNetAgent
 from ai_agents.OutreachAgent.form_filler import FormFiller
@@ -17,38 +25,61 @@ async def run_enhanced_workflow():
     tn_agent = ThomasNetAgent()
     outreach_agent = FormFiller()
     
-    # 1. Fetch Candidates (Products with 'pending' sourcing status)
-    # Using direct query if wrapper doesn't exist
-    conn = db._connect_db()
-    cursor = conn.cursor()
-    
-    # Get products that haven't been fully sourced yet
-    # We join with sourcing status to filter
-    query = """
-        SELECT p.id, p.product_name, s.solicitation_number, s.response_deadline 
-        FROM products p
-        JOIN solicitations s ON p.solicitation_id = s.id
-        LEFT JOIN product_sourcing_status pss ON p.id = pss.product_id
-        WHERE pss.status IS NULL OR pss.status = 'pending'
-        LIMIT 5
-    """
-    products = cursor.execute(query).fetchall()
-    conn.close()
-    
-    print(f"Found {len(products)} products pending sourcing.")
-    
-    for row in products:
-        p_id = row[0]
-        p_name = row[1]
-        sol_num = row[2]
-        due_date = row[3]
+    # 1. Fetch Candidates (Processing Loop)
+    while True:
+        conn = db._connect_db()
+        cursor = conn.cursor()
+        
+        # Get products that haven't been fully sourced yet (Batch of 5)
+        # We join with sourcing status to filter
+        try:
+            query = """
+                SELECT p.id, p.product_name, s.contract_id
+                FROM products p
+                JOIN solicitations s ON p.solicitation_id = s.id
+                LEFT JOIN product_sourcing_status pss ON p.id = pss.product_id
+                WHERE pss.status IS NULL OR pss.status = 'pending'
+                LIMIT 5
+            """
+            products = cursor.execute(query).fetchall()
+        except sqlite3.OperationalError:
+             # Fallback join
+            query = """
+                SELECT p.id, p.product_name, s.contract_id
+                FROM products p
+                JOIN solicitations s ON p.contract_id = s.contract_id
+                LEFT JOIN product_sourcing_status pss ON p.id = pss.product_id
+                WHERE pss.status IS NULL OR pss.status = 'pending'
+                LIMIT 5
+            """
+            products = cursor.execute(query).fetchall()
+            
+        db._close_db() # Close to free up for updates inside loop
+
+        if not products:
+            print("No more pending products found. Sourcing complete.")
+            break
+        
+        print(f"--- Fetched batch of {len(products)} products ---")
+        
+        for row in products:
+            p_id = row[0]
+            p_name = row[1]
+            sol_num = row[2]
+            due_date = "ASAP"
+
         
         print(f"\n>>> Processing Product: {p_name} (ID: {p_id})")
         db.update_sourcing_status(p_id, 'sourcing')
         
         # 2. Find Suppliers (ThomasNet)
-        # Using the agent DIRECTLY (Python API) instead of subprocess for better control
-        suppliers_found = tn_agent.find_suppliers_for_product({'product_name': p_name}, limit=LIMIT_SUPPLIERS)
+        # Using asyncio.to_thread to run blocking Playwright Sync API in a separate thread
+        print(f"  Starting ThomasNet search for: {p_name}")
+        suppliers_found = await asyncio.to_thread(
+            tn_agent.find_suppliers_for_product, 
+            {'product_name': p_name}, 
+            limit=LIMIT_SUPPLIERS
+        )
         
         print(f"Found {len(suppliers_found)} suppliers via ThomasNet.")
         
