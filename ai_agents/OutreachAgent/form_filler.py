@@ -100,7 +100,7 @@ Sincerely,
                 self.logger.info("Found Contact link, clicking...")
                 await contact_link.click()
                 await page.wait_for_load_state("networkidle")
-                await asyncio.sleep() # Wait for contact page to settle
+                await asyncio.sleep(5) # Wait for contact page to settle
                 return True
             else:
                 self.logger.warning("Could not find 'Contact' link.")
