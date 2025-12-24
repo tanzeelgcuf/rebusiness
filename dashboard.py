@@ -19,6 +19,7 @@ def get_data():
     # 2. Products Stats
     products_count = pd.read_sql_query("SELECT count(*) as count FROM products", conn).iloc[0]['count']
     detailed_products = pd.read_sql_query("SELECT count(*) as count FROM products WHERE quantity IS NOT NULL", conn).iloc[0]['count']
+    products_with_specs = pd.read_sql_query("SELECT count(*) as count FROM products WHERE specifications IS NOT NULL AND specifications != ''", conn).iloc[0]['count']
     
     # 3. Outreach Stats
     requests = pd.read_sql_query("SELECT status, count(*) as count FROM manufacturer_requests GROUP BY status", conn)
@@ -38,7 +39,7 @@ def get_data():
     total_manufacturers = pd.read_sql_query("SELECT count(*) as count FROM manufacturers", conn).iloc[0]['count']
     
     conn.close()
-    return solicitations, products_count, detailed_products, requests, recent_reqs, sourcing_df, sourcing_sums, total_manufacturers
+    return solicitations, products_count, detailed_products, products_with_specs, requests, recent_reqs, sourcing_df, sourcing_sums, total_manufacturers
 
 # --- Layout ---
 
@@ -46,14 +47,16 @@ def get_data():
 col1, col2, col3, col4 = st.columns(4)
 
 try:
-    solicitations, prod_total, prod_detailed, requests_df, recent_activity, sourcing_df, sourcing_sums, total_mfg = get_data()
+    solicitations, prod_total, prod_detailed, prod_with_specs, requests_df, recent_activity, sourcing_df, sourcing_sums, total_mfg = get_data()
     
     with col1:
         st.metric("Total Solicitations", len(solicitations))
         
     with col2:
         st.metric("Products Found", prod_total)
-        
+        spec_density = (prod_with_specs / prod_total * 100) if prod_total > 0 else 0
+        st.caption(f"Spec Density: {spec_density:.1f}%")
+
     with col3:
         st.metric("Manufacturers Database", total_mfg, delta=int(sourcing_sums['found'].fillna(0).iloc[0]))
         

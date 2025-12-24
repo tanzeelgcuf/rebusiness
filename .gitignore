@@ -16,3 +16,17 @@ datasets/
 .vscode/
 .idea/
 selenium_profile/
+
+# Data & Documents (Exclude)
+*.pdf
+*.docx
+*.doc
+*.xlsx
+*.xls
+*.csv
+*.pptx
+*.ppt
+page_source_*.html
+*.png
+*.webp
+!leads.csv

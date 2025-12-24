@@ -1,0 +1,74 @@
+# Task: Advanced Product Extraction & Crawling
+
+- [x] Research existing extraction and database architecture <!-- id: 0 -->
+- [x] Design extraction pipeline (Attachments, OCR, NLP, Deep Crawling) <!-- id: 1 -->
+- [x] Update Database Schema for rich product data <!-- id: 2 -->
+- [x] Implement Document Processor (PDF/DOCX/Images) <!-- id: 3 -->
+- [x] Implement Deep Crawler <!-- id: 4 -->
+- [x] Implement NLP Extractor <!-- id: 5 -->
+- [x] Integrate into `main_pipeline` <!-- id: 6 -->
+- [x] **Product Information Extraction**
+  - [x] Run `run_offline_extraction.py` to process downloaded files. <!-- id: 7 -->
+  - [x] Run `run_offline_extraction.py` to process downloaded files. <!-- id: 7 -->
+  - [x] Implement Retry Logic for API 429 Errors (Gemini Quota). <!-- id: 11 -->
+  - [x] Enable text-only product extraction (for items with missing attachments). <!-- id: 12 -->
+  - [x] Extract product details to `products` table. <!-- id: 8 -->
+- [ ] **Sourcing & Outreach**
+  - [x] Initialize `product_sourcing_status` for new products. (Backfilled 127 items) <!-- id: 9 -->
+  - [x] Run `batch_sourcing.py` to source manufacturers. <!-- id: 10 -->
+  - [x] **Deep Dive: Diatron (VISN 15)**
+    - [x] Scrape SAM.gov for "Download All" capability.
+    - [x] Extract specs from `36C25526Q0105.docx` and Attachment A.
+    - [x] Identify specific requirement: Replacement of XN3100/XN20 Analyzers (CPRR).
+  - [x] **Outreach Optimization**:
+    - [x] Investigate failure rates in `batch_sourcing.py`.
+    - [x] Implement direct email campaign script `run_email_campaign.py` with custom Camp Sable template.
+    - [x] Verify email delivery (Pilot run).
+    - [/] Execute full email campaign (Targeting ~1,160 fresh leads; Filtered old data).
+- [ ] **Deep Link Following & Universal Extraction**
+  - [x] Upgrade `SamGovAgent` to parse descriptions for external links (DropBox, Drive, etc.). <!-- id: 15 -->
+  - [x] Implement `_process_external_link` in `SamGovAgent` to download from typical file hosts. <!-- id: 16 -->
+  - [x] **Advanced Attachment Reader**: <!-- id: 19 -->
+      - [x] Implement Multimodal OCR (Image->LLM) for scanned PDFs. <!-- id: 20 -->
+      - [x] Add support for `.xlsx/.csv` (Pandas -> Auto-Markdown). <!-- id: 21 -->
+      - [x] Add support for `.pptx` (Text Extraction). <!-- id: 22 -->
+      - [x] Implement Recursive Link Extraction (Find URL in doc -> Fetch). <!-- id: 23 -->
+  - [x] Refine `AttachmentReaderAgent` prompts for "exact" spec extraction. <!-- id: 17 -->
+  - [x] Verify `main_workflow.py` uses the full deep stack. <!-- id: 18 -->
+- [x] **System Optimization**
+  - [x] Integrate "Deep Fetch" (Playwright Download All) into `SamGovAgent`. <!-- id: 13 -->
+  - [x] Automate "Deep Analysis" in `main_workflow.py` for every new solicitation. <!-- id: 14 -->
+    - [x] Run `run_deep_backfill.py` to re-process low-confidence solicitations.
+    - [/] **Smart Enrichment Campaign** (Active):
+        - [x] Stop backfill/legacy campaign.
+        - [x] Create `data_enrichment.py` for on-demand deep analysis.
+        - [x] Create `enrich_and_send_campaign.py` to auto-enrich missing data before sending.
+        - [x] Update Agent Prompts for "Aggressive Quantity Inference".
+        - [->] Running Smart Campaign on pending queue. <!-- id: 24 -->
+    - [/] **Content Quality Overhaul** (Response to User Feedback):
+        - [x] Stop campaign to fix vague emails.
+        - [x] Update Email Template to include full `Description` and `Delivery Timeline`.
+        - [x] Update Template to match User's EXACT request (Quote Reqs + Response Deadline).
+        - [x] Update `enrich_and_send_campaign.py` to trigger on "Weak Specs" (< 20 chars).
+        - [x] Update `AttachmentReaderAgent` to extract verbose descriptions.
+- [ ] Phase 3: System Scaling & Optimization
+    - [x] **Scale SAM.gov Scraping**
+  - [x] Modify `main_workflow.py` for 10-page batching <!-- id: 0 -->
+  - [x] Implement state tracking (`keyword_checkpoint.json`) <!-- id: 1 -->
+  - [x] Add retry logic for network stability <!-- id: 2 -->
+- [ ] **Ad-hoc "Product" Scraping**
+  - [x] Create/Update `main_workflow.py` to support ad-hoc arg scraping <!-- id: 7 -->
+- [x] Execute "Product" scrape using: `python3 main_workflow.py --keyword "product" --pages 10` <!-- id: 8 -->
+  - [x] Run `scrape_all_keyword.py product` to fetch all data <!-- id: 4 -->
+- [ ] **Improve Product Information Extraction**
+  - [x] Update `AttachmentReaderAgent` prompt for "Project Details" <!-- id: 5 -->
+  - [x] Extract "Quote Requirements" <!-- id: 6 -->
+  - [ ] Verify extraction quality <!-- id: 7 -->
+- [/] **Upgrade Supplier Email Extraction**
+  - [x] Implement deep crawling in `ThomasNetAgent` <!-- id: 8 -->
+  - [x] Verify 50+ result scraping (Configured) <!-- id: 9 -->
+  - [/] Integrate into `batch_sourcing.py` (Running for 299 new products) <!-- id: 10 -->
+- [ ] **Ensure Comprehensive Email Content**
+  - [ ] Update `enrich_and_send_campaign.py` templates <!-- id: 11 -->
+  - [ ] Test email generation <!-- id: 12 -->
+    - [ ] **Verification**: Run a full 10-page batch and verify deep email extraction.

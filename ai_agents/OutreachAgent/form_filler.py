@@ -30,7 +30,7 @@ class FormFiller:
         self.logger = logging.getLogger(__name__)
         if GEMINI_API_KEY:
             genai.configure(api_key=GEMINI_API_KEY)
-            self.model = genai.GenerativeModel('gemini-1.5-flash-latest')
+            self.model = genai.GenerativeModel('gemini-2.0-flash-exp')
         else:
             self.model = None
             self.logger.warning("GEMINI_API_KEY not found. LLM features disabled.")
@@ -108,6 +108,43 @@ Sincerely,
         except Exception as e:
             self.logger.error(f"Error finding contact page: {e}")
             return False
+
+    async def _handle_captcha(self, page):
+        """
+        Detects and handles CAPTCHA by pausing for manual user intervention being run in headful mode.
+        """
+        try:
+            # Common Captcha Selectors
+            captcha_selectors = [
+                'iframe[src*="recaptcha"]',
+                'iframe[src*="hcaptcha"]', 
+                '#g-recaptcha',
+                '.g-recaptcha',
+                'iframe[src*="turnstile"]'
+            ]
+            
+            found = False
+            for sel in captcha_selectors:
+                if await page.query_selector(sel):
+                    found = True
+                    break
+            
+            # Text Heuristics
+            if not found:
+                 content = await page.content()
+                 if "i'm not a robot" in content.lower() or "security check" in content.lower():
+                     found = True
+            
+            if found:
+                self.logger.warning("⚠️ CAPTCHA DETECTED! Pausing for 45s to allow manual solution...")
+                # If running headful, user can solve it.
+                await asyncio.sleep(45)
+                self.logger.info("Resuming after Captcha pause...")
+                return True
+        except Exception as e:
+            self.logger.warning(f"Error checking captcha: {e}")
+        return False
+
 
     async def extract_emails(self, page):
         """
@@ -244,6 +281,10 @@ Sincerely,
             
             # Step 1: Navigate to Contact Page
             on_contact_page = await self.find_contact_page(page, url)
+            
+            # Check for Captcha on arrival
+            await self._handle_captcha(page)
+            
             if not on_contact_page:
                 self.logger.info(f"Staying on {url} to check for form/emails directly.")
             

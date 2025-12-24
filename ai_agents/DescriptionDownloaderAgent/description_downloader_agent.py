@@ -65,8 +65,9 @@ class DescriptionDownloaderAgent:
     def _get_contract_id_from_url(self, url):
         parsed_url = urlparse(url)
         path_parts = parsed_url.path.split('/')
-        if 'contract' in path_parts and 'opp' in path_parts:
+        if 'opp' in path_parts:
             try:
+                # Handle /workspace/contract/opp/ID or /opp/ID
                 return path_parts[path_parts.index('opp') + 1]
             except (ValueError, IndexError):
                 pass

@@ -1,0 +1,7 @@
+{
+  "name": "ProcureLink AI v3.0 - Advanced Agent",
+  "description": "An industrial-grade autonomous agent that crawls SAM.gov for technical specifications and extracts manufacturer leads from Thomasnet. Features a local SQL-based lead management system.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

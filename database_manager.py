@@ -47,6 +47,16 @@ class DatabaseManager:
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
+
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS solicitation_analysis (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                contract_id TEXT UNIQUE,
+                analysis_json TEXT, -- Full JSON output from Gemini
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (contract_id) REFERENCES solicitations(contract_id)
+            )
+        """)
         
         # Migration for existing tables
         try:
@@ -175,7 +185,7 @@ class DatabaseManager:
 
 
 
-        cursor.execute("DROP TABLE IF EXISTS product_sourcing_status") # Only for dev, remove in prod
+        # cursor.execute("DROP TABLE IF EXISTS product_sourcing_status") # Removed destructive drop
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS product_sourcing_status (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -331,6 +341,15 @@ class DatabaseManager:
                     "UPDATE solicitations SET analysis_summary=? WHERE contract_id=?",
                     (analysis_summary, contract_id)
                 )
+
+            # Update the separate analysis table
+            cursor.execute("SELECT id FROM solicitation_analysis WHERE contract_id = ?", (contract_id,))
+            exists = cursor.fetchone()
+            if exists:
+                cursor.execute("UPDATE solicitation_analysis SET analysis_json = ? WHERE contract_id = ?", (analysis_summary, contract_id))
+            else:
+                cursor.execute("INSERT INTO solicitation_analysis (contract_id, analysis_json) VALUES (?, ?)", (contract_id, analysis_summary))
+
             conn.commit()
             return True
         except Exception as e:
@@ -449,12 +468,30 @@ class DatabaseManager:
             )
             conn.commit()
             product_id = cursor.lastrowid
+            self._close_db() # Close before calling another method that opens db
+            self.update_sourcing_status(product_id, status='pending')
             print(f"Added product '{product_name}' for {contract_id} (ID: {product_id}).")
             return product_id
         except Exception as e:
             print(f"Error adding product '{product_name}': {e}")
             conn.rollback()
             return None
+        finally:
+            self._close_db()
+
+    def clear_products_for_solicitation(self, contract_id):
+        """Removes all products associated with a contract_id. Used before re-extraction."""
+        conn = self._connect_db()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("DELETE FROM products WHERE contract_id = ?", (contract_id,))
+            conn.commit()
+            print(f"Cleared existing products for solicitation {contract_id}.")
+            return True
+        except Exception as e:
+            print(f"Error clearing products for {contract_id}: {e}")
+            conn.rollback()
+            return False
         finally:
             self._close_db()
 

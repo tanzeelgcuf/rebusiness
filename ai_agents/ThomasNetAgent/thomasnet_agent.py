@@ -34,7 +34,7 @@ class ThomasNetAgent:
             try:
                 import google.generativeai as genai
                 genai.configure(api_key=GEMINI_API_KEY)
-                self.model = genai.GenerativeModel('gemini-1.5-flash')
+                self.model = genai.GenerativeModel('gemini-2.0-flash-exp')
             except Exception as e:
                 print(f"Warning: Gemini import failed: {e}")
     
@@ -293,18 +293,20 @@ class ThomasNetAgent:
 
     def _enrich_supplier_details(self, company_name, product_context):
         """
-        Find company website and contact info.
+        [DEEP CRAWL UPGRADE]
+        Finds company website via DuckDuckGo, then VISITS the site to extract emails/forms.
         """
-        print(f"  Enriching details for: {company_name}...")
+        print(f"  Enriching details for: {company_name} (Deep Crawl Mode)...")
         try:
             from duckduckgo_search import DDGS
             query = f"{company_name} official site contact email"
-            results = DDGS().text(query, region='us-en', max_results=5)
+            # Limit results to find the best match
+            results = DDGS().text(query, region='us-en', max_results=3)
             
             ignored_domains = [
                 'youtube.com', 'facebook.com', 'linkedin.com', 'twitter.com', 
                 'instagram.com', 'pinterest.com', 'thomasnet.com', 'zoominfo.com',
-                'dnb.com', 'manta.com', 'bbb.org'
+                'dnb.com', 'manta.com', 'bbb.org', 'mapquest.com', 'yellowpages.com'
             ]
             
             best_match = None
@@ -319,19 +321,70 @@ class ThomasNetAgent:
                 best_match = res
                 break
             
-            if best_match:
-                snippet = best_match['body']
-                return {
-                    'name': company_name,
-                    'website': best_match['href'],
-                    'email': self._extract_email(snippet),
-                    'phone': self._extract_phone(snippet),
-                    'source': 'ThomasNet via Search',
-                    'notes': f"Identified as supplier for {product_context}"
-                }
-            else:
+            if not best_match:
                 print(f"  Could not find official site for {company_name}")
-                
+                return None
+
+            website_url = best_match['href']
+            print(f"  Visiting Official Site: {website_url}")
+            
+            # --- DEEP CRAWL (Playwright) ---
+            crawled_email = None
+            has_contact_form = False
+            
+            try:
+                # Use context from main thread if possible, or new ephemeral one
+                with sync_playwright() as p:
+                    # Headless for speed
+                    browser = p.chromium.launch(headless=True)
+                    context = browser.new_context(user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)")
+                    page = context.new_page()
+                    
+                    try:
+                        page.goto(website_url, timeout=30000, wait_until="domcontentloaded")
+                        
+                        # 1. Scrape Homepage
+                        content = page.content()
+                        crawled_email = self._extract_email(content)
+                        
+                        # Check for form signals
+                        if "contact" in content.lower() or "form" in content.lower():
+                            if page.locator("form").count() > 0:
+                                has_contact_form = True
+                                
+                        # 2. Visit "Contact" Page (if email not found or just to be thorough)
+                        if not crawled_email:
+                            contact_link = page.get_by_text("Contact", exact=False).first
+                            if contact_link.count() > 0 and contact_link.is_visible():
+                                print("    > navigating to Contact page...")
+                                contact_link.click(timeout=5000)
+                                page.wait_for_load_state("domcontentloaded", timeout=15000)
+                                content = page.content()
+                                crawled_email = self._extract_email(content)
+                                if page.locator("form").count() > 0:
+                                     has_contact_form = True
+                                     
+                    except Exception as e:
+                        print(f"    > Crawl warning: {e}")
+                    finally:
+                        browser.close()
+            except Exception as e:
+                print(f"    > Playwright error: {e}")
+
+            # Fallback to snippet extract if crawl failed
+            if not crawled_email:
+                crawled_email = self._extract_email(best_match['body'])
+            
+            return {
+                'name': company_name,
+                'website': website_url,
+                'email': crawled_email,
+                'phone': self._extract_phone(best_match['body']), # Basic snippet phone
+                'source': 'ThomasNet + Deep Crawl',
+                'has_form': has_contact_form,
+                'notes': f"Deep Crawl: Email={crawled_email}, Form={has_contact_form}"
+            }
+
         except Exception as e:
             print(f"  Enrichment error for {company_name}: {e}")
             
