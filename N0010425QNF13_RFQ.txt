@@ -1,0 +1,71 @@
+
+SUBJECT: RFQ: N00104-25-Q-NF13 - REPAIR OF CABLE ASSEMBLY,SPEC
+
+BODY:
+ Notice ID: N00104-25-Q-NF13
+
+# REPAIR OF CABLE ASSEMBLY,SPEC
+
+Dear Valued Supplier:
+
+We are writing to request a formal quote for repair of cable assembly,spec. Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
+
+Your response is needed on or before February 23, 2026 in order for us to submit your bid.
+
+If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+
+Thank you for your time and consideration.
+
+[My signature info]
+
+## Overview
+
+**Agency Issuing RFQ:**
+NAVSUP Weapon Systems Support Mechanicsburg (NAVSUP WSS MECH)
+5450 Carlisle Pike
+Mechanicsburg, PA 17050-2411
+USA
+
+**Type of Contract:** Firm Fixed Price
+**Set-Aside Type:** Small Business Set-Aside
+**Solicitation Date:** 2025-10-01
+**Quotes Due:** 2026-02-27 16:30 ET
+
+**NAICS Code:** 335931 -- Current-Carrying Wiring Device Manufacturing
+**Size Standard:** 600 employees
+
+## Items Required
+
+**Manufacturer CAGE:** 53711
+**Manufacturer Part Number:** 6964587
+**NSN:** 5995-01-604-0910
+
+**Description:** Teardown, evaluate, repair and/or modify CABLE ASSEMBLY,SPEC. All repair work shall be performed in accordance with the contractor's repair/overhaul standard practices, manuals, directives, drawings, and technical orders. The item shall be free from mercury contamination. Serialization is required per drawing 6964587 note 14 per 6964860.
+
+### CLIN Table
+
+| CLIN | Description | Quantity | Type | Inspection | Quality | Notes |
+|------|-------------|----------|------|------------|---------|-------|
+| 0001 | TEARDOWN, EVALUATE, REPAIR AND/OR MODIFY CABLE ASSEMBLY,SPEC, NSN: 5995-01-604-0910 | 1 LOT | FFP | Origin | Per original manufacturer’s specifications and drawings. | Main line item for the repair effort. |
+| 0001AA | CABLE ASSEMBLY,SPEC to be repaired. | 2 EA | FFP | Origin | Per original manufacturer’s specifications and drawings. | Vendor shall have 90 days after receipt of carcass(es) to complete teardown & evaluation (TD&E) and submit a Firm-Fixed Price quote for the full repair effort. |
+
+
+## Delivery Requirements
+
+**Ship To:**
+DLA DISTRIBUTION, DDSP NEW CUMBERLAND FACILITY (W25G1U)
+2083 NORMANDY DRIVE, DOOR 113 TO 134
+NEW CUMBERLAND
+PA
+17070-5002
+
+**Lead Time:** 120 Days ARO
+**First Delivery:** 120 days after contract award. Requested Repair Turn Around Time (RTAT) is 160 days.
+**Delivery Frequency:** One-time delivery
+
+## Submission Details
+
+**Due Date:** 2026-02-27 16:30 ET
+**Internal Deadline:** February 23, 2026
+
+**Submit To:** HEATHER.R.JONES52.CIV@US.NAVY.MIL

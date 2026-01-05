@@ -1,0 +1,78 @@
+--- Generating RFQ Output ---
+
+SUBJECT: RFQ: N00104-25-Q-NF13 - Teardown, Evaluate, Repair and/or Modify CABLE ASSEMBLY, SPEC (NSN 5995-01-604-0910)
+
+BODY:
+ Notice ID: N00104-25-Q-NF13
+
+# Teardown, Evaluate, Repair and/or Modify CABLE ASSEMBLY, SPEC (NSN 5995-01-604-0910)
+
+Dear Valued Supplier:
+
+We are writing to request a formal quote for teardown, evaluate, repair and/or modify cable assembly, spec (nsn 5995-01-604-0910). Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
+
+Your response is needed on or before February 23, 2026 in order for us to submit your bid.
+
+If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+
+Thank you for your time and consideration.
+
+[My signature info]
+
+🔹Summary of Project
+Title: Teardown, Evaluate, Repair and/or Modify CABLE ASSEMBLY, SPEC (NSN 5995-01-604-0910)
+Type: Firm Fixed Price Repair Contract
+Purpose: To provide teardown, evaluation, repair, and/or modification services for CABLE ASSEMBLY,SPEC (NSN 5995-01-604-0910) to restore Government Furnished Property (GFP) to an operable condition.
+Location: , 
+
+Total Work Area:
+- Base Contract: N/A - Technical Service (Repair of 2 Units) 
+- Option: N/A (Repair Services)
+
+🔹What They Want (Scope of Work)
+| Category | Main Tasks |
+|---|---|
+| **Teardown & Evaluation (TD&E)** | Perform inspection, disassembly, and tests to determine the extent of labor and material needed to restore the Government Furnished Property (GFP). Vendor has 90 days after receipt of carcass to complete TD&E. |
+| **Repair and Modification** | Provide labor and material required to repair and package the CABLE ASSEMBLY,SPEC. All repair work shall be performed in accordance with contractor's standard practices, drawings (e.g., 6964587), and technical orders to meet operational and functional requirements. |
+| **Reporting and Documentation** | Submit a Firm-Fixed Price (FFP) quote for the full repair effort. Utilize the Commercial Asset Visibility Repairables Portal (CAV RP) for inventory transaction reporting. Provide serialization and marking in accordance with MIL-STD-129 and MIL-STD-130. |
+
+
+🔹Timeline / Period of Performance
+| Year | Dates | Requirements |
+|---|---|---|
+| Year 1 | Award Date through 1 year (for induction of units) | Receipt of carcass(es), Teardown & Evaluation (TD&E), Submission of Firm-Fixed Price quote, Full repair effort, Final inspection and acceptance |
+
+
+🔹Deliverables & Reporting Deadlines
+| Deliverable | Due From Award | Format / Medium | Submit To |
+|---|---|---|---|
+| **Firm-Fixed Price Quote for Full Repair** | 90 days | Detailed pricing proposal | Contracting Officer |
+| **Repaired Units (CABLE ASSEMBLY,SPEC)** | 160 days | Physical hardware delivery (Requested Repair Turn Around Time - RTAT) | Contracting Officer |
+
+
+🔹Delivery / Work Locations
+- None: None, None - Contractor's Facility (TBD at Award)
+
+
+🔹Key Compliance Points
+- Requirements: Material must be Mercury Free, Serialization and marking required per MIL-STD-130, MIL-STD-129 and Drawing 6964587, Commercial Asset Visibility Repairables Portal (CAV RP) reporting is mandatory, Packaging must be in accordance with MIL-STD-2073, Configuration Management in accordance with WSSTERMCZ05
+- Insurance:
+  - General Liability: Standard Commercial Liability as per FAR Part 28 (General, Auto, Workers Comp)
+  - Auto Liability: Standard Commercial Liability as per FAR Part 28 (General, Auto, Workers Comp)
+  - Workers' Compensation: Standard Commercial Liability as per FAR Part 28 (General, Auto, Workers Comp)
+- Wage Determination: Federal Contractor Standards (SCA or Walsh-Healey as applicable)
+
+🔹Acceptance Criteria
+To be accepted by the Contracting Officer, each item must meet performance standards (e.g., operational testing, technical manual compliance) and pass final inspection (e.g., Origin inspection).
+
+🟩In Summary
+The Government requires a qualified contractor to perform Teardown, Evaluate, Repair and/or Modify CABLE ASSEMBLY, SPEC (NSN 5995-01-604-0910) over a Firm Fixed Price Repair Contract term. 
+
+In Plain Terms:
+1. Provide Teardown, Evaluate, Repair and/or Modify CABLE ASSEMBLY, SPEC (NSN 5995-01-604-0910) in strict accordance with military specifications, including Material must be Mercury Free, Serialization and marking required per MIL-STD-130, MIL-STD-129 and Drawing 6964587, Commercial Asset Visibility Repairables Portal (CAV RP) reporting is mandatory, Packaging must be in accordance with MIL-STD-2073, Configuration Management in accordance with WSSTERMCZ05 and all applicable technical drawings.
+2. Meet all quality standards specified in the solicitation, ensuring compliance with Federal Contractor Standards (SCA or Walsh-Healey as applicable) and standard military repair practices.
+3. Final inspection and acceptance will take place at Origin. Coordination with Government Agency or the assigned Quality Assurance Representative (QAR) is required for final sign-off.
+4. Success is defined by the timely delivery of items meeting all functional and performance requirements as verified by Government inspection.
+
+---end of RFQ---
+

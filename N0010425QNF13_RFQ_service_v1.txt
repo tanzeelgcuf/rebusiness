@@ -1,0 +1,73 @@
+--- Generating RFQ Output ---
+
+SUBJECT: RFQ: N00104-25-Q-NF13 - Repair and/or Modification of Cable Assembly, SPEC (NSN 5995-01-604-0910)
+
+BODY:
+ Notice ID: N00104-25-Q-NF13
+
+# Repair and/or Modification of Cable Assembly, SPEC (NSN 5995-01-604-0910)
+
+Dear Valued Supplier:
+
+We are writing to request a formal quote for repair and/or modification of cable assembly, spec (nsn 5995-01-604-0910). Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
+
+Your response is needed on or before February  d, 2026 in order for us to submit your bid.
+
+If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+
+Thank you for your time and consideration.
+
+[My signature info]
+
+🔹Summary of Project
+Title: Repair and/or Modification of Cable Assembly, SPEC (NSN 5995-01-604-0910)
+Type: Firm Fixed Price Repair Contract
+Purpose: To provide teardown, evaluation, repair, and/or modification services for Government Furnished CABLE ASSEMBLY,SPEC units (NSN 5995-01-604-0910) to restore them to an operable condition.
+Location: Information not provided in solicitation, Information not provided in solicitation, Cumberland, PA
+
+Total Work Area:
+- Base Contract: Information not provided in solicitation acres
+- Option: Information not provided in solicitation additional acres
+
+🔹What They Want (Scope of Work)
+| Category | Main Tasks |
+|---|---|
+| **Teardown & Evaluation (TD&E)** | Vendor shall complete a teardown and evaluation of the received carcass(es) and submit a Firm-Fixed Price (FFP) quote for the full repair effort. |
+| **Repair and Modification** | Perform all labor and provide material required to repair and package the Government Furnished Property (GFP). All repair work shall be performed in accordance with contractor's standard practices, manuals, and technical documents including Drawing 6964587 and other specifications listed. |
+| **Packaging and Marking** | Preservation, Packaging, Packing and Marking shall be in accordance with MIL-STD-2073 and MIL-STD-129. Physical identification marking in accordance with MIL-STD-130 and serialization in accordance with Drawing 6964587. |
+
+
+🔹Timeline / Period of Performance
+| Year | Dates | Requirements |
+|---|---|---|
+| Base Period | Award Date through 1 Year | Induction of units for repair, Receipt of carcass(es), Teardown & Evaluation (TD&E), Submission of FFP repair quote, Full repair/modification of units, Final government inspection and acceptance |
+
+
+🔹Deliverables & Reporting Deadlines
+| Deliverable | Due From Award | Format / Medium | Submit To |
+|---|---|---|---|
+| **Firm-Fixed Price (FFP) Quote for Repair Effort** | 90 days | Pricing Proposal | Contracting Officer |
+| **Repaired Cable Assembly Units** | 160 days | Physical Item, packaged per MIL-STD-2073 | Contracting Officer |
+
+
+🔹Delivery / Work Locations
+- Primary: Information not provided in solicitation, Information not provided in solicitation (Information not provided in solicitation acres) - Work to be performed at Contractor's facility.
+- Final Delivery: Cumberland, PA (Information not provided in solicitation acres) - Final delivery of repaired units to: DLA DISTRIBUTION, DDSP NEW CUMBERLAND FACILITY, 2083 NORMANDY DRIVE DOOR 113 TO 134, NEW CUMBERLAND, PA 17070-5002.
+
+
+🔹Key Compliance Points
+- Requirements: Compliance with all technical drawings and specifications, including: 5528057, 6964587, 6964860, MIL-STD-129, MIL-STD-130, QQ-B-575, MIL-STD-681, MIL-C-39029., Material must be mercury-free., Serialization is required per Drawing 6964587 note 14., Configuration Management must be maintained per WSSTERMCZ05., Commercial Asset Visibility Repairables Portal (CAV RP) reporting is required.
+- Insurance:
+  - General Liability: Information not provided in solicitation
+  - Auto Liability: Information not provided in solicitation
+  - Workers' Compensation: Information not provided in solicitation
+- Wage Determination: Information not provided in solicitation
+
+🔹Acceptance Criteria
+To be accepted by the Contracting Officer, each site must meet performance standards (e.g., vegetation density, invasive cover) and pass final walkthrough.
+
+🟩In Summary
+They want a qualified contractor to perform Repair and/or Modification of Cable Assembly, SPEC (NSN 5995-01-604-0910) over a Firm Fixed Price Repair Contract term at multiple locations. Success is measured by meeting specific performance standards and submittal milestones.
+
+---end of RFQ---
+

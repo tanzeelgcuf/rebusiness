@@ -62,5 +62,8 @@ COMPANY_INFO = {
 # SerpAPI Key - fetched from environment variable
 SERPAPI_KEY = "7f3f692cf6ad3936add827ab6522cc9c8cf12a37"
 
+# Data Directory for Solicitations
+SOLICITATION_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "solicitations")
+
 # Cloud SQL connection details are handled in database_manager.py using env vars.
 # No direct database connection strings needed here.

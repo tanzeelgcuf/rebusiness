@@ -1,0 +1,78 @@
+--- Generating RFQ Output ---
+
+SUBJECT: RFQ: N00104-25-Q-NF13 - Teardown, Evaluate, Repair and/or Modify Cable Assembly, SPEC
+
+BODY:
+ Notice ID: N00104-25-Q-NF13
+
+# Teardown, Evaluate, Repair and/or Modify Cable Assembly, SPEC
+
+Dear Valued Supplier:
+
+We are writing to request a formal quote for teardown, evaluate, repair and/or modify cable assembly, spec. Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
+
+Your response is needed on or before February  d, 2026 in order for us to submit your bid.
+
+If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+
+Thank you for your time and consideration.
+
+[My signature info]
+
+🔹Summary of Project
+Title: Teardown, Evaluate, Repair and/or Modify Cable Assembly, SPEC
+Type: Firm Fixed Price
+Purpose: The purpose of this contract is to teardown, evaluate, repair, and/or modify Government Furnished Property (GFP) CABLE ASSEMBLY,SPEC (NSN 5995-01-604-0910) to an operable condition.
+Location: Information not provided in solicitation, Information not provided in solicitation
+
+Total Work Area:
+- Base Contract: 0 acres
+- Option: 0 additional acres
+
+🔹What They Want (Scope of Work)
+| Category | Main Tasks |
+|---|---|
+| **Teardown & Evaluation (TD&E)** | Vendor shall have 90 days after receipt of carcass(es) to complete a teardown & evaluation (TD&E) and submit a Firm-Fixed Price (FFP) quote for the full repair effort. |
+| **Repair Services** | Includes all labor and material required to repair and restore the Government Furnished Property (GFP) to an operable condition, capable of functioning and performing as a new unit. |
+| **Marking and Serialization** | Items shall be physically identified in accordance with MIL-STD-129 and MIL-STD-130. A serial number shall be marked on each CABLE ASSEMBLY,SPEC in accordance with DWG 6964587 note 14 per 6964860. |
+| **Packaging** | Preservation, Packaging, Packing and Marking shall be in accordance with MIL-STD-2073 and MIL-STD-129. |
+
+
+🔹Timeline / Period of Performance
+| Year | Dates | Requirements |
+|---|---|---|
+| Year 1 | Award date for one year | Induction of units for repair |
+
+
+🔹Deliverables & Reporting Deadlines
+| Deliverable | Due From Award | Format / Medium | Submit To |
+|---|---|---|---|
+| **Firm-Fixed Price Quote** | 90 days | Pricing Proposal | Contracting Officer |
+| **Repaired Cable Assembly** | 160 days | Physical Item | Contracting Officer |
+
+
+🔹Delivery / Work Locations
+- Contractor Facility: Information not provided in solicitation, Information not provided in solicitation - Work to be performed at the contractor's own facility.
+
+
+🔹Key Compliance Points
+- Requirements: Material shall contain no metallic mercury., Commercial Asset Visibility Repairables Portal (CAV RP) reporting is required., Configuration Management in accordance with WSSTERMCZ05., Proof of being an authorized distributor of the original manufacturer's item shall be provided.
+- Insurance:
+  - General Liability: Information not provided in solicitation
+  - Auto Liability: Information not provided in solicitation
+  - Workers' Compensation: Information not provided in solicitation
+- Wage Determination: Information not provided in solicitation
+
+🔹Acceptance Criteria
+To be accepted by the Contracting Officer, each item must meet performance standards (e.g., operational testing, technical manual compliance) and pass final inspection (e.g., Origin inspection).
+
+🟩In Summary
+They want a qualified contractor to perform Teardown, Evaluate, Repair and/or Modify Cable Assembly, SPEC over a Firm Fixed Price term. 
+In Plain Terms:
+1. Supply Teardown, Evaluate, Repair and/or Modify Cable Assembly, SPEC built to military specifications (including Material shall contain no metallic mercury., Commercial Asset Visibility Repairables Portal (CAV RP) reporting is required., Configuration Management in accordance with WSSTERMCZ05., Proof of being an authorized distributor of the original manufacturer's item shall be provided. if applicable).
+2. Meet quality standards referenced in solicitation (including Information not provided in solicitation).
+3. Inspect and accept at Origin, coordinate with Government Agency as required.
+4. Success is measured by meeting specific performance standards and submittal milestones.
+
+---end of RFQ---
+

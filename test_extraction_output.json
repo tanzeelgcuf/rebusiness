@@ -1,0 +1,61 @@
+{
+  "solicitation_type": "PRODUCT",
+  "notice_id": "N0010425QNF13",
+  "title": "59--CABLE ASSEMBLY,SPEC, IN REPAIR/MODIFICATION OF",
+  "overview": {
+    "agency_name": "DEPT OF THE NAVY, NAVSUP WEAPON SYSTEMS SUPPORT MECH",
+    "agency_address": "NAVSUP Weapon Systems Support, 5450 Carlisle Pike, Mechanicsburg, PA 17055",
+    "contract_type": "Firm Fixed Price",
+    "set_aside": "Small Business",
+    "solicitation_date": "2025-10-01",
+    "quotes_due": "2026-02-27 03:30 PM EST",
+    "naics_code": "335931",
+    "naics_description": "Current-Carrying Wiring Device Manufacturing",
+    "size_standard": "600 employees"
+  },
+  "specifications": {
+    "manufacturer_cage": "Information not provided in solicitation",
+    "manufacturer_part_number": "Information not provided in solicitation",
+    "nsn": "Information not provided in solicitation",
+    "description": "CABLE ASSEMBLY,SPEC, IN REPAIR/MODIFICATION OF"
+  },
+  "clins": [
+    {
+      "clin": "Information not provided in solicitation",
+      "description": "Information not provided in solicitation",
+      "quantity": "Information not provided in solicitation",
+      "unit": "Information not provided in solicitation",
+      "type": "FFP",
+      "inspection_point": "Origin",
+      "acceptance_point": "Origin",
+      "quality_level": "Information not provided in solicitation",
+      "packaging": "Information not provided in solicitation",
+      "notes": "Information not provided in solicitation"
+    }
+  ],
+  "delivery_requirements": {
+    "fob_point": "Information not provided in solicitation",
+    "ship_to_address": {
+      "organization": "Information not provided in solicitation",
+      "street": "Information not provided in solicitation",
+      "city": "Information not provided in solicitation",
+      "state": "Information not provided in solicitation",
+      "zip": "Information not provided in solicitation"
+    },
+    "lead_time_days": "Information not provided in solicitation",
+    "delivery_frequency": "Information not provided in solicitation",
+    "calculated_first_delivery": "Information not provided in solicitation"
+  },
+  "submission": {
+    "method": "Information not provided in solicitation",
+    "email": "HEATHER.R.JONES52.CIV@US.NAVY.MIL",
+    "due_date": "2026-02-27 03:30 PM EST",
+    "required_forms": [
+      "SF 1449"
+    ],
+    "evaluation_basis": "Information not provided in solicitation"
+  },
+  "contract_id": "218fe9a046",
+  "external_resource_links": [],
+  "url": "https://sam.gov/opp/92341e2e45ca4323919060d2d4cfc62f/view"
+}

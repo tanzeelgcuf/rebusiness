@@ -1,0 +1,62 @@
+Subject: RFQ: W912ES26BA007 - Industrial Bolts - Various Sizes\n\nNotice ID: W912ES26BA007
+
+# Industrial Bolts - Various Sizes
+
+Dear ABC Industrial Supply:
+
+We are writing to request a formal quote for industrial bolts - various sizes. Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
+
+Your response is needed on or before January 20, 2026 in order for us to submit your bid.
+
+If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+
+Thank you for your time and consideration.
+
+[My signature info]
+
+## Overview
+
+**Agency Issuing RFQ:**
+U.S. Army Corps of Engineers
+441 G Street NW\nWashington, DC 20314
+
+**Type of Contract:** Firm Fixed Price
+**Set-Aside Type:** Small Business
+**Solicitation Date:** 2026-01-01
+**Quotes Due:** 2026-01-26 14:00 EST
+
+**NAICS Code:** 332722 -- Bolt, Nut, Screw, Rivet, and Washer Manufacturing
+**Size Standard:** 750 employees
+
+## Items Required
+
+**Manufacturer CAGE:** 12345
+**Manufacturer Part Number:** BOLT-IND-500
+**NSN:** 5306-01-234-5678
+
+**Description:** Industrial grade steel bolts, Grade 8, zinc plated
+
+### CLIN Table
+
+| CLIN | Description | Quantity | Type | Inspection | Quality | Notes |\n|------|-------------|----------|------|------------|---------|-------|\n| 0001 | 1st Year -- Industrial Bolts 1/2 inch | 1000 EA | FFP | Origin | Commercial | Guaranteed Minimum |\n
+
+## Delivery Requirements
+
+**Ship To:**
+DLA Distribution Center
+1234 Supply Road
+Richmond, VA 23297
+
+**Lead Time:** 60 Days ARO
+**First Delivery:** 2026-03-27
+**Delivery Frequency:** Monthly shipments
+
+## Submission Details
+
+**Due Date:** 2026-01-26 14:00 EST
+**Internal Deadline:** January 20, 2026
+
+**Submit To:** contracting.officer@usace.army.mil
+**Required:** SF 1449, Representations and Certifications
+
+---end of RFQ---

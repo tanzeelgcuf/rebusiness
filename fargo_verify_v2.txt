@@ -1,0 +1,10 @@
+--- Starting Crawl for W912ES26BA007 ---
+Dropped 'vendors' table to refresh schema.
+Database tables created or already exist.
+Traceback (most recent call last):
+  File "/Users/apple/Downloads/rebusinessautomationproject/test_fargo_moorhead.py", line 52, in <module>
+    test_fargo_moorhead_solicitation()
+  File "/Users/apple/Downloads/rebusinessautomationproject/test_fargo_moorhead.py", line 18, in test_fargo_moorhead_solicitation
+    solicitations = sam_agent.search_solicitations(keyword=notice_id, limit=1)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'SamGovAgent' object has no attribute 'search_solicitations'. Did you mean: 'search_for_new_solicitations'?

@@ -1,0 +1,83 @@
+--- Generating RFQ Output ---
+
+SUBJECT: RFQ: N00104-25-Q-NF13 - REPAIR OF CABLE ASSEMBLY,SPEC
+
+BODY:
+ Notice ID: N00104-25-Q-NF13
+
+# REPAIR OF CABLE ASSEMBLY,SPEC
+
+Dear Valued Supplier:
+
+We are writing to request a formal quote for repair of cable assembly,spec. Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
+
+Your response is needed on or before February 23, 2026 in order for us to submit your bid.
+
+If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+
+Thank you for your time and consideration.
+
+[My signature info]
+
+🔹 Overview
+Agency Issuing RFQ:
+NAVSUP Weapon Systems Support Mechanicsburg (NAVSUP WSS MECH)
+5450 Carlisle Pike
+Mechanicsburg, PA 17050-2411
+
+Type of Contract: Firm Fixed Price
+Set-Aside Type: Total Small Business Set-Aside
+Solicitation Date: 2025-10-01
+Quotes Due: 2026-02-27 16:30 Eastern Time
+
+NAICS Code: 335931 -- Current-Carrying Wiring Device Manufacturing
+Size Standard: 600 employees
+
+🔹 Items Required
+Manufacturer CAGE: 53711
+Manufacturer Part Number: 6964587
+NSN: 5995-01-604-0910
+
+Description: Teardown, evaluate, repair, and/or modify CABLE ASSEMBLY,SPEC. The repaired item shall meet the operational and functional requirements as represented by CAGE 53711, P/N 6964587. All repair work shall be performed in accordance with the contractor's repair/overhaul standard practices, manuals, and technical documents including drawings listed in the solicitation. Item shall be mercury-free.
+
+| CLIN | Description | Quantity (EA) | Contract Type | Inspection/Acceptance | Packaging | Notes |
+|---|---|---|---|---|---|---|
+| 0001AA | Repair of CABLE ASSEMBLY,SPEC, NSN 5995-01-604-0910 | 2 EA | FFP | Origin | MIL-STD-2073 | Vendor shall have 90 days after receipt of carcass(es) to complete teardown & evaluation (TD&E) and submit a Firm-Fixed Price quote for the full repair effort. |
+
+
+🔹 Delivery Requirements
+Ship To:
+DLA DISTRIBUTION, DDSP NEW CUMBERLAND FACILITY
+2083 NORMANDY DRIVE DOOR 113 TO 134
+NEW CUMBERLAND
+PA
+17070-5002
+
+Lead Time: 160 Days ARO
+First Delivery: 160 days after receipt of carcass (Repair Turn Around Time)
+Delivery Frequency: Information not provided in solicitation
+
+🔹 Submission Details
+Due Date: 2026-02-27 16:30 Eastern Time
+Internal Deadline: February 23, 2026
+
+Submit To: HEATHER.R.JONES52.CIV@US.NAVY.MIL
+Required: Completed RFQ Form (SF-18 provided)
+
+🔹 Delivery Summary Table
+| Item | Description | Qty | Delivery (Days ARO) | Frequency | Inspection | Ship-To | Notes |
+|---|---|---|---|---|---|---|---|
+| 0001AA | Repair of CABLE ASSEMBLY,SPEC, | 2 | 160 | Information not provided in solicitation | Origin | NEW CUMBERLAND | Vendor shall have 90 |
+
+
+🔹 Summary of What They Require
+In Plain Terms:
+1. Supply REPAIR OF CABLE ASSEMBLY,SPEC built to military specifications.
+2. Meet quality standards referenced in solicitation.
+3. Inspect and accept at Origin, coordinate with DCMA/Agency as required.
+4. Deliver to NEW CUMBERLAND FOB Origin.
+5. Lead time: 160 Days ARO.
+6. Participate in electronic submission processes.
+
+---end of RFQ---
+

@@ -1,0 +1,69 @@
+Subject: RFQ: N0010425QNF13 - 59--CABLE ASSEMBLY,SPEC, IN REPAIR/MODIFICATION OF
+
+Notice ID: N0010425QNF13
+
+# 59--CABLE ASSEMBLY,SPEC, IN REPAIR/MODIFICATION OF
+
+Dear Test Vendor:
+
+We are writing to request a formal quote for 59--cable assembly,spec, in repair/modification of. Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
+
+Your response is needed on or before February 23, 2026 in order for us to submit your bid.
+
+If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+
+Thank you for your time and consideration.
+
+[My signature info]
+
+## Overview
+
+**Agency Issuing RFQ:**
+DEPT OF THE NAVY, NAVSUP WEAPON SYSTEMS SUPPORT
+NAVSUP Weapon Systems Support, 5450 Carlisle Pike, P.O. Box 2020, Mechanicsburg, PA 17050-0788, USA
+
+**Type of Contract:** Firm-Fixed Price (Implied by repair quote requirement)
+**Set-Aside Type:** Total Small Business Set-Aside
+**Solicitation Date:** 2025-10-01
+**Quotes Due:** 2026-02-27 03:30 pm EST
+
+**NAICS Code:** 335931 -- Current-Carrying Wiring Device Manufacturing
+**Size Standard:** 600 employees
+
+## Items Required
+
+**Manufacturer CAGE:** 53711
+**Manufacturer Part Number:** 6964587
+**NSN:** N/A (See Part Number)
+
+**Description:** CABLE ASSEMBLY,SPEC. Repair/Overhaul/Modification. The item shall meet operational and functional requirements as represented by CAGE 53711 and reference number 6964587. All repair work shall be performed in accordance with contractor's repair/overhaul standard practices, manuals, and directives including drawings (e.g., 5528057, 5528064, 5528078, 5729368, 5729369, 6508778, 6558469, 6558470, 6558473, 6813109, 6813116, 6964418, 6964587, 6964860) and applicable documents (e.g., MIL-STD-129, QQ-B-575, MIL-STD-681, MIL-C-39029). Material must be mercury-free. Marking in accordance with MIL-STD-129 and MIL-STD-130. Serialization required IAW 6964587 note 14 per 6964860, with serial numbers obtained from NUWC_NPT_SerialNumbers@navy.mil.
+
+### CLIN Table
+
+| CLIN | Description | Quantity | Type | Inspection | Quality | Notes |
+|------|-------------|----------|------|------------|---------|-------|
+| 0001 | Repair/Overhaul/Modification of CABLE ASSEMBLY,SPEC | 1 LOT | FFP | Origin | Not specified in solicitation | Provide repair price as Estimated (EST) for the full repair effort. Vendor shall have 90 days after receipt of carcass(es) to complete a teardown & evaluation (TD&E) and submit a Firm-Fixed Price (FFP) quote for the full repair effort. Include cost of new for evaluation. Requested Repair Turn Around Time (RTAT): 160 Days. Price reduction for failure to meet RTAT. |
+
+
+## Delivery Requirements
+
+**Ship To:**
+NAVSUP Weapon Systems Support
+5450 Carlisle Pike
+Mechanicsburg
+PA
+17050-0788
+
+**Lead Time:** 160 Days ARO
+**First Delivery:** Not specified in solicitation
+**Delivery Frequency:** Not specified in solicitation
+
+## Submission Details
+
+**Due Date:** 2026-02-27 03:30 pm EST
+**Internal Deadline:** February 23, 2026
+
+**Submit To:** HEATHER.R.JONES52.CIV@US.NAVY.MIL
+**Required:** SF 1449 (implied), Annual Representations and Certifications
+
+---end of RFQ---

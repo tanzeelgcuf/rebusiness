@@ -4,23 +4,47 @@ import time
 import json
 import csv
 import hashlib
+from datetime import datetime
 import urllib.request
 import urllib.error
+from urllib.parse import urljoin
 import zipfile
 import re
 import logging
+import random
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
+from database_manager import DatabaseManager
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 import config
-import capsolver
 
 
 class SamGovAgent:
     def __init__(self):
+        self.db_manager = DatabaseManager()
+        self.playwright = None
+        self.browser = None
+        self.context = None
+        self.page = None
+        self.visited_links = set()
+
+        
+        # User agents for rotation (helps bypass some restrictions)
+        self.user_agents = [
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Safari/605.1.15",
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        ]
+        
+        self.search_url = "https://sam.gov/search/"
+        self.checkpoint_file = "sam_gov_last_run.json"
+
+    def start_browser(self):
         self.playwright = sync_playwright().start()
         # Use headless=True for production, can set False for debug
         self.browser = self.playwright.chromium.launch(headless=True, args=["--no-sandbox", "--disable-setuid-sandbox"])
@@ -54,55 +78,7 @@ class SamGovAgent:
         with open(self.checkpoint_file, 'w') as f:
             json.dump({'last_run_timestamp': time.time()}, f)
 
-    def _solve_captcha(self, page):
-        """
-        Detects and solves reCAPTCHA v2/v3 using CapSolver.
-        """
-        try:
-            # Check for reCAPTCHA frames or elements
-            iframe = page.query_selector("iframe[src*='google.com/recaptcha']")
-            if iframe:
-                print("    [CAPTCHA] Detected reCAPTCHA. Attempting to solve...")
-                
-                # Get sitekey
-                sitekey_frame = page.frame_locator("iframe[src*='google.com/recaptcha']").first
-                # This is a simplification; often sitekey is in the main page source div
-                # A more robust way:
-                sitekey_elem = page.query_selector("[data-sitekey]")
-                sitekey = sitekey_elem.get_attribute("data-sitekey") if sitekey_elem else None
-                
-                if not sitekey:
-                    # Fallback regex
-                    content = page.content()
-                    match = re.search(r'data-sitekey=["\'](.+?)["\']', content)
-                    if match:
-                        sitekey = match.group(1)
-                
-                if sitekey:
-                    print(f"    [CAPTCHA] Found sitekey: {sitekey}")
-                    capsolver.api_key = os.getenv("CAPSOLVER_API_KEY") 
-                    if not capsolver.api_key:
-                        print("    [CAPTCHA] Error: CAPSOLVER_API_KEY not set.")
-                        return
 
-                    solution = capsolver.solve({
-                        "type": "ReCaptchaV2TaskProxyLess",
-                        "websiteURL": page.url,
-                        "websiteKey": sitekey
-                    })
-                    
-                    token = solution.get("gRecaptchaResponse")
-                    if token:
-                        print("    [CAPTCHA] Solved! Injecting token...")
-                        page.evaluate(f'document.getElementById("g-recaptcha-response").innerHTML="{token}";')
-                        # Sometimes need to call a callback function
-                        # page.evaluate(f'___grecaptcha_cfg.clients[0].aa.l.callback("{token}")') 
-                        # Click verify/submit if exists
-                        # This part is highly site-specific
-                else:
-                    print("    [CAPTCHA] Could not find sitekey.")
-        except Exception as e:
-            print(f"    [CAPTCHA] Error solving: {e}")
 
 
     def _deep_download_attachments(self, page, target_dir):
@@ -120,6 +96,16 @@ class SamGovAgent:
                 print("    [Deep Fetch] Found Terms of Service modal. Clicking Accept...")
                 tos_accept.click()
                 time.sleep(2)
+        except: pass
+
+        # Ensure the Attachments/Links section is visible (dynamic content)
+        try:
+            page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+            time.sleep(1)
+            header = page.query_selector("h2:has-text('Attachments/Links'), h3:has-text('Attachments/Links')")
+            if header:
+                header.scroll_into_view_if_needed()
+                time.sleep(1)
         except: pass
 
         download_count = 0
@@ -202,6 +188,30 @@ class SamGovAgent:
             
         return download_count
 
+    def _register_attachments_in_db(self, contract_id, directory):
+        """Scan directory and add all files to the database as attachments."""
+        if not os.path.exists(directory): return
+        
+        for root, _, files in os.walk(directory):
+            for file in files:
+                if file.startswith('.') or file.endswith('.json'): continue
+                
+                file_path = os.path.abspath(os.path.join(root, file))
+                # Add to DB if not already there
+                # We use a simple check or just let add_attachment handle it (if it has deduplication)
+                try:
+                    self.db_manager.add_attachment(
+                        contract_id=contract_id,
+                        file_name=file,
+                        file_path=file_path,
+                        url="Extracted via Deep Crawl",
+                        download_date=datetime.now().strftime("%Y-%m-%d")
+                    )
+                    print(f"    [DB] Registered attachment: {file}")
+                except Exception as e:
+                    print(f"    [DB] Error registering {file}: {e}")
+
+
     def _download_file(self, url, target_dir):
         """Deprecated: Legacy urllib download. Keeping for fallback if needed."""
         try:
@@ -242,20 +252,35 @@ class SamGovAgent:
             print(f"    Error downloading {url}: {e}")
             return None
 
-    def _extract_external_links(self, text):
+    def _extract_external_links(self, text, base_url=None):
         """
         Scan text for URLs that look like file hosts or external portals.
+        Resolves relative URLs if base_url is provided.
         """
         if not text: return []
         
-        # Regex to find http/https links
+        # 1. Regex to find absolute http/https links
         url_pattern = r'https?://[^\s<>"]+|www\.[^\s<>"]+'
         found_urls = re.findall(url_pattern, text)
         
+        # 2. Check for relative links in common portal attributes (href, onclick)
+        # This is a bit brute-force but effective for deep crawl
+        if base_url:
+            rel_patterns = [
+                r'href=["\'](/[^"\']+)["\']',
+                r'onclick=["\'].*?open_attach\(["\'](/[^"\']+)["\']\)',
+                r'location\.href\s*=\s*["\']([^"\']+)["\']'
+            ]
+            for pattern in rel_patterns:
+                rel_matches = re.findall(pattern, text)
+                for rel in rel_matches:
+                    abs_url = urljoin(base_url, rel)
+                    found_urls.append(abs_url)
+
         target_domains = [
             'drive.google.com', 'dropbox.com', 'box.com', 'onedrive.live.com', 
             'sharepoint.com', 'wetransfer.com', 'army.mil', 'navy.mil', 'af.mil',
-            'dla.mil', 'va.gov' # Agency sites often host files directly
+            'dla.mil', 'va.gov', 'neco.navy.mil'
         ]
         
         relevant_links = []
@@ -263,47 +288,181 @@ class SamGovAgent:
             # Clean trailing punctuation
             url = url.rstrip('.,;:)')
             
+            # Filtering: Ignore common assets and non-relevant pages to save time
+            junk_patterns = ['.css', '.js', '.jpg', '.png', '.gif', 'login', 'register', 'feedback', 'faq', 'search']
+            if any(junk in url.lower() for junk in junk_patterns):
+                continue
+
             # Check if relevant domain OR directly ends in file extension
             is_relevant_domain = any(d in url.lower() for d in target_domains)
             is_file = any(url.lower().endswith(ext) for ext in ['.pdf', '.docx', '.xlsx', '.zip', '.csv'])
             
             if is_relevant_domain or is_file:
                 relevant_links.append(url)
+        
+        # Deduplicate
+        unique_links = list(set(relevant_links))
+        
+        # Prioritization: Sort links so that those containing 'attach', 'doc', or 'soln' come first
+        priority_keywords = ['attach', 'doc', 'soln', 'rfq', 'pdf', 'zip']
+        def sort_key(u):
+            score = 0
+            for kw in priority_keywords:
+                if kw in u.lower():
+                    score -= 1 # Lower is better for sorting (higher priority)
+            return score
+            
+        unique_links.sort(key=sort_key)
                 
-        return list(set(relevant_links)) # Deduplicate
+        return unique_links
 
     def _recursive_crawl(self, url, depth=0, max_depth=2, target_dir=""):
         """
-        Recursively crawls links to find more attachments.
+        Recursively crawls links with multiple fallback strategies for restricted sites.
         """
         if depth > max_depth: return
         
         print(f"    [Deep Crawl] depth={depth} Visiting: {url}")
-        new_page = self.context.new_page()
+        
+        # Try multiple strategies to access the page
+        strategies = [
+            self._try_standard_access,
+            self._try_with_different_user_agent,
+            self._try_alternative_protocol,
+            self._try_with_delay
+        ]
+        
+        page_text = None
+        new_page = None
+        
+        for strategy_func in strategies:
+            try:
+                new_page, page_text = strategy_func(url, target_dir)
+                if page_text and "Access Denied" not in page_text:
+                    print(f"    [Deep Crawl] ✓ Success with {strategy_func.__name__}")
+                    break
+                elif new_page:
+                    new_page.close()
+                    new_page = None
+            except Exception as e:
+                if new_page:
+                    new_page.close()
+                    new_page = None
+                continue
+        
+        if not new_page:
+            print(f"    [Deep Crawl] ✗ All strategies failed for {url}")
+            # Save error info for LLM to know we tried
+            self._save_failed_link_info(url, target_dir, depth)
+            return
+        
         try:
-            new_page.goto(url, timeout=30000)
-            # Try to grab attachments here
+            # Try to grab attachments
             self._deep_download_attachments(new_page, target_dir)
             
             # Find more links if not at max depth
             if depth < max_depth:
                 text = new_page.content()
-                links = self._extract_external_links(text)
+                links = self._extract_external_links(text, base_url=url)
                 for link in links:
-                    # Filter loops
-                     if link not in self.visited_links:
+                    if link not in self.visited_links:
                         self.visited_links.add(link)
                         self._recursive_crawl(link, depth+1, max_depth, target_dir)
-        except Exception as e:
-            print(f"    [Deep Crawl] Error on {url}: {e}")
         finally:
-            new_page.close()
-
-
+            if new_page:
+                new_page.close()
+    
+    def _try_standard_access(self, url, target_dir):
+        """Standard page access"""
+        new_page = self.context.new_page()
+        new_page.goto(url, timeout=30000)
+        new_page.wait_for_load_state("domcontentloaded")
+        page_text = new_page.locator("body").inner_text()
+        
+        if page_text and len(page_text) > 100:
+            self._save_page_content(url, page_text, target_dir, "standard")
+        
+        return new_page, page_text
+    
+    def _try_with_different_user_agent(self, url, target_dir):
+        """Try with a different user agent"""
+        user_agent = random.choice(self.user_agents)
+        new_context = self.browser.new_context(user_agent=user_agent)
+        new_page = new_context.new_page()
+        
+        new_page.goto(url, timeout=30000)
+        new_page.wait_for_load_state("domcontentloaded")
+        page_text = new_page.locator("body").inner_text()
+        
+        if page_text and len(page_text) > 100:
+            self._save_page_content(url, page_text, target_dir, "alt_ua")
+        
+        new_context.close()
+        return new_page, page_text
+    
+    def _try_alternative_protocol(self, url, target_dir):
+        """Try switching http/https"""
+        if url.startswith("https://"):
+            alt_url = url.replace("https://", "http://")
+        else:
+            alt_url = url.replace("http://", "https://")
+        
+        new_page = self.context.new_page()
+        new_page.goto(alt_url, timeout=30000)
+        new_page.wait_for_load_state("domcontentloaded")
+        page_text = new_page.locator("body").inner_text()
+        
+        if page_text and len(page_text) > 100:
+            self._save_page_content(alt_url, page_text, target_dir, "alt_protocol")
+        
+        return new_page, page_text
+    
+    def _try_with_delay(self, url, target_dir):
+        """Try with delay (rate limiting)"""
+        time.sleep(2)  # Wait 2 seconds
+        new_page = self.context.new_page()
+        new_page.goto(url, timeout=30000)
+        new_page.wait_for_load_state("domcontentloaded")
+        page_text = new_page.locator("body").inner_text()
+        
+        if page_text and len(page_text) > 100:
+            self._save_page_content(url, page_text, target_dir, "delayed")
+        
+        return new_page, page_text
+    
+    def _save_page_content(self, url, page_text, target_dir, method):
+        """Save page content to file"""
+        safe_name = re.sub(r'[^a-zA-Z0-9]', '_', url.split('//')[1][:50])
+        text_filename = f"linked_page_{method}_{safe_name}.txt"
+        text_path = os.path.join(target_dir, text_filename)
+        
+        with open(text_path, 'w', encoding='utf-8') as f:
+            f.write(f"Source URL: {url}\n")
+            f.write(f"Access Method: {method}\n")
+            f.write("="*80 + "\n\n")
+            f.write(page_text)
+        
+        print(f"    [Deep Crawl] Saved: {text_filename} ({len(page_text)} chars)")
+    
+    def _save_failed_link_info(self, url, target_dir, depth):
+        """Save info about failed link attempts"""
+        safe_name = re.sub(r'[^a-zA-Z0-9]', '_', url.split('//')[1][:50])
+        text_filename = f"FAILED_ACCESS_depth{depth}_{safe_name}.txt"
+        text_path = os.path.join(target_dir, text_filename)
+        
+        with open(text_path, 'w', encoding='utf-8') as f:
+            f.write(f"FAILED TO ACCESS: {url}\n")
+            f.write(f"Depth: {depth}\n")
+            f.write("="*80 + "\n\n")
+            f.write("This link was found in the solicitation but could not be accessed.\n")
+            f.write("Possible reasons: firewall, authentication required, or site down.\n")
+            f.write("\nLLM: Please try to infer missing data from other sources or mark as unavailable.\n")
+        
+        print(f"    [Deep Crawl] Saved failure info: {text_filename}")
     def _process_external_link(self, page, url, save_dir):
         """
         Visit an external link and attempt to download files using Playwright.
-        Robustly handles direct downloads and 'Click to Download' pages.
+        Also saves page content for AttachmentReaderAgent extraction.
         """
         print(f"    [Deep Link] Visiting: {url}")
         try:
@@ -328,8 +487,25 @@ class SamGovAgent:
                     # Page loaded normally (no auto download)
                     pass
                 
-                # 2. Page Analysis
+                # 2. Page Analysis - Save content for extraction
                 ex_page.wait_for_load_state("domcontentloaded", timeout=5000)
+                
+                # CRITICAL: Save page content as text file
+                try:
+                    page_text = ex_page.locator("body").inner_text()
+                    if page_text and len(page_text) > 100:
+                        safe_name = re.sub(r'[^a-zA-Z0-9]', '_', url.split('//')[1][:50])
+                        text_filename = f"external_link_{safe_name}.txt"
+                        text_path = os.path.join(save_dir, text_filename)
+                        
+                        with open(text_path, 'w', encoding='utf-8') as f:
+                            f.write(f"Source URL: {url}\n")
+                            f.write("="*80 + "\n\n")
+                            f.write(page_text)
+                        
+                        print(f"    [Deep Link] Saved page content: {text_filename} ({len(page_text)} chars)")
+                except Exception as e:
+                    print(f"    [Deep Link] Could not save page text: {e}")
                 
                 # Look for explicit download buttons
                 buttons = ex_page.get_by_text("Download", exact=False)
@@ -596,14 +772,27 @@ class SamGovAgent:
             print(f"  Visiting {url}...")
             detail_page.goto(url, timeout=45000)
             
-            # Check for Captcha on load
-            self._solve_captcha(detail_page)
-
             # detail_page.wait_for_load_state("domcontentloaded") # Faster than networkidle
             detail_page.wait_for_selector("h1", timeout=30000)
             
+            # CRITICAL: Wait for description to load
+            try:
+                detail_page.wait_for_selector("#desc", timeout=5000)
+            except:
+                print("  Warning: #desc selector not found, continuing with body text...")
+
             title = detail_page.locator("h1").first.text_content().strip()
+            
+            # Prefer full body text but ensure #desc is captured
             page_text = detail_page.locator("body").inner_text()
+            
+            # Explicitly append #desc text if it might be missing from body scan
+            try:
+                desc_text = detail_page.locator("#desc").inner_text()
+                if desc_text not in page_text:
+                    page_text += "\n\n--- FORCED DESCRIPTION EXTRACTION ---\n\n" + desc_text
+            except:
+                pass
             
             # ID Extraction
             contract_id = hashlib.md5(url.encode()).hexdigest()[:10]
@@ -631,23 +820,30 @@ class SamGovAgent:
             
             # Deep Link Following (Robust)
             # Use the new helper method to find and fetch external links
-            external_links = self._extract_external_links(page_text)
+            external_links = self._extract_external_links(detail_page.content(), base_url=url)
             if external_links:
                 print(f"    [Deep Dive] Found {len(external_links)} potential external links. analyzing...")
                 clicked_count = 0
                 for link in external_links:
-                    if clicked_count >= 5: break # Safety limit
+                    if clicked_count >= 10: break # Safety limit (increased for portals)
                     # Filter out purely navigational/junk links if regex wasn't enough
                     if "sam.gov" in link and "opp" not in link: continue 
                     
-                    self._process_external_link(self.page, link, attachment_dir) 
+                    self._process_external_link(detail_page, link, attachment_dir) 
                     
                     # New Recursive Crawl for critical external portals
-                    if depth_enabled := True: # Enable logic switch
-                         self.visited_links = set()
+                    if depth_enabled := True: 
+                         # self.visited_links is a set on the class, careful about resets
+                         # Use at least depth 2 for portals to reach the actual files
                          self._recursive_crawl(link, depth=1, max_depth=2, target_dir=attachment_dir)
 
                     clicked_count += 1
+
+            # --- REGISTER ALL DOWNLOADS IN DB ---
+            self._register_attachments_in_db(contract_id, attachment_dir)
+            # Also register the main description and metadata as "docs" if helpful
+            # But primarily we want all files in attachment_dir
+
 
             # Metadata
             with open(os.path.join(contract_dir, "metadata.json"), "w") as f:

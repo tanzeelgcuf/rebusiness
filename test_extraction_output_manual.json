@@ -1,0 +1,65 @@
+{
+  "solicitation_type": "PRODUCT",
+  "notice_id": "N0010425QNF13",
+  "title": "59--CABLE ASSEMBLY,SPEC, IN REPAIR/MODIFICATION OF",
+  "overview": {
+    "agency_name": "DEPT OF THE NAVY, NAVSUP WEAPON SYSTEMS SUPPORT",
+    "agency_address": "NAVSUP Weapon Systems Support, 5450 Carlisle Pike, P.O. Box 2020, Mechanicsburg, PA 17050-0788, USA",
+    "contract_type": "Firm-Fixed Price (Implied by repair quote requirement)",
+    "set_aside": "Total Small Business Set-Aside",
+    "solicitation_date": "2025-10-01",
+    "quotes_due": "2026-02-27 03:30 pm EST",
+    "naics_code": "335931",
+    "naics_description": "Current-Carrying Wiring Device Manufacturing",
+    "size_standard": "600 employees"
+  },
+  "specifications": {
+    "manufacturer_cage": "53711",
+    "manufacturer_part_number": "6964587",
+    "nsn": "N/A (See Part Number)",
+    "description": "CABLE ASSEMBLY,SPEC. Repair/Overhaul/Modification. The item shall meet operational and functional requirements as represented by CAGE 53711 and reference number 6964587. All repair work shall be performed in accordance with contractor's repair/overhaul standard practices, manuals, and directives including drawings (e.g., 5528057, 5528064, 5528078, 5729368, 5729369, 6508778, 6558469, 6558470, 6558473, 6813109, 6813116, 6964418, 6964587, 6964860) and applicable documents (e.g., MIL-STD-129, QQ-B-575, MIL-STD-681, MIL-C-39029). Material must be mercury-free. Marking in accordance with MIL-STD-129 and MIL-STD-130. Serialization required IAW 6964587 note 14 per 6964860, with serial numbers obtained from NUWC_NPT_SerialNumbers@navy.mil."
+  },
+  "clins": [
+    {
+      "clin": "0001",
+      "description": "Repair/Overhaul/Modification of CABLE ASSEMBLY,SPEC",
+      "quantity": 1,
+      "unit": "LOT",
+      "type": "FFP",
+      "inspection_point": "Origin",
+      "acceptance_point": "Origin",
+      "quality_level": "Not specified in solicitation",
+      "packaging": "MIL-STD-2073-1",
+      "notes": "Provide repair price as Estimated (EST) for the full repair effort. Vendor shall have 90 days after receipt of carcass(es) to complete a teardown & evaluation (TD&E) and submit a Firm-Fixed Price (FFP) quote for the full repair effort. Include cost of new for evaluation. Requested Repair Turn Around Time (RTAT): 160 Days. Price reduction for failure to meet RTAT."
+    }
+  ],
+  "delivery_requirements": {
+    "fob_point": "Not specified in solicitation",
+    "ship_to_address": {
+      "organization": "NAVSUP Weapon Systems Support",
+      "street": "5450 Carlisle Pike",
+      "city": "Mechanicsburg",
+      "state": "PA",
+      "zip": "17050-0788"
+    },
+    "lead_time_days": "160",
+    "delivery_frequency": "Not specified in solicitation",
+    "calculated_first_delivery": "Not specified in solicitation"
+  },
+  "submission": {
+    "method": "Email",
+    "email": "HEATHER.R.JONES52.CIV@US.NAVY.MIL",
+    "due_date": "2026-02-27 03:30 pm EST",
+    "required_forms": [
+      "SF 1449 (implied)",
+      "Annual Representations and Certifications"
+    ],
+    "evaluation_basis": "Not specified in solicitation"
+  },
+  "contract_id": "218fe9a046",
+  "external_resource_links": [
+    "http://quicksearch.dla.mil/",
+    "http://www.dsp.dla.mil/"
+  ],
+  "url": "https://sam.gov/opp/92341e2e45ca4323919060d2d4cfc62f/view"
+}
