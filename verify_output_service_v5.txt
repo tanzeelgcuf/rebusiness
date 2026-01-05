@@ -1,0 +1,433 @@
+--- Starting Targeted Test for N0010425QNF13 ---
+Dropped 'vendors' table to refresh schema.
+Database tables created or already exist.
+Dropped 'vendors' table to refresh schema.
+Database tables created or already exist.
+Crawling NECO portal: https://www.neco.navy.mil/biz_ops/840-v5soln.aspx?soln=N0010425QNF13
+    [Deep Crawl] depth=1 Visiting: https://www.neco.navy.mil/biz_ops/840-v5soln.aspx?soln=N0010425QNF13
+    [Deep Crawl] Saved: linked_page_standard_www_neco_navy_mil_biz_ops_840_v5soln_aspx_soln_N00.txt (17143 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/N0010425QNF13/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.neco.navy.mil/biz_ops/necoattach.aspx?soln13=N0010425QNF13
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/N0010425QNF13/attachments
+    [Deep Fetch] Downloaded: N0010425QNF13.pdf
+    [Deep Fetch] Downloaded: N0010425QNF130001.pdf
+    [Deep Crawl] depth=2 Visiting: https://www.neco.navy.mil/synopsis/synopsis.aspx?solnum=N0010425QNF13
+    [Deep Crawl] Saved: linked_page_standard_www_neco_navy_mil_synopsis_synopsis_aspx_solnum_N0.txt (619 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/N0010425QNF13/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.neco.navy.mil/biz_ops/840-clauseRef.aspx?hkey=244152798
+    [Deep Crawl] Saved: linked_page_standard_www_neco_navy_mil_biz_ops_840_clauseRef_aspx_hkey_.txt (12788 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/N0010425QNF13/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.neco.navy.mil/synopsis/synopsis.aspx
+    [Deep Crawl] Saved: linked_page_standard_www_neco_navy_mil_synopsis_synopsis_aspx.txt (5829 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/N0010425QNF13/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.neco.navy.mil/Content/css/main?v=JU7vXEvMSDQ4E6dcHq1E7-KXeMXg0bTR08LyOtPjupM1
+    [Deep Crawl] Saved: linked_page_standard_www_neco_navy_mil_Content_css_main_v_JU7vXEvMSDQ4E.txt (8776 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/N0010425QNF13/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.neco.navy.mil/index.aspx
+    [Deep Crawl] Saved: linked_page_standard_www_neco_navy_mil_index_aspx.txt (803 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/N0010425QNF13/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.neco.navy.mil/link/codes.aspx
+    [Deep Crawl] Saved: linked_page_standard_www_neco_navy_mil_link_codes_aspx.txt (4166 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/N0010425QNF13/attachments
+    [Deep Crawl] depth=2 Visiting: http://www.dsp.dla.mil/
+    [Deep Crawl] Saved: linked_page_standard_www_dsp_dla_mil_.txt (197 chars)
+    [Deep Crawl] Saved: linked_page_alt_ua_www_dsp_dla_mil_.txt (3482 chars)
+    [Deep Crawl] ✓ Success with _try_with_different_user_agent
+    [Deep Fetch] Starting attachment download to data/solicitations/N0010425QNF13/attachments
+    [Deep Fetch] Error checking 'Download All': Page.query_selector: Target page, context or browser has been closed
+    [Deep Fetch] Individual file scan error: Page.query_selector_all: Target page, context or browser has been closed
+    [Deep Crawl] depth=2 Visiting: https://www.neco.navy.mil/link/abbreviations.aspx
+    [Deep Crawl] Saved: linked_page_standard_www_neco_navy_mil_link_abbreviations_aspx.txt (6071 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/N0010425QNF13/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.neco.navy.mil/link/header.html
+    [Deep Crawl] Saved: linked_page_standard_www_neco_navy_mil_link_header_html.txt (133 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/N0010425QNF13/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.neco.navy.mil/link/linkspage.aspx?site=1
+    [Deep Crawl] Saved: linked_page_standard_www_neco_navy_mil_link_linkspage_aspx_site_1.txt (2382 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/N0010425QNF13/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.neco.navy.mil/link/nnotes.aspx
+    [Deep Crawl] Saved: linked_page_standard_www_neco_navy_mil_link_nnotes_aspx.txt (8626 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/N0010425QNF13/attachments
+Added attachment linked_page_standard_www_dsp_dla_mil_.txt for N0010425QNF13 to database.
+    [DB] Registered attachment: linked_page_standard_www_dsp_dla_mil_.txt
+Added attachment linked_page_standard_www_neco_navy_mil_index_aspx.txt for N0010425QNF13 to database.
+    [DB] Registered attachment: linked_page_standard_www_neco_navy_mil_index_aspx.txt
+Added attachment linked_page_standard_www_neco_navy_mil_link_codes_aspx.txt for N0010425QNF13 to database.
+    [DB] Registered attachment: linked_page_standard_www_neco_navy_mil_link_codes_aspx.txt
+Added attachment N0010425QNF130001.pdf for N0010425QNF13 to database.
+    [DB] Registered attachment: N0010425QNF130001.pdf
+Added attachment linked_page_standard_www_neco_navy_mil_Faq_faq_aspx.txt for N0010425QNF13 to database.
+    [DB] Registered attachment: linked_page_standard_www_neco_navy_mil_Faq_faq_aspx.txt
+Added attachment linked_page_standard_www_neco_navy_mil_secure_register_login_aspx_soln_.txt for N0010425QNF13 to database.
+    [DB] Registered attachment: linked_page_standard_www_neco_navy_mil_secure_register_login_aspx_soln_.txt
+Added attachment linked_page_standard_www_neco_navy_mil_link_abbreviations_aspx.txt for N0010425QNF13 to database.
+    [DB] Registered attachment: linked_page_standard_www_neco_navy_mil_link_abbreviations_aspx.txt
+Added attachment linked_page_standard_www_neco_navy_mil_link_header_html.txt for N0010425QNF13 to database.
+    [DB] Registered attachment: linked_page_standard_www_neco_navy_mil_link_header_html.txt
+Added attachment linked_page_standard_www_neco_navy_mil_biz_ops_search_edi_aspx.txt for N0010425QNF13 to database.
+    [DB] Registered attachment: linked_page_standard_www_neco_navy_mil_biz_ops_search_edi_aspx.txt
+Added attachment FAILED_ACCESS_depth2_www_neco_navy_mil_biz_ops___Content_neco_style_css.txt for N0010425QNF13 to database.
+    [DB] Registered attachment: FAILED_ACCESS_depth2_www_neco_navy_mil_biz_ops___Content_neco_style_css.txt
+Added attachment linked_page_standard_www_neco_navy_mil_biz_ops_840_clauseRef_aspx_hkey_.txt for N0010425QNF13 to database.
+    [DB] Registered attachment: linked_page_standard_www_neco_navy_mil_biz_ops_840_clauseRef_aspx_hkey_.txt
+Added attachment N0010425QNF13.pdf for N0010425QNF13 to database.
+    [DB] Registered attachment: N0010425QNF13.pdf
+Added attachment linked_page_standard_www_neco_navy_mil_secure_register_login_aspx.txt for N0010425QNF13 to database.
+    [DB] Registered attachment: linked_page_standard_www_neco_navy_mil_secure_register_login_aspx.txt
+Added attachment linked_page_standard_www_neco_navy_mil_link_feedback_aspx_subj_NECO_Com.txt for N0010425QNF13 to database.
+    [DB] Registered attachment: linked_page_standard_www_neco_navy_mil_link_feedback_aspx_subj_NECO_Com.txt
+Added attachment linked_page_alt_ua_www_dsp_dla_mil_.txt for N0010425QNF13 to database.
+    [DB] Registered attachment: linked_page_alt_ua_www_dsp_dla_mil_.txt
+Added attachment linked_page_alt_protocol_www_dsp_dla_mil_.txt for N0010425QNF13 to database.
+    [DB] Registered attachment: linked_page_alt_protocol_www_dsp_dla_mil_.txt
+Added attachment solicitation_full_text.txt for N0010425QNF13 to database.
+    [DB] Registered attachment: solicitation_full_text.txt
+Added attachment linked_page_standard_www_neco_navy_mil_synopsis_synopsis_aspx_solnum_N0.txt for N0010425QNF13 to database.
+    [DB] Registered attachment: linked_page_standard_www_neco_navy_mil_synopsis_synopsis_aspx_solnum_N0.txt
+Added attachment linked_page_standard_www_neco_navy_mil_biz_ops_840_v5soln_aspx_soln_N00.txt for N0010425QNF13 to database.
+    [DB] Registered attachment: linked_page_standard_www_neco_navy_mil_biz_ops_840_v5soln_aspx_soln_N00.txt
+Added attachment linked_page_standard_www_neco_navy_mil_Content_css_main_v_JU7vXEvMSDQ4E.txt for N0010425QNF13 to database.
+    [DB] Registered attachment: linked_page_standard_www_neco_navy_mil_Content_css_main_v_JU7vXEvMSDQ4E.txt
+Added attachment linked_page_standard_www_neco_navy_mil_secure_register_register_aspx_fr.txt for N0010425QNF13 to database.
+    [DB] Registered attachment: linked_page_standard_www_neco_navy_mil_secure_register_register_aspx_fr.txt
+Added attachment linked_page_alt_protocol_quicksearch_dla_mil__nbsp.txt for N0010425QNF13 to database.
+    [DB] Registered attachment: linked_page_alt_protocol_quicksearch_dla_mil__nbsp.txt
+Added attachment linked_page_standard_www_neco_navy_mil_link_linkspage_aspx_site_1.txt for N0010425QNF13 to database.
+    [DB] Registered attachment: linked_page_standard_www_neco_navy_mil_link_linkspage_aspx_site_1.txt
+Added attachment linked_page_standard_www_neco_navy_mil_synopsis_synopsis_aspx.txt for N0010425QNF13 to database.
+    [DB] Registered attachment: linked_page_standard_www_neco_navy_mil_synopsis_synopsis_aspx.txt
+Added attachment linked_page_standard_www_neco_navy_mil_link_nnotes_aspx.txt for N0010425QNF13 to database.
+    [DB] Registered attachment: linked_page_standard_www_neco_navy_mil_link_nnotes_aspx.txt
+Added attachment FAILED_ACCESS_depth2_applications_navsup_navy_mil_neco_secure_admin_Hel.txt for N0010425QNF13 to database.
+    [DB] Registered attachment: FAILED_ACCESS_depth2_applications_navsup_navy_mil_neco_secure_admin_Hel.txt
+Added attachment FAILED_ACCESS_depth2_applications_navsup_navy_mil_neco_buyer_login_aspx.txt for N0010425QNF13 to database.
+    [DB] Registered attachment: FAILED_ACCESS_depth2_applications_navsup_navy_mil_neco_buyer_login_aspx.txt
+
+--- Running AI Extraction ---
+Dropped 'vendors' table to refresh schema.
+Database tables created or already exist.
+Solicitation with contract_id N0010425QNF13 already exists. Updating existing entry.
+Updated solicitation N0010425QNF13 in database.
+  [Content] Processing: N0010425QNF130001.pdf (attachment)
+  [Content] Processing: N0010425QNF13.pdf (attachment)
+  [Content] Processing: linked_page_standard_www_dsp_dla_mil_.txt (attachment)
+  [Content] Processing: linked_page_alt_ua_www_dsp_dla_mil_.txt (attachment)
+  [Content] Processing: linked_page_alt_protocol_www_dsp_dla_mil_.txt (attachment)
+  [Content] Processing: linked_page_standard_www_neco_navy_mil_synopsis_synopsis_aspx_solnum_N0.txt (attachment)
+  [Content] Processing: linked_page_standard_www_neco_navy_mil_biz_ops_840_v5soln_aspx_soln_N00.txt (attachment)
+  [Content] Processing: linked_page_alt_protocol_quicksearch_dla_mil__nbsp.txt (attachment)
+  [Content] Processing: linked_page_standard_www_neco_navy_mil_index_aspx.txt (attachment)
+  [Content] Processing: linked_page_standard_www_neco_navy_mil_link_codes_aspx.txt (attachment)
+  [Content] Processing: linked_page_standard_www_neco_navy_mil_Faq_faq_aspx.txt (attachment)
+  [Content] Processing: linked_page_standard_www_neco_navy_mil_secure_register_login_aspx_soln_.txt (attachment)
+  [Content] Processing: linked_page_standard_www_neco_navy_mil_link_abbreviations_aspx.txt (attachment)
+  [Content] Processing: linked_page_standard_www_neco_navy_mil_link_header_html.txt (attachment)
+  [Content] Processing: linked_page_standard_www_neco_navy_mil_biz_ops_search_edi_aspx.txt (attachment)
+  [Content] Processing: linked_page_standard_www_neco_navy_mil_biz_ops_840_clauseRef_aspx_hkey_.txt (attachment)
+  [Content] Processing: linked_page_standard_www_neco_navy_mil_secure_register_login_aspx.txt (attachment)
+  [Content] Processing: linked_page_standard_www_neco_navy_mil_link_feedback_aspx_subj_NECO_Com.txt (attachment)
+  [Content] Processing: linked_page_standard_www_neco_navy_mil_Content_css_main_v_JU7vXEvMSDQ4E.txt (attachment)
+  [Content] Processing: linked_page_standard_www_neco_navy_mil_secure_register_register_aspx_fr.txt (attachment)
+  [Content] Processing: linked_page_standard_www_neco_navy_mil_link_linkspage_aspx_site_1.txt (attachment)
+  [Content] Processing: linked_page_standard_www_neco_navy_mil_synopsis_synopsis_aspx.txt (attachment)
+  [Content] Processing: linked_page_standard_www_neco_navy_mil_link_nnotes_aspx.txt (attachment)
+  [Content] Processing: FAILED_ACCESS_depth2_applications_navsup_navy_mil_neco_secure_admin_Hel.txt (attachment)
+  [Content] Processing: FAILED_ACCESS_depth2_applications_navsup_navy_mil_neco_buyer_login_aspx.txt (attachment)
+  [Content] Processing: FAILED_ACCESS_depth2_www_neco_navy_mil_biz_ops___Content_neco_style_css.txt (attachment)
+  [Content] Processing: solicitation_full_text.txt (attachment)
+  Collective analysis of 28 items...
+    - Part 0 (Text): 49 characters
+    - Part 1 (Text): 4382 characters
+    - Part 2 (Text): 220974 characters
+    - Part 3 (Text): 412 characters
+    - Part 4 (Text): 3693 characters
+    - Part 5 (Text): 3706 characters
+    - Part 6 (Text): 914 characters
+    - Part 7 (Text): 10123 characters
+    - Part 8 (Text): 400 characters
+    - Part 9 (Text): 1043 characters
+    - Part 10 (Text): 4416 characters
+    - Part 11 (Text): 514 characters
+    - Part 12 (Text): 654 characters
+    - Part 13 (Text): 6337 characters
+    - Part 14 (Text): 385 characters
+    - Part 15 (Text): 10114 characters
+    - Part 16 (Text): 10123 characters
+    - Part 17 (Text): 629 characters
+    - Part 18 (Text): 568 characters
+    - Part 19 (Text): 9091 characters
+    - Part 20 (Text): 10123 characters
+    - Part 21 (Text): 2654 characters
+    - Part 22 (Text): 6093 characters
+    - Part 23 (Text): 8878 characters
+    - Part 24 (Text): 507 characters
+    - Part 25 (Text): 491 characters
+    - Part 26 (Text): 491 characters
+    - Part 27 (Text): 201229 characters
+  [LLM] Calling Gemini 2.5 Pro...
+  [LLM] Received response (4271 characters)
+  Searching for missing insurance data for ...
+  Searching for Wage Determination for ...
+
+--- Extraction Result ---
+{
+  "solicitation_type": "SERVICE",
+  "notice_id": "N00104-25-Q-NF13",
+  "project_title": "Teardown, Evaluate, Repair and/or Modify Cable Assembly, SPEC",
+  "project_summary": {
+    "agency_name": "NAVSUP WEAPON SYSTEMS SUPPORT MECH",
+    "agency_address": "5450 CARLISLE PIKE, MECHANICSBURG, PA 17050-2411",
+    "contract_type": "Firm Fixed Price Repair Service Contract",
+    "set_aside": "Total Small Business Set-Aside",
+    "solicitation_date": "2025-10-01",
+    "quotes_due": "2026-02-27 16:30 ET",
+    "naics_code": "335931",
+    "naics_description": "Current-Carrying Wiring Device Manufacturing",
+    "size_standard": "600 employees",
+    "purpose": "To perform teardown, evaluation, repair, and/or modification services for the CABLE ASSEMBLY, SPEC, NSN 5995-01-604-0910, restoring it to an operable condition.",
+    "work_locations": [
+      {
+        "site_id": "Information not provided in solicitation",
+        "county": "Information not provided in solicitation",
+        "state": "Information not provided in solicitation",
+        "acreage": 0,
+        "description": "Work to be performed at Contractor's facility."
+      }
+    ],
+    "key_details": {
+      "item_name": "CABLE ASSEMBLY,SPEC",
+      "nsn": "5995-01-604-0910",
+      "part_number": "6964587",
+      "manufacturer_cage": "53711",
+      "initial_quantity": "2 EA (per CLIN 0001AA)"
+    }
+  },
+  "scope_categories": [
+    {
+      "category": "Repair and Modification Services",
+      "description": "Vendor shall perform all inspection, disassembly, and tests to determine the labor and material needed to restore the Government Furnished Property (CABLE ASSEMBLY,SPEC) to an operable condition. All repair work shall be performed in accordance with the contractor's repair/overhaul standard practices, manuals, and technical documents including drawings 5528057, 6964587, 6964860 and specifications MIL-STD-129, QQ-B-575, MIL-STD-681, MIL-C-39029."
+    }
+  ],
+  "timeline": {
+    "periods": [
+      {
+        "year": "One-Year Induction Period",
+        "date_range": "One year period from the date of the order.",
+        "activities": [
+          "Receipt of carcass",
+          "Teardown & Evaluation (TD&E)",
+          "Submission of Firm-Fixed Price repair quote",
+          "Full repair and delivery of assets"
+        ]
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Firm-Fixed Price (FFP) quote for full repair effort",
+        "due_days": 90,
+        "format": "Quote document, submitted after receipt of carcass"
+      },
+      {
+        "name": "Repaired Cable Assembly",
+        "due_days": 160,
+        "format": "Physical item (Requested Repair Turn Around Time)"
+      }
+    ]
+  },
+  "delivery_information": {
+    "fob_point": "Origin",
+    "ship_to_address": {
+      "organization": "DLA DISTRIBUTION, DDSP NEW CUMBERLAND FACILITY",
+      "street": "2083 NORMANDY DRIVE DOOR 113 TO 134",
+      "city": "NEW CUMBERLAND",
+      "state": "PA",
+      "zip": "17070-5002"
+    }
+  },
+  "compliance": {
+    "key_requirements": [
+      "Packaging in accordance with MIL-STD-2073",
+      "Marking in accordance with MIL-STD-129 and MIL-STD-130",
+      "Serialization IAW DWG 6964587 note 14 per 6964860",
+      "Material must be Mercury Free",
+      "Compliance with Commercial Asset Visibility Repairables Portal (CAV RP) reporting",
+      "Adherence to technical drawings and specifications listed in Section C"
+    ],
+    "insurance": {
+      "general_liability": "Information not provided in solicitation",
+      "auto_liability": "Information not provided in solicitation",
+      "workers_comp": "Information not provided in solicitation"
+    },
+    "wage_determination": "Information not provided in solicitation"
+  },
+  "submission": {
+    "method": "Email",
+    "address": "NAVSUP WEAPON SYSTEMS SUPPORT MECH, 5450 CARLISLE PIKE, MECHANICSBURG, PA 17050-2411. Email quotes to: HEATHER.R.JONES52.CIV@US.NAVY.MIL",
+    "due_date": "2026-02-27 16:30 ET",
+    "required_documents": [
+      "Completed SF 18 (Request for Quotations)",
+      "Quote including Teardown & Evaluation Rate",
+      "Quote including Repair Turn Around Time (RTAT)",
+      "Quote including Throughput Constraint",
+      "Quote including Induction Expiration Date"
+    ]
+  },
+  "contract_id": "N0010425QNF13",
+  "external_resource_links": [
+    "https://www.fedramp.gov/documents-templates/",
+    "https://quicksearch.dla.mil/&nbsp",
+    "https://www.neco.navy.mil/secure/register/login.aspx",
+    "https://www.neco.navy.mil/Content/css/main?v=JU7vXEvMSDQ4E6dcHq1E7-KXeMXg0bTR08LyOtPjupM1",
+    "http://www.dlis.dla.mil/ccal/",
+    "http://www.aimglobal.org/?Reg_Authority15459",
+    "https://public.cyber.mil/eca/",
+    "https://sam.gov",
+    "http://dx.doi.org/10.6028/NIST.SP.800-171",
+    "https://www.neco.navy.mil/secure/register/login.aspx?soln=N0010425QNF13",
+    "https://www.neco.navy.mil/link/abbreviations.aspx",
+    "https://quicksearch.dla.mil/",
+    "https://home.daas.dla.mil/daashome/daasinq.asp",
+    "https://www.sam.gov",
+    "https://www.fsrs.gov",
+    "https://www.sam.gov/",
+    "https://applications.navsup.navy.mil/neco/buyer/login.aspx",
+    "https://www.sba.gov/document/support--table-size-standards",
+    "https://orca.bpn.gov/login.aspx",
+    "https://www.dla.mil/HQ/",
+    "https://www.neco.navy.mil/biz_ops/840-v5soln.aspx?soln=N0010425QNF13",
+    "https://www.navsup.navy.mil/NAVSUP-Enterprise/NAVSUP-Weapon-Systems-Support/",
+    "https://www.navsup.navy.mil/NAVSUP-Enterprise/NAVSUP-Weapon-Systems-Support/Pro",
+    "https://applications.navsup.navy.mil/neco/secure/admin/Helpdesk_Login.aspx",
+    "www.acquisition.gov",
+    "https://www.sprs.csd.disa.mil/",
+    "https://www.neco.navy.mil/link/header.html",
+    "https://forms.documentservices.dla.mil/order/",
+    "http://www.acq.osd.mil/dpap/dars/class_deviations.html",
+    "https://www.neco.navy.mil/secure/register/register.aspx?from=1",
+    "http://www.fsrs.gov",
+    "www.acq.osd.mil/dpap/dars/dfarspgi/current/",
+    "https://errors.edgesuite.net/18.4cd02e17.1767652892.e64e6244",
+    "https://www.dsp.dla.mil/",
+    "https://www.esd.whs.mil/dd",
+    "https://www.neco.navy.mil/biz_ops/840-clauseRef.aspx?hkey=244152798",
+    "https://piee.eb.mil",
+    "https://www.neco.navy.mil/synopsis/synopsis.aspx",
+    "https://assist.dla.mil",
+    "https://www.acq.osd.mil/asda/dpc/ce/ds/unique-id.html",
+    "http://www.archives.gov/cui/registry/category-list.html",
+    "https://www.neco.navy.mil/Faq/faq.aspx",
+    "http://quicksearch.dla.mil/",
+    "https://www.neco.navy.mil/link/codes.aspx",
+    "http://quicksearch.dla.mil",
+    "https://www.neco.navy.mil/link/linkspage.aspx?site=1",
+    "http://support.outreachsystems.com/resources/tables/pscs/",
+    "https://www.neco.navy.mil/synopsis/synopsis.aspx?solnum=N0010425QNF13",
+    "https://www.neco.navy.mil/biz_ops/search_edi.aspx",
+    "https://www.neco.navy.mil/biz_ops/~/Content/neco.style.css",
+    "http://qpldocs.dla.mil/",
+    "https://www.neco.navy.mil/index.aspx",
+    "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-171r2.pdf",
+    "https://wawf.eb.mil/",
+    "http://www.mhi.org",
+    "https://dibnet.dod.mil",
+    "https://www.sam.gov.(see",
+    "http://www.dsp.dla.mil/",
+    "https://www.navsup.navy.mil/NAVSUP-Enterprise/NAVSUP-Weapon-Systems-Support",
+    "https://www.neco.navy.mil/link/nnotes.aspx",
+    "https://piee.eb.mil/",
+    "http://www.sec.gov/answers/execomp.htm",
+    "https://dodprocurementtoolbox.com/sitepages/gfp-resources",
+    "https://www.neco.navy.mil/link/feedback.aspx?subj=NECO_Comment",
+    "http://dodprocurementtoolbox.com/site/uidregistry/"
+  ],
+  "title": "REPAIR OF CABLE ASSEMBLY,SPEC",
+  "url": "https://www.neco.navy.mil/biz_ops/840-v5soln.aspx?soln=N0010425QNF13"
+}
+
+--- Generating RFQ Output ---
+
+SUBJECT: RFQ: N00104-25-Q-NF13 - Teardown, Evaluate, Repair and/or Modify Cable Assembly, SPEC
+
+BODY:
+ Notice ID: N00104-25-Q-NF13
+
+# Teardown, Evaluate, Repair and/or Modify Cable Assembly, SPEC
+
+Dear Valued Supplier:
+
+We are writing to request a formal quote for teardown, evaluate, repair and/or modify cable assembly, spec. Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
+
+Your response is needed on or before February 23, 2026 in order for us to submit your bid.
+
+If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+
+Thank you for your time and consideration.
+
+[My signature info]
+
+🔹Summary of Project
+Title: Teardown, Evaluate, Repair and/or Modify Cable Assembly, SPEC
+Type: Firm Fixed Price Repair Service Contract
+Purpose: To perform teardown, evaluation, repair, and/or modification services for the CABLE ASSEMBLY, SPEC, NSN 5995-01-604-0910, restoring it to an operable condition.
+Location: Information not provided in solicitation, Information not provided in solicitation
+
+Total Work Area:
+- Base Contract: 0 acres
+- Option: 0 additional acres
+
+🔹What They Want (Scope of Work)
+| Category | Main Tasks |
+|---|---|
+| **Repair and Modification Services** | Vendor shall perform all inspection, disassembly, and tests to determine the labor and material needed to restore the Government Furnished Property (CABLE ASSEMBLY,SPEC) to an operable condition. All repair work shall be performed in accordance with the contractor's repair/overhaul standard practices, manuals, and technical documents including drawings 5528057, 6964587, 6964860 and specifications MIL-STD-129, QQ-B-575, MIL-STD-681, MIL-C-39029. |
+
+
+🔹Timeline / Period of Performance
+| Year | Dates | Requirements |
+|---|---|---|
+| One-Year Induction Period | One year period from the date of the order. | Receipt of carcass, Teardown & Evaluation (TD&E), Submission of Firm-Fixed Price repair quote, Full repair and delivery of assets |
+
+
+🔹Deliverables & Reporting Deadlines
+| Deliverable | Due From Award | Format / Medium | Submit To |
+|---|---|---|---|
+| **Firm-Fixed Price (FFP) quote for full repair effort** | 90 days | Quote document, submitted after receipt of carcass | Contracting Officer |
+| **Repaired Cable Assembly** | 160 days | Physical item (Requested Repair Turn Around Time) | Contracting Officer |
+
+
+🔹Delivery / Work Locations
+- Information not provided in solicitation: Information not provided in solicitation, Information not provided in solicitation - Work to be performed at Contractor's facility.
+
+
+🔹Key Compliance Points
+- Requirements: Packaging in accordance with MIL-STD-2073, Marking in accordance with MIL-STD-129 and MIL-STD-130, Serialization IAW DWG 6964587 note 14 per 6964860, Material must be Mercury Free, Compliance with Commercial Asset Visibility Repairables Portal (CAV RP) reporting, Adherence to technical drawings and specifications listed in Section C
+- Insurance:
+  - General Liability: Information not provided in solicitation
+  - Auto Liability: Information not provided in solicitation
+  - Workers' Compensation: Information not provided in solicitation
+- Wage Determination: Information not provided in solicitation
+
+🔹Acceptance Criteria
+To be accepted by the Contracting Officer, each item must meet performance standards (e.g., operational testing, technical manual compliance) and pass final inspection (e.g., Origin inspection).
+
+🟩In Summary
+They want a qualified contractor to perform Teardown, Evaluate, Repair and/or Modify Cable Assembly, SPEC over a Firm Fixed Price Repair Service Contract term. 
+In Plain Terms:
+1. Supply Teardown, Evaluate, Repair and/or Modify Cable Assembly, SPEC built to military specifications (including Packaging in accordance with MIL-STD-2073, Marking in accordance with MIL-STD-129 and MIL-STD-130, Serialization IAW DWG 6964587 note 14 per 6964860, Material must be Mercury Free, Compliance with Commercial Asset Visibility Repairables Portal (CAV RP) reporting if applicable).
+2. Meet quality standards referenced in solicitation (including technical drawing requirements and standard military practices).
+3. Inspect and accept at Origin, coordinate with Government Agency as required.
+4. Success is measured by meeting specific performance standards and submittal milestones.
+
+---end of RFQ---
+

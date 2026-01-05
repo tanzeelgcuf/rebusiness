@@ -7,7 +7,7 @@
 ---
 
 ## 1. High-Level Objectives
-1.  **Deep Crawling & CAPTCHA**: Integrate `capsolver` into `SamGovAgent` to handle reCAPTCHA v2/v3 automatically. Ensure deep link validation reaches 2-3 levels deep.
+1.  **Deep Crawling**: Ensure deep link validation reaches 2-3 levels deep for comprehensive attachment discovery.
 2.  **Advanced Document Processing**: Replace `PyPDF2` with `pdf-extract-kit` (or a robust Gemini Vision fallback if kit fails) for table extraction.
 3.  **Zero-Placeholder Policy**: Enforce a strict "No N/A" rule. If data is missing in the main text, the agent must trigger web research (SerpAPI) or deep document scanning.
 4.  **Template-Compliant Output**: The JSON output from `AttachmentReaderAgent` must EXACTLY match the fields required by `Claude Vendor List.odt` (Products) and `Claude Services List.odt` (Services).
@@ -18,14 +18,7 @@
 
 ### A. `ai_agents/SamGovAgent/sam_gov_agent.py`
 **Upgrade Task:**
--   **Import**: Add `import capsolver`.
--   **Method `_solve_captcha(self, page)`**: Implement this method.
-    -   Detect `data-sitekey`.
-    -   Call Capsolver API.
-    -   Inject `g-recaptcha-response`.
-    -   Click submit/callback.
 -   **Method `process_detail_page`**:
-    -   Call `_solve_captcha` if a challenge is detected.
     -   Enhance `_extract_external_links` to be recursive (max depth 2). Current implementation finds links but doesn't recursively scrape *their* content effectively into the analysis context.
     -   Ensure `_deep_download_attachments` handles "Terms of Service" modals (click "Accept").
 
@@ -81,8 +74,8 @@ You are a MASTER Federal Procurement Analyst. Your mission is to extract ALL inf
 ---
 
 ## 4. Execution Plan
-1.  **Install Dependencies**: `pip install capsolver pdf-extract-kit` (ensure system deps are met).
-2.  **Refactor `SamGovAgent`**: Add captcha solving and robust deep crawler.
+1.  **Install Dependencies**: `pip install pdf-extract-kit` (ensure system deps are met).
+2.  **Refactor `SamGovAgent`**: Add robust deep crawler for comprehensive attachment discovery.
 3.  **Refactor `AttachmentReaderAgent`**: Swap LLM prompt and add PDF-Extract-Kit.
 4.  **Verify**: Run `run_agents_workflow.py` or `main_workflow.py` on a known complex solicitation URL.
 

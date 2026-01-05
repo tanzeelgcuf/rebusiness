@@ -6,10 +6,6 @@ from ai_agents.SamGovAgent.sam_gov_agent import SamGovAgent
 from ai_agents.AttachmentReaderAgent.attachment_reader_agent import AttachmentReaderAgent
 from ai_agents.ProposalWriterAgent.proposal_writer import create_bid_request
 
-# Config check
-if not os.getenv("CAPSOLVER_API_KEY"):
-    print("WARNING: CAPSOLVER_API_KEY not set. CAPTCHA solving will be skipped.")
-
 # Target: Use a known solicitation with attachments and complexity
 # Example: W912HZ26Q1215 (from previous test file)
 TEST_URL = "https://sam.gov/opp/W912HZ26Q1215/view"

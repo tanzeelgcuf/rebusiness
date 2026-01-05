@@ -1,0 +1,69 @@
+Notice ID: N00104-25-Q-NF13
+
+# Teardown, Evaluate, Repair and/or Modify Cable Assembly, SPEC (NSN: 5995-01-604-0910)
+
+Dear Valued Supplier:
+
+We are writing to request a formal quote for teardown, evaluate, repair and/or modify cable assembly, spec (nsn: 5995-01-604-0910). Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
+
+Your response is needed on or before February 23, 2026 in order for us to submit your bid.
+
+If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+
+Thank you for your time and consideration.
+
+[My signature info]
+
+🔹Summary of Project
+Title: Teardown, Evaluate, Repair and/or Modify Cable Assembly, SPEC (NSN: 5995-01-604-0910)
+Type: Firm Fixed Price
+Purpose: To conduct teardown, evaluation, and repair services on unserviceable CABLE ASSEMBLY,SPEC units (carcasses) to restore them to an operable, 'A' condition stock.
+Location: Contractor's Facility (TBD at Award)
+
+Total Work Area:
+- Base Contract: N/A - Technical Service (Repair of 2 Units) 
+- Option: N/A (Repair Services)
+
+🔹What They Want (Scope of Work)
+| Category | Main Tasks |
+|---|---|
+| **Repair and Modification Services** | Teardown, evaluate, repair and/or modify CABLE ASSEMBLY,SPEC (NSN 5995-01-604-0910) to an operable condition. This includes all labor and material required for the complete repair effort, inspection, testing, packaging, and marking in accordance with all technical specifications and drawings. |
+
+
+🔹Timeline / Period of Performance
+| Year | Dates | Requirements |
+|---|---|---|
+| Year 1 | Upon receipt of carcass, with a requested Repair Turn Around Time (RTAT) of 160 days. | Receipt of unserviceable units (carcasses)., Teardown & Evaluation (TD&E) of the carcasses., Submission of Firm-Fixed Price (FFP) quote for the full repair effort., Complete repair of material, including handling damaged or incomplete units., Final inspection and acceptance by the Government., Packaging and marking for return shipment. |
+
+
+🔹Deliverables & Reporting Deadlines
+| Deliverable | Due From Award | Format / Medium | Submit To |
+|---|---|---|---|
+| **Firm-Fixed Price (FFP) Quote for Repair Effort** | 90 days | Detailed pricing proposal | Contracting Officer |
+
+
+🔹Delivery / Work Locations
+- Contractor's Facility (TBD at Award), - The contractor will receive Government Furnished Property (carcasses) for repair at their own facility.
+
+
+🔹Key Compliance Points
+- Requirements: Repair shall meet requirements of CAGE 53711, Ref. No. 6964587 and associated drawings., Packaging must be in accordance with MIL-STD-2073., Marking must be in accordance with MIL-STD-129 and MIL-STD-130., Material supplied must be Mercury-Free., Commercial Asset Visibility Repairables Portal (CAV RP) reporting is required., Serialization is required in accordance with DWG 6964587 note 14 per 6964860.
+- Insurance:
+  - General Liability: Standard Commercial Liability as per FAR Part 28
+  - Auto Liability: Standard Commercial Liability as per FAR Part 28
+  - Workers' Compensation: Standard Commercial Liability as per FAR Part 28
+- Wage Determination: Federal Contractor Standards (SCA or Walsh-Healey as applicable)
+
+🔹Acceptance Criteria
+To be accepted by the Contracting Officer, each item must meet performance standards (e.g., operational testing, technical manual compliance) and pass final inspection (e.g., Origin inspection).
+
+🟩In Summary
+The Government requires a qualified contractor to perform Teardown, Evaluate, Repair and/or Modify Cable Assembly, SPEC (NSN: 5995-01-604-0910) over a Firm Fixed Price term. 
+
+In Plain Terms:
+1. Provide Teardown, Evaluate, Repair and/or Modify Cable Assembly, SPEC (NSN: 5995-01-604-0910) in strict accordance with military specifications, including Repair shall meet requirements of CAGE 53711, Ref. No. 6964587 and associated drawings., Packaging must be in accordance with MIL-STD-2073., Marking must be in accordance with MIL-STD-129 and MIL-STD-130., Material supplied must be Mercury-Free., Commercial Asset Visibility Repairables Portal (CAV RP) reporting is required. and all applicable technical drawings.
+2. Meet all quality standards specified in the solicitation, ensuring compliance with Federal Contractor Standards (SCA or Walsh-Healey as applicable) and standard military repair practices.
+3. Final inspection and acceptance will take place at Origin. Coordination with Government Agency or the assigned Quality Assurance Representative (QAR) is required for final sign-off.
+4. Success is defined by the timely delivery of items meeting all functional and performance requirements as verified by Government inspection.
+
+---end of RFQ---

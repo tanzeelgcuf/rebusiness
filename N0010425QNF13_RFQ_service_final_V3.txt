@@ -1,0 +1,75 @@
+--- Generating RFQ Output ---
+
+SUBJECT: RFQ: N00104-25-Q-NF13 - Teardown, Evaluate, Repair and/or Modify Cable Assembly, SPEC
+
+BODY:
+ Notice ID: N00104-25-Q-NF13
+
+# Teardown, Evaluate, Repair and/or Modify Cable Assembly, SPEC
+
+Dear Valued Supplier:
+
+We are writing to request a formal quote for teardown, evaluate, repair and/or modify cable assembly, spec. Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
+
+Your response is needed on or before February 23, 2026 in order for us to submit your bid.
+
+If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+
+Thank you for your time and consideration.
+
+[My signature info]
+
+🔹Summary of Project
+Title: Teardown, Evaluate, Repair and/or Modify Cable Assembly, SPEC
+Type: Firm Fixed Price Repair Service Contract
+Purpose: To perform teardown, evaluation, repair, and/or modification services for the CABLE ASSEMBLY, SPEC, NSN 5995-01-604-0910, restoring it to an operable condition.
+Location: Information not provided in solicitation, Information not provided in solicitation
+
+Total Work Area:
+- Base Contract: 0 acres
+- Option: 0 additional acres
+
+🔹What They Want (Scope of Work)
+| Category | Main Tasks |
+|---|---|
+| **Repair and Modification Services** | Vendor shall perform all inspection, disassembly, and tests to determine the labor and material needed to restore the Government Furnished Property (CABLE ASSEMBLY,SPEC) to an operable condition. All repair work shall be performed in accordance with the contractor's repair/overhaul standard practices, manuals, and technical documents including drawings 5528057, 6964587, 6964860 and specifications MIL-STD-129, QQ-B-575, MIL-STD-681, MIL-C-39029. |
+
+
+🔹Timeline / Period of Performance
+| Year | Dates | Requirements |
+|---|---|---|
+| One-Year Induction Period | One year period from the date of the order. | Receipt of carcass, Teardown & Evaluation (TD&E), Submission of Firm-Fixed Price repair quote, Full repair and delivery of assets |
+
+
+🔹Deliverables & Reporting Deadlines
+| Deliverable | Due From Award | Format / Medium | Submit To |
+|---|---|---|---|
+| **Firm-Fixed Price (FFP) quote for full repair effort** | 90 days | Quote document, submitted after receipt of carcass | Contracting Officer |
+| **Repaired Cable Assembly** | 160 days | Physical item (Requested Repair Turn Around Time) | Contracting Officer |
+
+
+🔹Delivery / Work Locations
+- Information not provided in solicitation: Information not provided in solicitation, Information not provided in solicitation - Work to be performed at Contractor's facility.
+
+
+🔹Key Compliance Points
+- Requirements: Packaging in accordance with MIL-STD-2073, Marking in accordance with MIL-STD-129 and MIL-STD-130, Serialization IAW DWG 6964587 note 14 per 6964860, Material must be Mercury Free, Compliance with Commercial Asset Visibility Repairables Portal (CAV RP) reporting, Adherence to technical drawings and specifications listed in Section C
+- Insurance:
+  - General Liability: Information not provided in solicitation
+  - Auto Liability: Information not provided in solicitation
+  - Workers' Compensation: Information not provided in solicitation
+- Wage Determination: Information not provided in solicitation
+
+🔹Acceptance Criteria
+To be accepted by the Contracting Officer, each item must meet performance standards (e.g., operational testing, technical manual compliance) and pass final inspection (e.g., Origin inspection).
+
+🟩In Summary
+They want a qualified contractor to perform Teardown, Evaluate, Repair and/or Modify Cable Assembly, SPEC over a Firm Fixed Price Repair Service Contract term. 
+In Plain Terms:
+1. Supply Teardown, Evaluate, Repair and/or Modify Cable Assembly, SPEC built to military specifications (including Packaging in accordance with MIL-STD-2073, Marking in accordance with MIL-STD-129 and MIL-STD-130, Serialization IAW DWG 6964587 note 14 per 6964860, Material must be Mercury Free, Compliance with Commercial Asset Visibility Repairables Portal (CAV RP) reporting if applicable).
+2. Meet quality standards referenced in solicitation (including technical drawing requirements and standard military practices).
+3. Inspect and accept at Origin, coordinate with Government Agency as required.
+4. Success is measured by meeting specific performance standards and submittal milestones.
+
+---end of RFQ---
+

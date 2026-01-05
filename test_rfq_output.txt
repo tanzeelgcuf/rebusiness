@@ -1,0 +1,64 @@
+Subject: RFQ: N0010425QNF13 - 59--CABLE ASSEMBLY,SPEC, IN REPAIR/MODIFICATION OF
+
+Notice ID: N0010425QNF13
+
+# 59--CABLE ASSEMBLY,SPEC, IN REPAIR/MODIFICATION OF
+
+Dear Test Vendor:
+
+We are writing to request a formal quote for 59--cable assembly,spec, in repair/modification of. Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
+
+Your response is needed on or before February 23, 2026 in order for us to submit your bid.
+
+If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+
+Thank you for your time and consideration.
+
+[My signature info]
+
+## Overview
+
+**Agency Issuing RFQ:**
+DEPT OF THE NAVY, NAVSUP WEAPON SYSTEMS SUPPORT MECH
+NAVSUP Weapon Systems Support, 5450 Carlisle Pike, Mechanicsburg, PA 17055
+
+**Type of Contract:** Firm Fixed Price
+**Set-Aside Type:** Small Business
+**Solicitation Date:** 2025-10-01
+**Quotes Due:** 2026-02-27 03:30 PM EST
+
+**NAICS Code:** 335931 -- Current-Carrying Wiring Device Manufacturing
+**Size Standard:** 600 employees
+
+## Items Required
+
+**Manufacturer CAGE:** Information not provided in solicitation
+**Manufacturer Part Number:** Information not provided in solicitation
+**NSN:** Information not provided in solicitation
+
+**Description:** CABLE ASSEMBLY,SPEC, IN REPAIR/MODIFICATION OF
+
+### CLIN Table
+
+| CLIN | Description | Quantity | Type | Inspection | Quality | Notes |\n|------|-------------|----------|------|------------|---------|-------|\n| Information not provided in solicitation | Information not provided in solicitation | Information not provided in solicitation Information not provided in solicitation | FFP | Origin | Information not provided in solicitation | Information not provided in solicitation |\n
+
+## Delivery Requirements
+
+**Ship To:**
+Information not provided in solicitation
+Information not provided in solicitation
+Information not provided in solicitation, Information not provided in solicitation Information not provided in solicitation
+
+**Lead Time:** Information not provided in solicitation Days ARO
+**First Delivery:** Information not provided in solicitation
+**Delivery Frequency:** Information not provided in solicitation
+
+## Submission Details
+
+**Due Date:** 2026-02-27 03:30 PM EST
+**Internal Deadline:** February 23, 2026
+
+**Submit To:** HEATHER.R.JONES52.CIV@US.NAVY.MIL
+**Required:** SF 1449
+
+---end of RFQ---
