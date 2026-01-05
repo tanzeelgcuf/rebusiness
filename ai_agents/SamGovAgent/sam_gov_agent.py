@@ -16,6 +16,8 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 import config
+import capsolver
+
 
 class SamGovAgent:
     def __init__(self):
@@ -52,12 +54,74 @@ class SamGovAgent:
         with open(self.checkpoint_file, 'w') as f:
             json.dump({'last_run_timestamp': time.time()}, f)
 
+    def _solve_captcha(self, page):
+        """
+        Detects and solves reCAPTCHA v2/v3 using CapSolver.
+        """
+        try:
+            # Check for reCAPTCHA frames or elements
+            iframe = page.query_selector("iframe[src*='google.com/recaptcha']")
+            if iframe:
+                print("    [CAPTCHA] Detected reCAPTCHA. Attempting to solve...")
+                
+                # Get sitekey
+                sitekey_frame = page.frame_locator("iframe[src*='google.com/recaptcha']").first
+                # This is a simplification; often sitekey is in the main page source div
+                # A more robust way:
+                sitekey_elem = page.query_selector("[data-sitekey]")
+                sitekey = sitekey_elem.get_attribute("data-sitekey") if sitekey_elem else None
+                
+                if not sitekey:
+                    # Fallback regex
+                    content = page.content()
+                    match = re.search(r'data-sitekey=["\'](.+?)["\']', content)
+                    if match:
+                        sitekey = match.group(1)
+                
+                if sitekey:
+                    print(f"    [CAPTCHA] Found sitekey: {sitekey}")
+                    capsolver.api_key = os.getenv("CAPSOLVER_API_KEY") 
+                    if not capsolver.api_key:
+                        print("    [CAPTCHA] Error: CAPSOLVER_API_KEY not set.")
+                        return
+
+                    solution = capsolver.solve({
+                        "type": "ReCaptchaV2TaskProxyLess",
+                        "websiteURL": page.url,
+                        "websiteKey": sitekey
+                    })
+                    
+                    token = solution.get("gRecaptchaResponse")
+                    if token:
+                        print("    [CAPTCHA] Solved! Injecting token...")
+                        page.evaluate(f'document.getElementById("g-recaptcha-response").innerHTML="{token}";')
+                        # Sometimes need to call a callback function
+                        # page.evaluate(f'___grecaptcha_cfg.clients[0].aa.l.callback("{token}")') 
+                        # Click verify/submit if exists
+                        # This part is highly site-specific
+                else:
+                    print("    [CAPTCHA] Could not find sitekey.")
+        except Exception as e:
+            print(f"    [CAPTCHA] Error solving: {e}")
+
+
     def _deep_download_attachments(self, page, target_dir):
         """
         Robustly downloads attachments using Playwright interactions.
         Prioritizes 'Download All' button, then individual links.
+        Handles formatting and Terms of Service modals.
         """
         print(f"    [Deep Fetch] Starting attachment download to {target_dir}")
+
+        # Check for Terms of Service Modal
+        try:
+            tos_accept = page.query_selector("button:has-text('Accept')")
+            if tos_accept and tos_accept.is_visible():
+                print("    [Deep Fetch] Found Terms of Service modal. Clicking Accept...")
+                tos_accept.click()
+                time.sleep(2)
+        except: pass
+
         download_count = 0
         
         # Priority 1: Download All Button
@@ -207,6 +271,34 @@ class SamGovAgent:
                 relevant_links.append(url)
                 
         return list(set(relevant_links)) # Deduplicate
+
+    def _recursive_crawl(self, url, depth=0, max_depth=2, target_dir=""):
+        """
+        Recursively crawls links to find more attachments.
+        """
+        if depth > max_depth: return
+        
+        print(f"    [Deep Crawl] depth={depth} Visiting: {url}")
+        new_page = self.context.new_page()
+        try:
+            new_page.goto(url, timeout=30000)
+            # Try to grab attachments here
+            self._deep_download_attachments(new_page, target_dir)
+            
+            # Find more links if not at max depth
+            if depth < max_depth:
+                text = new_page.content()
+                links = self._extract_external_links(text)
+                for link in links:
+                    # Filter loops
+                     if link not in self.visited_links:
+                        self.visited_links.add(link)
+                        self._recursive_crawl(link, depth+1, max_depth, target_dir)
+        except Exception as e:
+            print(f"    [Deep Crawl] Error on {url}: {e}")
+        finally:
+            new_page.close()
+
 
     def _process_external_link(self, page, url, save_dir):
         """
@@ -503,6 +595,10 @@ class SamGovAgent:
         try:
             print(f"  Visiting {url}...")
             detail_page.goto(url, timeout=45000)
+            
+            # Check for Captcha on load
+            self._solve_captcha(detail_page)
+
             # detail_page.wait_for_load_state("domcontentloaded") # Faster than networkidle
             detail_page.wait_for_selector("h1", timeout=30000)
             
@@ -544,7 +640,13 @@ class SamGovAgent:
                     # Filter out purely navigational/junk links if regex wasn't enough
                     if "sam.gov" in link and "opp" not in link: continue 
                     
-                    self._process_external_link(self.page, link, attachment_dir) # Pass main page context source? No, method creates new page.
+                    self._process_external_link(self.page, link, attachment_dir) 
+                    
+                    # New Recursive Crawl for critical external portals
+                    if depth_enabled := True: # Enable logic switch
+                         self.visited_links = set()
+                         self._recursive_crawl(link, depth=1, max_depth=2, target_dir=attachment_dir)
+
                     clicked_count += 1
 
             # Metadata

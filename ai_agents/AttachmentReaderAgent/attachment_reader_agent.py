@@ -9,7 +9,7 @@ import base64
 import io
 import re
 import pandas as pd
-import PyPDF2
+import pdfplumber
 import requests
 import config
 from openai import OpenAI
@@ -40,25 +40,41 @@ class AttachmentReaderAgent:
             return None
 
     def _read_pdf_file(self, file_path):
-        if self.config.LLM_PROVIDER == "gemini":
+        """
+        Reads PDF using pdfplumber for better table/layout extraction.
+        Falls back to Gemini Multimodal if file is essentially an image.
+        """
+        full_text = ""
+        try:
+            with pdfplumber.open(file_path) as pdf:
+                for i, page in enumerate(pdf.pages):
+                    # Extract tables first
+                    tables = page.extract_tables()
+                    if tables:
+                        full_text += f"\n--- Page {i+1} Tables ---\n"
+                        for table in tables:
+                            # Convert list of lists to markdown-like table
+                            df = pd.DataFrame(table[1:], columns=table[0]) if len(table) > 1 else pd.DataFrame(table)
+                            full_text += df.to_markdown() + "\n\n"
+                    
+                    # Extract text
+                    text = page.extract_text()
+                    if text:
+                        full_text += f"\n--- Page {i+1} Text ---\n{text}\n"
+        except Exception as e:
+            print(f"Error reading PDF with pdfplumber: {e}")
+        
+        # If extraction yielded little text, try Gemini Vision (scanned PDF)
+        if len(full_text) < 200 and self.config.LLM_PROVIDER == "gemini":
             try:
-                print(f"Uploading {file_path} to Gemini for Multimodal processing...")
+                print(f"  [PDF] Low text count ({len(full_text)}). Uploading {file_path} to Gemini Vision...")
                 file_ref = genai.upload_file(file_path, mime_type="application/pdf")
                 return file_ref
             except Exception as e:
-                print(f"Error uploading PDF to Gemini: {e}")
-                return "Error processing PDF."
-        
-        # Fallback for OpenAI or if upload fails (though we want consistency)
-        full_text = ""
-        try:
-            with open(file_path, 'rb') as f:
-                reader = PyPDF2.PdfReader(f)
-                for page_num in range(len(reader.pages)):
-                    full_text += reader.pages[page_num].extract_text()
-        except Exception as e:
-            print(f"Error reading PDF file {file_path} with PyPDF2: {e}")
-        return full_text if full_text.strip() else "Could not read content or content is empty."
+                print(f"  [PDF] Gemini upload failed: {e}")
+
+        return full_text if full_text.strip() else "Could not read PDF content."
+
 
     def _read_docx_file(self, file_path):
         try:
@@ -191,53 +207,32 @@ class AttachmentReaderAgent:
             return {"error": "No content to analyze."}
 
         system_instruction = """
-        As a Senior Federal Contract Analyst, your PRIMARY MISSION is to extract ALL information from SAM.gov solicitations (main page, ALL attachments, and linked documents).
-        
-        **ZERO-PLACEHOLDER POLICY**: 
-        - DO NOT use "See solicitation", "Contact CO", or "N/A" unless the information is physically absent from EVERY provided document.
-        - You MUST extract exact quantities, complete ship-to addresses, and specific dates. 
-        - Cross-reference main page data with attachment tables (CLINs, Delivery Schedules).
-        - If multiple versions exist (Amendments), ALWAYS prioritize the LATEST amendment data.
-        
-        **EXTRACTION TARGETS**:
-        1. **Type Detection**: Determine if "Product" (NSN, CAGE, Supply) or "Service" (PWS, SOW, Maintenance).
-        2. **Technical Details**: Part Numbers, Drawings, TDP access, JCP/ITAR requirements. 
-        3. **Structured Data**: CLIN tables, Delivery schedules (days ARO), Ship-to addresses (every line).
-        4. **Compliance**: Insurance limits (FAR 52.228-5), Wage Determination (WD) numbers and specific hourly rates, Security/Base Access protocols.
-        5. **Checklist**: Every document/form required for a valid proposal.
-        6. **Service Specifics**: Work sites/acreage, monitoring periods, report deadlines, approved material lists.
+        You are a MASTER Federal Procurement Analyst. Your mission is to extract ALL information with ZERO placeholders.
+
+        **CRITICAL RULES:**
+        1. **Notice ID**: Extract character-perfect (e.g., W912ES26BA007).
+        2. **Quantities**: Must be numeric with units (118 EA, not "See Schedule").
+        3. **Addresses**: Extract complete Ship-To block (Street, City, State, Zip).
+        4. **Calculated Dates**: Convert "30 Days ARO" to specific estimated dates based on today's date.
+        5. **Tables**: Extract CLIN tables completely (Item, Qty, Unit, Price Format).
+
+        **OUTPUT SCHEMA (JSON):**
+        {
+          "notice_id": "...",
+          "solicitation_type": "PRODUCT" | "SERVICE",
+          "dates": { "posted": "YYYY-MM-DD", "due": "YYYY-MM-DD", "internal_due": "YYYY-MM-DD" },
+          "soliciting_entity": { "name": "...", "address": "..." },
+          "product_specifications": { "nsn": "...", "part_number": "...", "description": "..." },
+          "service_scope": { "pws_summary": "...", "locations": ["..."] },
+          "clins": [ { "clin": "001", "description": "...", "qty": 10, "unit": "EA" } ],
+          "delivery_requirements": { "ship_to_address": "...", "lead_time": "..." },
+          "compliance": { "set_aside": "...", "wage_determination": "..." },
+          "missing_data_report": ["List any truly missing critical fields"]
+        }
         """
         
         formatting_instruction = """
-        EXHAUSTIVE EXTRACTION RULES:
-        1.  solicitation_category: "Product" or "Service".
-        2.  soliciting_entity: Agency Name and Full Mailing Address.
-        3.  notice_id: Character-for-character match from SAM.gov.
-        4.  contract_type: e.g. "Firm Fixed Price".
-        5.  set_aside_type: e.g. "100% Small Business Set-Aside".
-        6.  dpas_rating: e.g. "DO-A4".
-        7.  naics_code: Numerical code + Industry name.
-        8.  size_standard: Numerical (e.g. 600 employees or $xxM).
-        9.  solicitation_date: Original posted date.
-        10. quotes_due_date: Official deadline (including time/zone).
-        11. clins: List of {clin, description, quantity, unit, year_period, packaging, notes}.
-        12. product_details: {name, drawing_number, manufacturer_cage, manufacturer_part_number, nsn, technical_description, tdp_access}.
-        13. quantities_summary: {guaranteed_minimum, maximum_contract_quantity}.
-        14. inspection_testing: {point, agency, ipi_required (bool), quality_standard (e.g. ISO 9001)}.
-        15. delivery_requirements: {fob_point, ship_to_address (FULL), schedule_aro (days), frequency, acceleration_allowed (bool)}.
-        16. packaging_mil_std: {preservation_level, quantity_per_unit, spi_reference, mil_std_129_labeling (bool)}.
-        17. compliance: {jcp_certification_required (bool), itar_controlled (bool), security_clearance_needed, dd2345_required (bool)}.
-        18. project_scope: (For services) {task_descriptions, acreage_details, work_site_list (structured)}.
-        19. timeline_deliverables: {periods (table), reporting_deadlines (table), submittal_requirements}.
-        20. insurance_limits: {general_liability, auto_liability, workers_compensation} -> Exact dollar amounts.
-        21. wage_rates: {wd_number, primary_labor_categories (list with $/hr)}.
-        22. submission_checklist: MANDATORY - List every required form, volume, and document.
-        23. submission_instructions: {method (Email/Portal/Mail), agency_email, subject_line_format}.
-        24. evaluation_basis: e.g. "Lowest Price Technically Acceptable (LPTA)".
-        25. summary_recap: Numbered list of 10+ key data points for the bidder.
-        26. post_award_responsibilities: List of specific contractor duties.
-        
-        RETURN ONLY VALID JSON. If a value is unknown, use "Information not provided in solicitation" instead of null.
+        Ensure INVALID or MISSING data is explicitly marked as "Not specified in solicitation" ONLY after thorough cross-referencing.
         """
 
         try:
@@ -345,11 +340,31 @@ class AttachmentReaderAgent:
         if not os.path.exists(local_path): return []
         full_text = ""
         try:
-            with open(local_path, 'rb') as f:
-                reader = PyPDF2.PdfReader(f)
-                for page in reader.pages: full_text += page.extract_text() + "\n"
+            with pdfplumber.open(local_path) as pdf:
+                for page in pdf.pages: full_text += (page.extract_text() or "") + "\n"
         except: return []
         return [full_text[i:i + chunk_size + 2000] for i in range(0, len(full_text), chunk_size)]
+
+    def _validate_completeness(self, analysis):
+        """
+        Checks for missing critical fields and triggers Deep Research.
+        """
+        critical_missing = []
+        
+        # Check Ship-To
+        dr = analysis.get('delivery_requirements', {})
+        if not dr.get('ship_to_address') or "solicitation" in str(dr.get('ship_to_address')).lower():
+            critical_missing.append("Ship-To Address")
+            
+        # Check CLINs
+        if not analysis.get('clins') or len(analysis.get('clins')) == 0:
+            critical_missing.append("CLIN Table")
+            
+        if critical_missing:
+            print(f"  [Validation] Missing critical data: {critical_missing}. Triggering Deep Research...")
+            analysis = self._research_missing_data(analysis)
+            
+        return analysis
 
     def _merge_analyses(self, analyses):
         if not analyses: return {}

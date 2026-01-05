@@ -23,79 +23,77 @@ def create_bid_request(analysis_summary, vendor_name="Valued Supplier"):
     Returns:
         dict: A dictionary containing the email subject and body.
     """
-    # Extracting structured data
-    product_details = analysis_summary.get('product_details', [])
-    delivery_location_obj = analysis_summary.get('delivery_location', {})
-    summary = analysis_summary.get('summary', 'No summary available.')
+    analysis_summary = analysis_summary if isinstance(analysis_summary, dict) else {}
+    solicitation_type = analysis_summary.get('solicitation_type', 'PRODUCT').upper()
+    
+    # Common Data
     title = analysis_summary.get('title', 'N/A')
-    agency = analysis_summary.get('agency', 'a government agency')
-    point_of_contact = config.COMPANY_INFO.get("Point of Contact", "John Campbell") # Get sender name
-
-    # Format product details for the prompt
-    formatted_product_details = []
-    if product_details:
-        for i, p_item in enumerate(product_details):
-            details = [f"Item {i+1}: {p_item.get('name', 'N/A')}"]
-            if p_item.get('line_item_number'):
-                details.append(f"  - Line Item: {p_item.get('line_item_number')}")
-            if p_item.get('quantity') and p_item.get('unit'):
-                details.append(f"  - Quantity: {p_item.get('quantity')} {p_item.get('unit')}")
-            if p_item.get('part_number'):
-                details.append(f"  - Part Number: {p_item.get('part_number')}")
-            if p_item.get('description'):
-                details.append(f"  - Description: {p_item.get('description')}")
+    agency = analysis_summary.get('soliciting_entity', {}).get('name', 'Government Agency')
+    closing_date = analysis_summary.get('dates', {}).get('due', 'See Solicitation')
+    
+    # 1. Product Layout (Claude Vendor List.odt)
+    if "PRODUCT" in solicitation_type:
+        clins = analysis_summary.get('clins', [])
+        clin_table = "| CLIN | Description | Qty | Unit |\n|---|---|---|---|\n"
+        for c in clins:
+            clin_table += f"| {c.get('clin')} | {c.get('description')} | {c.get('qty')} | {c.get('unit')} |\n"
             
-            # Handle specifications which is now a list
-            specifications = p_item.get('specifications')
-            if specifications and isinstance(specifications, list):
-                details.append("  - Specifications:")
-                for spec in specifications:
-                    details.append(f"    - {spec}")
-            elif specifications: # Handle if it's a string
-                details.append(f"  - Specifications: {specifications}")
+        ship_to = analysis_summary.get('delivery_requirements', {}).get('ship_to_address', 'See Solicitation')
+        if isinstance(ship_to, dict):
+             ship_str = f"{ship_to.get('organization','')}\n{ship_to.get('street','')}\n{ship_to.get('city','')}, {ship_to.get('state','')} {ship_to.get('zip','')}"
+        else: ship_str = str(ship_to)
 
-            formatted_product_details.append("\n".join(details))
-        product_list_for_prompt = "\n\n".join(formatted_product_details)
+        prompt_context = f"""
+        TEMPLATE: PRODUCT (Vendor List)
+        STRUCTURAL REQUIREMENTS:
+        - Greeting: "Hi [Vendor Name]," (Casual but professional)
+        - Opening: "We are bidding on [Title] ({agency}). Closing Date: {closing_date}."
+        - Section 1: **Request for Quote (RFQ)** (Bold Header)
+        - Table: Insert the CLIN table below exactly.
+        {clin_table}
+        - Section 2: **Shipping / Delivery**
+        - Address: {ship_str}
+        - Terms: FOB Destination? {analysis_summary.get('delivery_requirements', {}).get('fob_point', 'Unknown')}
+        - Section 3: **Compliance & Stats**
+        - Set-Aside: {analysis_summary.get('compliance', {}).get('set_aside', 'None')}
+        - NAICS: {analysis_summary.get('contract_details', {}).get('naics_code')}
+        - Closing: "Please provide pricing and lead times by [Internal Date]."
+        - Signature: {point_of_contact}, Campsable.com
+        """
+
+    # 2. Service Layout (Claude Services List.odt)
     else:
-        product_list_for_prompt = "No specific product details found, please refer to the overall summary."
-
-    # Format delivery location for the prompt
-    location_parts = [delivery_location_obj.get(k) for k in ['street', 'city', 'state', 'zip_code'] if delivery_location_obj.get(k)]
-    delivery_location_for_prompt = ", ".join(location_parts) if location_parts else "an unspecified location"
-
-    mission_statement = config.COMPANY_INFO.get("MISSION_STATEMENT", "Our mission is to foster meaningful progress through integrity, innovation, and collaboration.")
+        scope = analysis_summary.get('service_scope', {}).get('pws_summary', 'See PWS')
+        locs = analysis_summary.get('service_scope', {}).get('locations', [])
+        loc_str = "\n".join([f"- {l}" for l in locs])
+        
+        wd = analysis_summary.get('compliance', {}).get('wage_determination', 'N/A')
+        
+        prompt_context = f"""
+        TEMPLATE: SERVICE (Services List)
+        STRUCTURAL REQUIREMENTS:
+        - Greeting: "Hello [Vendor Name],"
+        - Opening: "We are preparing a proposal for [Title] ({agency}). Due: {closing_date}."
+        - Section 1: **Scope of Work** (Bold Header)
+        - Summary: {scope}
+        - Section 2: **Performance Locations**
+        {loc_str}
+        - Section 3: **Labor & Compliance**
+        - Wage Determination: {wd}
+        - Insurance: Customary limits apply.
+        - Section 4: **Submission Requirements**
+        - Ask for: Capability Statement, Past Performance (3 refs), Key Personnel Resumes.
+        - Closing: "Please confirm interest/availability by [Internal Date]."
+        - Signature: {point_of_contact}, Campsable.com
+        """
 
     prompt = f"""
-    You are a highly professional procurement specialist for "Campsable.com". Your task is to draft a formal, persuasive, and personalized email to a potential supplier to request a quote for a government contract. The email should be concise, professional, and highlight key requirements.
-
-    **Recipient:** {vendor_name}
-    **Sender:** {point_of_contact}
-    **Our Company Name:** Campsable.com
-    **Our Mission Statement:**
-    {mission_statement}
-
-    **Solicitation Details:**
-    *   **Title:** {title}
-    *   **Issuing Agency:** {agency}
-    *   **Products/Services Required (Precise Details):**
-        {product_list_for_prompt}
-    *   **Delivery Location:** {delivery_location_for_prompt}
-    *   **Overall Summary of Requirements:**
-        {summary}
-
-    **Instructions:**
-    1.  The email should be personally addressed to the "{vendor_name} Team".
-    2.  The subject line must be compelling and informative: "Partnership Opportunity for Government Contract: {title}".
-    3.  The body of the email must be structured, professional, and persuasive. It should include the following sections:
-        a. **Introduction:** Briefly introduce "Campsable.com" as a specialist in government contracting. Clearly state that we are preparing a competitive bid for the referenced solicitation with the {agency} and are seeking a reliable supplier for the required products/services. Mention the solicitation title.
-        b. **Detailed Opportunity Overview:** Clearly present the "Products/Services Required" and "Delivery Location" information. **For product details (quantities, units, names, descriptions, specifications, part numbers), copy the exact information verbatim as provided in the 'Products/Services Required (Precise Details)' section above. Do NOT rephrase, summarize, or omit any of these product specifics. It is critical that the vendor receives the exact requirements.** Emphasize this as a valuable business opportunity requiring precise fulfillment.
-        c. **Our Company's Values:** Briefly incorporate our mission statement or key values to give context to our approach.
-        d. **Call to Action:** Request their interest in providing a confidential quote, ask for their capabilities statement or relevant product catalog, and **specifically inquire about their ability to provide shipping to the specified Delivery Location.**
-    4.  The email should be signed off by "{point_of_contact}" from "Campsable.com".
-    5.  Maintain a professional, confident, and partnership-oriented tone throughout.
-    6.  Ensure the email is concise and easy to read, highlighting the most critical information upfront.
-
-    Return the email as a JSON object with two keys: "subject" and "body".
+    You are a Procurement Agent for Campsable.com. Write a vendor email based **STRICTLY** on the layout below.
+    
+    CONTEXT:
+    {prompt_context}
+    
+    OUTPUT JSON: {{ "subject": "...", "body": "..." }}
     """
 
     try:
