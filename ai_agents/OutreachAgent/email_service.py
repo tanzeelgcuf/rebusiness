@@ -33,10 +33,14 @@ class EmailService:
         context = ssl.create_default_context()
 
         try:
-            with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
-                server.ehlo()  # Can be omitted
+            # Use SMTP_SSL for port 465 or SMTP with STARTTLS for 587
+            if self.smtp_port == 465:
+                server = smtplib.SMTP_SSL(self.smtp_server, self.smtp_port, context=context, timeout=10)
+            else:
+                server = smtplib.SMTP(self.smtp_server, self.smtp_port, timeout=10)
                 server.starttls(context=context)
-                server.ehlo()  # Can be omitted
+            
+            with server:
                 server.login(self.sender_email, self.sender_password)
                 server.sendmail(self.sender_email, to_email, msg.as_string())
             

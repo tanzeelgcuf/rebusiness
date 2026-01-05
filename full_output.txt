@@ -1,0 +1,280 @@
+================================================================================
+PREVIEW EMAIL FOR COMPLETE SOLICITATION
+================================================================================
+Contract ID: 796b8188161049bfa359c2b16432e946
+Product: Base Period Services
+Attachments: 17 PDF files
+================================================================================
+
+
+DEBUG DATA EXTRACTION:
+delivery_requirements: null
+schedule_details: None
+primary_destination_address: None
+----------------------------------------
+DEBUG: Calling format_email_body now...
+DEBUG: ENTRIED format_email_body for 796b8188161049bfa359c2b16432e946
+DEBUG: delivery_requirements raw: null
+DEBUG: issuing_agency_address raw: None
+DEBUG: agency_name assigned: 'DEBUG_FALLBACK_DLA'
+DEBUG: agency_addr assigned: 'As per solicitation requirements'
+DEBUG: agency_name before body: 'DEBUG_FALLBACK_DLA'
+SUBJECT: Request for Quote - Notice ID 796b8188161049bfa359c2b16432e946 [Base Period Services]
+
+Camp Sable, LLC
+john@campsable.com
+December 31, 2025
+
+Subject: Request for Quote - Notice ID 796b8188161049bfa359c2b16432e946 [Base Period Services]
+
+Dear Sales Department:
+
+We are writing to request a formal quote for Base Period Services. Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
+
+If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+
+Thank you for your time and consideration.
+
+Sincerely,
+
+John Campbell
+Procurement Manager
+Camp Sable, LLC
+
+🔹 Overview
+Agency Issuing RFQ:
+DEBUG_FALLBACK_DLA
+As per solicitation requirements
+
+Type of Contract: Firm Fixed Price
+Set-Aside Type: As per solicitation
+Solicitation Date: See SAM.gov
+Quotes Due: January 07, 2026
+
+Solicitation Title: USCG REGIONAL MULTIPLE AWARD CONSTRUCTION CONTRACT (RMACC III)
+Contract Number (if awarded): 796b8188161049bfa359c2b16432e946
+NAICS Code: As per solicitation
+Size Standard: As per solicitation
+DPAS Rating: None
+
+🔹 Items Required
+Item Requested: Base Period Services
+Manufacturer CAGE: As per drawing
+Manufacturer Part Number: Base Period Three-Year (3)
+
+Description: 12/19/2025 RELEASE --Amendment 0011--Region 7.5 small business set aside determination and proposal due date declared. Set aside 8(a)/due date 02 March 2026.
+Other region due dates remain the same.
+Second Revision to RFP included with this amendment.
+Note Sam.gov date is a placeholder required by sam.gov.--The table in Amendment 0011 is what should be followed.
+NOTE: The Florida panhandle is being designated part of Region 7—all of Florida to be in one singular region—for the purposes of this solicitation and resulting awards.
+***************************************************************************************************************************************************
+12/04/2025 RELEASE --Amendment 0010--Due date extension into January because of the holidays.
+Proposal Due Date Extension --Note Sam.gov date is a placeholder required by sam.gov.
+The table in Amendment 0010 is what should be followed.
+All remaing RFIs recevied by deadline of October 23, 2025 are within this amendment.
+The final analysis of additional market research of Region 7.5 has been issued to SBA today.  USCG must await their decision to determine the set aside and propoal due dates.
+NOTE: The Florida panhandle is being designated part of Region 7—all of Florida to be in one singular region—for the purposes of this solicitation and resulting awards.
+***************************************************************************************************************************************************
+11/26/2025 RELEASE --Amendment 0009
+Proposal Due Date Extension --Note Sam.gov date is a placeholder required by sam.gov.
+The table in Amendment 0009 is what should be followed.
+Any remaining questions (especially refrencing SBA or CFR) are still being researched and will be included in a future amendment.
+Region 7.5 set-aside is still under review.  Decision will be forthcoming.
+NO OTHER QUESTIONS ARE BEING ACCEPTED
+***********************************************************************************************************************************************
+11/19/2025 RELEASE --Amendment 0008
+Proposal Due Date Extension --Note Sam.gov date is a placeholder required by sam.gov.
+The table in Amendment 0008 is what should be followed.
+Any remaining questions (especially refrencing SBA or CFR) are still being researched and will be included in a future amendment.
+Region 7.5 set-aside is still under review.  Decision will be forthcoming.
+NO OTHER QUESTIONS ARE BEING ACCEPTED
+************************************************************************************************************************************************
+11/11/2025 RELEASE --Amendment 0007
+Proposal Due Date Extension --Note Sam.gov date is a placeholder required by sam.gov.
+The table in Amendment 0007 is what should be followed.
+Any remaining questions (especially refrencing SBA or CFR) are still being researched and will be included in a future amendment.
+NO OTHER QUESTIONS ARE BEING ACCEPTED
+********************************************************************************************************************************
+11/03/2025 RELEASE --Amendment 0006--Revised to correct Block 11.
+Proposal Due Date Extension and answers to most questions received by October 23, 2025 12:00pm PST
+Any remaining questions (especially refrencing SBA or CFR) are still being researched and will be included in a future amendment.
+NO OTHER QUESTIONS ARE BEING ACCEPTED
+****************************************************************************************************************************************************
+10/27/2025 RELEASE --Amendment 0005, Revised Attachment A, and Revised Attachment B
+Offerors shall use the revised Attachment A & B and follow revised directions of Section L contained herein Amendment 0005.
+Offerors shall disregard and discard previous versions.
+NOTE: USCG is still compiling answers to all remaining questions received by October 23, 2025 12:00pm PST.  Another amendment with these answers is forthcoming.
+*******************************************************************************************************************************************
+10/24/2025 NOTICE--USCG will release REVISED Attachment A and REVISED Attachment B forms and revised Section L.5.1 in the next amendment.  These revisions will provide clarity on use of attachments in relation to RFP proposal responses.
+Any other RFIs sent in before the October 23 deadline are being reviewed and will be included in an amendment next week.
+****************************************************************************************************************************************************
+10/21/2025 AMENDMENT 0004 RELEASED 
+Amendment 0004 issued to Revise sections of the Revised RFP, answer Offeror questions received October 5-14, and remind offerors of proposal due date extensions.
+Amendment 0004 attached.
+REMINDER: Offerors should use the Revised RFP and all amendments when preparing their proposal response.
+************************************************************************************************************************************
+10/17/2025-AMENDMENT 0003 RELEASED
+Amendment 0003 issued to extend the Proposal Due Dates, and the RFI period.  
+Amendment 0003 attached.
+***********************************************************************************************************************************
+10/07/2025-AMENDMENT 0002 RELEASED
+Amendment 0002 issued to answer Contractor questions received October 1-4, 2025.
+Amendment 0002 attached.
+***********************************************************************************************************************************
+10/01/2025-REVISED SOLICITATION & AMENDMENT RELEASED
+A revised solicitation has been released correcting clerical errors.  Content and proposal response requirements HAVE NOT changed.
+Amendment 0001 attached.
+***********************************************************************************************************************************
+RELEASE OF OFFICIAL SOLICITATION--9/29/2025
+Attached you will find the official Request for Proposal.  Each of the designated regions have RFP response dates, see section L.
+RFI/questions regarding this solicitation must be received NLT October 16, 2025.  See instructions for submitting questions at Section L.2 .
+For Contractor's convenience attachments B & C are provided in Word format.  Attachment A is provided as an Excel spreadsheet and must be used as response to solicitation.
+To prevent confusion, all previous attached documents to this SAM.gov posting have been removed as of September 29, 2025 except the Consolidated QA RMACC III (1 file) . 
+Official Request for Proposal documents are attached (4 files attached).
+Five (5) files remain atached to this SAM.gov posting.
+Read Section L carefully and adhere to page limitations and formatting requirements.
+REMINDER: Contractors wishing to compete in multiple regions MUST submit separate RFP response to each region POC.
+************************************************************************************************************************************************
+UPDATE: 9/25/2025 The official solicitation has not been released.  Anticipated release is prior is COB September 30, 2025.  Continue to check this listing for more information.
+The Q&A received from intertested parties regarding the draft solicitation have been added to the attached files.
+UPDATE: 9/8/2025 The official solicitation has not been released.  Anticipated release is prior to September 30, 2025.  Continue to check this listing for more information.
+*******************************************************************************************************************************
+UPDATE: 8/25/2025 Clarifications Regarding Sociaeconommic Set Asides
+Set Aside designations be region:
+Region 1 (USCG Northeast District, formerly District 1), CEU Providence, 8(a) 
+Region 5 (USCG East District, formerly District 5), CEU Cleveland, SDVOSB 
+Region 7 (USCG Southeast District, formerly District 7), CEU Miami, 8(a) 
+Region 7.5 (USCG Southeast District, formerly District 7.5), CEU Miami, TBD 
+Region 8 (USCG Heartland District, formerly District 8), CEU Miami, HUBZone 
+Region 9 (USCG Great Lakes District, formerly District 9), CEU Cleveland, 8(a) 
+Region 11 / 13 (USCG Southwest/Northwest District, formerly District 11/13), CEU Oakland, SDVOSB 
+Region 14** (USCG Oceania District, formerly District 14), CEU Honolulu, 8(a) 
+Region 17*** (USCG Artic District, formerly District 17), CEU Juneau, HUBZone and 8(a) (Offerors must chose which pool these wish to compete)
+UPDATE:  Release DRAFT Solicitation
+This is an advanced presolicitation notice that is provided for information, to stimulate interest, and to provide an opportunity for inquiries and comments. The Government will take into consideration all inquiries and comments prior to posting any further presolicitation notices and/or the solicitation.
+Comments will either be integrated into new notices or addressed separately in a narrative attachment to a future notice or the solicitation. This is not a request for proposals. This notice does not constitute a solicitation and shall not be construed as a commitment by the government. Responses in any form are not offers and the government is under no obligation to award a contract as a result of this announcement. Any information submitted by respondents to this notice is strictly voluntary.
+All comments and inquiries to include draft solicitation shall be submitted in writing to Cheryl A. Berry at Cheryl.a.berry@uscg.mil and John Wright at John.wright@uscg.mil no later than close of business August 6, 2025. Please ensure e-mail comments and inquiries include "RMACC Presolicitation" in the subject line.
+It is the responsibility of the offeror to note any changes between this announcement, any future postings of any further presolicitation notices, and the final solicitation.
+Description of Work:
+The U.S. Coast Guard (USCG), Shore Infrastructure Logistics Center (SILC) Construction Contracting Office, has determined the need to re-procure a suite of up to ten Indefinite Delivery Indefinite Quantity (IDIQ) Regional Multiple Award Construction Contracts (RMACCs) to perform construction on a regional basis nationwide. The contracts will be available on a non-mandatory, enterprise-wide basis to all DHS Directorates and Components. The DHS Components include United States Citizen and Immigration Services (USCIS), United States Customs and Border Protection (CBP), United States Coast Guard (USCG), Federal Emergency and Management Agency (FEMA), Federal Law Enforcement Training Center (FLETC), United States Immigration and Customs Enforcement (ICE), Transportation Security Administration (TSA), and United States Secret Service (USSS).
+The contracts will meet the majority of the DHS infrastructure needs for maintenance, repair, and construction for all projects with a maximum value, as determined by each RMACC, between $10M and $20M within the 50 United States and its territories. These contracts are intended to provide prompt responses on an as-needed basis for routine and emergent requirements. The contracts offer a streamlined approach to construction contracting and ongoing competition between qualified contractors.
+The scope of work will include real property repairs, maintenance, and general construction, marine construction, demolition, historical restoration, and remediation. Facilities include, but are not limited to, operations buildings, hangars, boat houses, firing ranges, residential and light commercial buildings and their mechanical and electrical systems, site utilities, waterfront facilities, electronic surveillance/security construction, dredging, and airports/runways. Design-Build including One-Step Turnkey, and Design/Bid/Build project or other delivery methods will be used.
+Each of the resulting contracts will be aligned with a specific geographical region corresponding to Coast Guard Districts. A map of the Coast Guard Districts has been provided in the files accompanying this notice. A separate contract will cover the United States territories within the Region of Caribbean and Puerto Rico (Contract Region 7.5) which is a part of Coast Guard District 7. This area was separated because the government considers that the market conditions are significantly different than those in the rest of the District. Contract Regions 11 and 13 will be combined as they were on the predecessor RMACC.
+The Coast Guard has six different Civil Engineering Units (CEUs). Each of the CEUs is aligned with one or two of the Coast Guard Districts. Each CEU will award and administer the contracts for the regions that correspond with the District(s) to which they are aligned. After the contract award, the ordering authority and ordering procedures will be provided to all DHS components.
+All contract awards will be based on a single solicitation. The solicitation will prescribe phased proposal due dates for each regional contract. Offerors will submit a separate proposal for each regional contract to the CEU assigned to conduct the procurement. The terms and ordering procedures of each contract will be uniform among the resulting contracts, in the manner of promoting a standardized method of delivery. The evaluation factors for each region will be uniform and a single source selection authority will take responsibility for all contract awards that stem from the solicitation; but separate source selection teams will be formed to evaluate each regional contract.
+Pre-proposal inquiries for final conformed solicitation will be reviewed programmatically, and any amendments will be issued to the solicitation as required. Pre-proposal inquiries shall be issued to cheryl.a.berry@uscg.mil and john.wright@uscg.mil.
+Any protests received after close of the solicitation will be directed in a manner to allow ongoing efforts to continue, where possible. For instance, in the case of a protest related to a specific regional contract, it is our intention to resolve these matters at the regional contract level, in order to isolate any delays to the regional contract that is under protest. In essence, each regional award decision will be considered a separate source selection.
+Each Regional Multiple Award Construction Contract is set aside for contractors in one or more small business socioeconomic programs.
+Each of the contracts will include a base year and two (3)-year option periods. Task order limits will range from $2,000 to $20M. As previously noted, ordering authority will be available to any Department of Homeland Security components with appropriate construction warrant authority. The minimum guarantee for each individual contract will be $5,000. The anticipated aggregate capacity for new regional RMACCs is $4 Billion.  Approximately ten individual contracts (individual contractors) are anticipated for each region.
+As part of the source selection criteria, the government will evaluate the contractor's ability and capacity to work within the region of each specific contract. Please note that a separate proposal will be required for each regional contract. The proposal’s due dates and delivery locations will vary for each regional contract. Specific instructions will be provided in the solicitation.
+Attached is a table showing the CEU assignment, the socioeconomic program set aside.
+*Note on 8(a) contractors: We are working with SBA to accept contractors with a Bonafide place of business that is anywhere within the region covered by the contract. The final solicitation will elaborate on this requirement.
+**Note on Region 17: The contract will be set aside for contracts in the HUBZone program and/or the 8(a) program. Awards will be made in a manner where at least two contracts are reserved for 8(a) contractors and at least two contracts are reserved for HUBZone contractors. After award of the contract, the Contracting Officer will be able to set aside orders to either the HUBZone program or the 8(a) program, where the rule of two is met. The contract will be administered in accordance with FAR 19.502-4, Multiple-Award Contracts and Small Business Set-Asides.
+Through a separate effort which will be addressed in future, separate notices, a complementary National Multiple Award Contract (NMACC) will be awarded to address larger construction projects that are greater than $4M in value. The model of separate, complementary multiple-award contracts for large and small construction has proven successful over the past six years for both the Coast Guard and DHS. Each of these contracts provides specific capabilities. The RMACC is typically used for nonrecurring major maintenance repairs of real property facilities utilizing a Design/Bid/Build project delivery method or a One-Step Turnkey (Design-Build) delivery method. These projects are typically funded through an annual Operating Expense appropriation (e.g. the AFC-43 account in the Coast Guard). The RMACC can also be used for small new construction projects (minor construction) funded with separate appropriation (e.g. Acquisition Construction & Improvement, AC&I, in the Coast Guard). The NMACC contractors will have robust capabilities for executing large projects using Design-Build procedures and will typically be used for large capital improvement projects (renovations or new construction) funded with AC&I. The slight overlap in contract thresholds (i.e. the $20M upper limit on the RMACC and the $4M lower limit on the NMACC) allows flexibility to employ the most appropriate contract for the work involved. For example, a larger minor construction project that might utilize complex Design-Build processes would benefit from the robust design capabilities held by the NMACC contractors. On the other hand, a small new construction project to be executed in a Design/Bid/Build project delivery method would benefit from the more localized and regional competition available on the RMACC.
+The contract awardees under this procurement shall be able to provide all necessary personnel, facilities, equipment, and materials for multiple and concurrent task orders within the respective regions across the United States and its territories. The contract awardees shall provide these construction services across the entire awarded region at all USCG installations, across all urban and remote locations. The firm shall ensure that all activities performed by its personnel, subcontractors and suppliers are executed as required in compliance with all applicable environmental and safety laws and regulations and will meet all relevant, appropriate, and applicable standards. Specific requirements will be detailed in each task order general requirements, specifications, and drawings. The description of these requirements will vary for each acquisition dependent upon the needs of the requiring entity. Projects will include a variety of assignments involving the U.S. Department of Homeland Security (DHS) and Components within DHS.
+RMACC contractors should have Design-Build capabilities; however, it should be noted that the Coast Guard is expected to place the majority of orders on the contract and the Coast Guard does not intend to routinely use the RMACC for projects that require complex or collaborative designs that are difficult to forward price, require lengthy review processes, or require significant expense for the presentation of a proposal. Instead, the Coast Guard intends that the majority of the work on the RMACC will utilize the Design/Bid/Build project delivery method or the One-Step (Design-Build) Turnkey delivery method for which the Coast Guard has special statutory authority (See 14 USC 677). The One-Step Turnkey process on this contract will entail selection of a contractor through the fair opportunity process on the basis of price or price in combination with other evaluation criteria to perform, in accordance with the provisions of a firm fixed price contract, both the design and construction of a facility using performance specifications.
+When utilizing this process, the Coast Guard will be sensitive to any advanced design costs necessary to offer a proposal and will attempt to minimize or eliminate these costs by restricting the One-Step Turnkey process to only non-complex design that can be easily coordinated between the contractor and designer and approved through a contract submittal process.
+The intent of this contract is that all RMACC Contractors participate in pre-proposal conferences and site visits and submit proposals for each task order. Contract awardees will be expected to submit a proposal for all Task Order Requests for Proposal (RFP) received from the Government. However, in the event an RMACC awardee is unable to submit a proposal on a particular RFP, the contractor is required to notify, in writing, the Contracting Officer who issued the RFP and the ACO for the basic contract within five (5) working days from receipt of the RFP. A RMACC awardee can only elect to withdraw from submitting a proposal on three (3) task order RFPs during the course of each year of the contract (base plus two (3)-year option periods). Additional withdrawal requests, in excess of three per year, may result in the Government choosing not to exercise the remaining option terms.
+Award of the RMACC IDIQ contracts will be based on the criteria outlined in FAR 36.301. The government has determined that the Two-Phase Design-Build Selection Procedure outlined in FAR Subpart 36.3 is appropriate for this procurement. Phase One will be conducted as outlined in FAR 36.303-1 to assess the technical qualifications, technical approach, specialized experience, technical competence, and capability of each firm in utilizing Design-Build Methods. Only the most highly qualified offerors will advance to Phase Two. Phase Two will be conducted in accordance with FAR 15.3 procedures. The evaluation in Phase Two will include the planned approach and price of a Design-Build "Seed Project" for each region (first contract task order).
+It is USCG intention to award approximately ten individual IDIQ contracts for each region and the number of offerors selected to submit phase-two proposals is expected to be no more than fifteen per region.
+The following evaluation factors are planned at this time:
+Phase-One:
+Factor 1 - Corporate Experience
+Factor 2 - Past Performance
+Factor 3 - Regional Management Capabilities, Technical Capabilities, and Capacity (including bonding capabilities)
+Factor 4 – Safety
+Note: It is anticipated that bonding capacity will be evaluated during phase one. Also, it is anticipated that a bona fide office within the region will also be evaluated during phase one.
+**Failure to demonstrate compliance with minimum bonding requirements and SAM.gov registration with the required socioeconomic categories the proposal does not meet government requirements and may not be evaluated further.”
+Phase-Two:
+Factor 1- Technical Solution Seed Project Means & Methods
+Factor 2 - Price (Regional Seed Project)
+Attachments to Pre-solicitation Notice:
+Attachment 1: Draft Solicitation
+Attachment 2: Regiona/District Set Aside Table
+Attachment 3: Regional/District Map
+THIS PRE-SOLICITATION NOTICE IS FOR THE PURPOSE OF INFORMING THE INDUSTRY OF OUR INTENTION TO POST SOLICITATION WITHIN NEXT MONTH. THIS NOTICE IS NOT AN INVITATION FOR BIDS OR REQUEST FOR PROPOSAL. BIDS OR PROPOSALS RECEIVED AS A RESULT OF THIS PRESOLICITATION NOTICE WILL NOT BE ACCEPTED OR EVALUATED.
+THE GOVERNMENT RESERVES THE RIGHT TO CANCEL THIS SOLICITATION EITHER BEFORE OR AFTER THE CLOSING DATE. NO REIMBURSEMENT WILL BE MADE FOR ANY COSTS ASSOCIATED WITH PROVIDING INFORMATION IN RESPONSE TO THIS PRESOLICITATION NOTICE OR ANY FOLLOW-UP INFORMATION REQUEST.
+******************************************************************************************************************************************************
+UPDATE: Anticipate posting Pre-solicitation Notice July 16, 2025
+Anticipated Request for Proposal/Solicitation release is August 1, 2025.
+Anticipated award is May 2026.
+Follow Acquisition Planning Forecast System (dhs.gov) F2025068524 for further updates and details.
+Response date within this record have been changed.
+************************************************************************************************************************************************
+UPDATE: Anticipated Request for Proposal/Solicitation release is June 30, 2025.
+Anticipated award is June 2026.
+Follow Acquisition Planning Forecast System (dhs.gov) F2025068524 for further updates and details.
+Response date within this record have been changed.
+*************************************************************************************************************************************************
+EXTENSION OF SOURCES SOUGHT TO NOVEMBER 26, 2024 3:00PM EST.
+Attachments have been updated.
+*************************************************************************************************************************************************
+EXTENSION OF SOURCES SOUGHT TO NOVEMBER 19, 2024 3:00PM EST.
+**************************************************************************************************************************************************
+ATTACHMENT A edited to correct secondary email contact for District 17.
+**************************************************************************************************************************************************
+THIS IS A SOURCES SOUGHT NOTICE ONLY. THIS IS NOT A REQUEST FOR PROPOSAL OR INVITATION FOR BID.  AT THIS TIME, THERE WILL NOT BE A SOLICITATION, SPECIFICATIONS OR DRAWINGS ASSOCIATED WITH THIS NOTICE. THIS IS A MARKET RESEARCH TOOL USED TO IDENTIFY POTENTIAL SMALL BUSINESS CONCERN (INCLUDING SMALL DISADVANTAGED BUSINESSES, 8(A) FIRMS, WOMEN-OWNED SMALL BUSINESSES, SERVICE-DISABLED VETERAN-OWNED SMALL BUSINESSES, HUBZONES, AND JOINT VENTURES) CAPABLE OF PERFORMING THESE CONTRACTS IN THE TEN AREAS IDENTIFIED IN THE ATTACHED MAP. 
+The Department of Homeland Security (DHS) U.S. Coast Guard (USCG), Shore Infrastructure Logistics Center (SILC) Construction Contracting Office, is seeking eligible Small Businesses interested and capable of performing on a Design-Build/Design-Bid-Build (DB/DBB) Indefinite Delivery Indefinite Quantity (IDIQ) Regional Multiple Award Construction Contracts (RMACCs) to perform General Construction Services in any of the 50 United States, Puerto Rico, Guam and the U.S. Virgins Islands.
+ATTACHMENTS:
+ATTACHMENT A: RMACC II SOURCES SOUGHT NOTICE
+ATTACHMENT B SOURCES SOUGHT CONTRACTING INFO FORM
+SOURCES SOUGHT POINT OF CONTACT: See Attachment A. Send responses to RMACC III mailbox and POCs for primary District of interest.
+REMINDER: Responses due by 12 November 2024 at 3:00pm EST.
+
+CLIN	Description	Quantity	Contract Type	Inspection	Packaging	Notes
+0011	Base Period Services	3 EA	FFP	Origin	Military	---
+
+Total Contract Quantity Range:
+Guaranteed Minimum: 3 Each
+Maximum Contract Quantity: As Ordered Each
+
+Packaging:
+SPI Reference: --
+Preservation: Military, Level B (or as specified)
+
+🔹 Inspection & Testing
+Inspection Point: Origin
+Acceptance Point: Origin
+Inspection Agency: DCMA (Defense Contract Management Agency)
+Requirement: Standard notification applies.
+Initial Production Inspection (IPI): As per solicitation
+Quality Standard: ISO 9001:2015 or equivalent
+Destructive Testing: If required, costs included in unit price
+
+🔹 Delivery Requirements
+General Delivery Terms
+FOB Point: Destination
+Destination: As per solicitation requirements
+
+Delivery Schedule
+First Article Testing (FAT): Not required
+As per solicitation requirements
+Acceleration: See solicitation for acceleration terms
+
+🔹 Data & Access Requirements
+See solicitation for TDP access.
+--
+--
+
+🔹 Submission Details
+Quote Submission:
+Email proposal (PDF preferred) to john@campsable.com
+Subject line: Proposal Submission 796b8188161049bfa359c2b16432e946 (Company Name)
+Response Deadline: January 07, 2026
+
+Evaluation Basis:
+Lowest price, technically acceptable (LPTA)
+
+Inspection Contact:
+See Solicitation
+
+🔹 Delivery Summary Table
+Item	Description	Qty	Delivery (Days ARO)	Frequency	Inspection	Ship-To	Notes
+0011	Base Period Services	3 EA	As per solicitation requirements	---	Origin	As per solicitation requiremen	---
+
+🔹 Summary of What They Require
+In Plain Terms:
+Supply of Base Period Services.
+
+
+================================================================================

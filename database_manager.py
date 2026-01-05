@@ -205,15 +205,43 @@ class DatabaseManager:
                 product_id INTEGER,
                 manufacturer_id INTEGER,
                 found_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                validation_status TEXT DEFAULT 'pending', -- pending, valid, invalid
+                validation_notes TEXT,
                 FOREIGN KEY (product_id) REFERENCES products(id),
                 FOREIGN KEY (manufacturer_id) REFERENCES manufacturers(id),
                 UNIQUE(product_id, manufacturer_id)
             )
         """)
+        
+        # Migration for product_suppliers
+        try:
+            cursor.execute("ALTER TABLE product_suppliers ADD COLUMN validation_status TEXT DEFAULT 'pending'")
+            cursor.execute("ALTER TABLE product_suppliers ADD COLUMN validation_notes TEXT")
+            print("Migrated 'product_suppliers' table with validation columns.")
+        except sqlite3.OperationalError:
+            pass # Columns likely exist
 
         conn.commit()
         self._close_db()
         print("Database tables created or already exist.")
+
+    def update_supplier_validation(self, product_id, manufacturer_id, status, notes=None):
+        """Updates the validation status of a product-supplier link."""
+        conn = self._connect_db()
+        cursor = conn.cursor()
+        try:
+            cursor.execute(
+                "UPDATE product_suppliers SET validation_status = ?, validation_notes = ? WHERE product_id = ? AND manufacturer_id = ?",
+                (status, notes, product_id, manufacturer_id)
+            )
+            conn.commit()
+            return True
+        except Exception as e:
+            print(f"Error updating supplier validation link: {e}")
+            conn.rollback()
+            return False
+        finally:
+            self._close_db()
 
     def add_solicitation(self, contract_id, url, title, description, location, product_requirements, analysis_summary, data):
         """

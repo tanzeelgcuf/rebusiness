@@ -22,12 +22,19 @@ def generate_pending_requests():
     logger.info("--- Generating Pending Requests for Valid Emails ---")
 
     # Select all valid Manufacturer-Product pairs
+    # QUALITY GATE: Only include products from solicitations that have PDF attachments
+    # This ensures we only send emails with complete, detailed information
     query = """
         SELECT ps.product_id, ps.manufacturer_id, m.name
         FROM product_suppliers ps
         JOIN manufacturers m ON ps.manufacturer_id = m.id
         JOIN products p ON ps.product_id = p.id
+        JOIN solicitations s ON p.contract_id = s.contract_id
         WHERE m.email IS NOT NULL AND m.email != ''
+          AND EXISTS (
+              SELECT 1 FROM attachments a 
+              WHERE a.contract_id = s.contract_id
+          )
     """
     cursor.execute(query)
     all_pairs = cursor.fetchall()

@@ -12,6 +12,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__))))
 
 from database_manager import DatabaseManager
 from ai_agents.OutreachAgent.outreach_agent import OutreachAgent
+from ai_agents.VendorValidatorAgent.vendor_validator import VendorValidatorAgent
 
 # Logging Setup
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -126,7 +127,8 @@ def run_thomasnet_sourcing(limit=20):
 
     logger.info(f"Sourcing for {len(products)} products...")
     
-    supplier_target_per_product = 60 # User requested 50+
+    validator = VendorValidatorAgent()
+    supplier_target_per_product = 40 # User requested about 40
     
     for p in products:
         p_id = p['id']
@@ -162,6 +164,17 @@ def run_thomasnet_sourcing(limit=20):
             
             found_count = 0
             for s in suppliers:
+                # NEW: Validate Sector Match
+                is_match = validator.is_sector_match(
+                    s['name'], 
+                    s.get('description', ''), 
+                    p_name, 
+                    "" # Solicitation title could be passed here if we joined it
+                )
+                if not is_match:
+                    logger.warning(f"  Skipping {s['name']}: Sector mismatch (Filtered).")
+                    continue
+
                 m_id = db_manager.add_manufacturer(
                     name=s['name'],
                     website=s['website'],

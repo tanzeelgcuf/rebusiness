@@ -10,8 +10,9 @@ import io
 import re
 import pandas as pd
 import PyPDF2
-import re
-from openai import OpenAI # Import OpenAI client
+import requests
+import config
+from openai import OpenAI
 from database_manager import DatabaseManager
 
 
@@ -175,7 +176,7 @@ class AttachmentReaderAgent:
                 )
                 return response.choices[0].message.content
             else: # Default to gemini
-                model = genai.GenerativeModel('gemini-2.0-flash-exp') # Corrected model name
+                model = genai.GenerativeModel('gemini-2.5-flash-image') # Migrated for higher quota
                 response = model.generate_content(prompt)
                 return response.text
         except Exception as e:
@@ -184,103 +185,276 @@ class AttachmentReaderAgent:
 
     def _analyze_content_with_llm(self, content_parts):
         """
-        Analyzes content parts (strings or Gemini file objects).
+        Analyzes content parts (strings or Gemini file objects) with a zero-placeholder policy.
         """
         if not content_parts:
             return {"error": "No content to analyze."}
 
-        # prompt_v3 definition (kept the same logic, extracted for clarity)
         system_instruction = """
-        As an expert government contract analyst, your task is to meticulously review the provided solicitation documents and extract key information into a structured JSON format. 
+        As a Senior Federal Contract Analyst, your PRIMARY MISSION is to extract ALL information from SAM.gov solicitations (main page, ALL attachments, and linked documents).
         
-        The inputs may include text descriptions and attached PDF/Image documents. **You must strictly extract product details from ALL provided sources, especially the attachments.**
+        **ZERO-PLACEHOLDER POLICY**: 
+        - DO NOT use "See solicitation", "Contact CO", or "N/A" unless the information is physically absent from EVERY provided document.
+        - You MUST extract exact quantities, complete ship-to addresses, and specific dates. 
+        - Cross-reference main page data with attachment tables (CLINs, Delivery Schedules).
+        - If multiple versions exist (Amendments), ALWAYS prioritize the LATEST amendment data.
         
-        **CRITICAL**: When extracting product specifications, look for:
-        - Exact Size/Specs
-        - Material Composition
-        - Part Numbers
-        - Quantities (Search explicitly for "Qty", "Quantity", "Units". If "Market Research", look for "Est. Qty". If implied like "Replacement of X", qty is 1.)
+        **EXTRACTION TARGETS**:
+        1. **Type Detection**: Determine if "Product" (NSN, CAGE, Supply) or "Service" (PWS, SOW, Maintenance).
+        2. **Technical Details**: Part Numbers, Drawings, TDP access, JCP/ITAR requirements. 
+        3. **Structured Data**: CLIN tables, Delivery schedules (days ARO), Ship-to addresses (every line).
+        4. **Compliance**: Insurance limits (FAR 52.228-5), Wage Determination (WD) numbers and specific hourly rates, Security/Base Access protocols.
+        5. **Checklist**: Every document/form required for a valid proposal.
+        6. **Service Specifics**: Work sites/acreage, monitoring periods, report deadlines, approved material lists.
         """
         
         formatting_instruction = """
-        Based on the content, extract the following details into a valid JSON object:
-
-        1.  **soliciting_entity**: Full name of the organization.
-        2.  **soliciting_contact_info**: {email, phone}.
-        3.  **product_details**: A list of objects. Each object must have:
-            *   `line_item_number`: (e.g., CLIN 0001)
-            *   `name`: Name of the product (Extracted exactly).
-            *   `description`: Detailed technical description. Include dimensions, materials, and usage context. Do not be brief.
-            *   `quantity`: Numerical quantity (integer). If implied (e.g. "1 unit"), separate the number. If range, provide max.
-            *   `unit`: Unit of measure (e.g., "EA").
-            *   `part_number`: EXACT Part Number, NSN, or Model Number. Do not hallucinate.
-            *   `specifications`: A detailed list of technical specs, materials, dimensions. **Capture ALL specs found.**
-        4.  **delivery_location**: {street, city, state, zip_code}. If multiple, list primary.
-        5.  **delivery_timeline**: Specific dates, duration (e.g. "30 days ARO"), or period of performance found.
-        6.  **summary**: A detailed summary (2-4 sentences).
-        7.  **external_resource_links**: A list of ANY URLs found in the documents that likely contain technical data (Dropbox, Drive, Portals).
+        EXHAUSTIVE EXTRACTION RULES:
+        1.  solicitation_category: "Product" or "Service".
+        2.  soliciting_entity: Agency Name and Full Mailing Address.
+        3.  notice_id: Character-for-character match from SAM.gov.
+        4.  contract_type: e.g. "Firm Fixed Price".
+        5.  set_aside_type: e.g. "100% Small Business Set-Aside".
+        6.  dpas_rating: e.g. "DO-A4".
+        7.  naics_code: Numerical code + Industry name.
+        8.  size_standard: Numerical (e.g. 600 employees or $xxM).
+        9.  solicitation_date: Original posted date.
+        10. quotes_due_date: Official deadline (including time/zone).
+        11. clins: List of {clin, description, quantity, unit, year_period, packaging, notes}.
+        12. product_details: {name, drawing_number, manufacturer_cage, manufacturer_part_number, nsn, technical_description, tdp_access}.
+        13. quantities_summary: {guaranteed_minimum, maximum_contract_quantity}.
+        14. inspection_testing: {point, agency, ipi_required (bool), quality_standard (e.g. ISO 9001)}.
+        15. delivery_requirements: {fob_point, ship_to_address (FULL), schedule_aro (days), frequency, acceleration_allowed (bool)}.
+        16. packaging_mil_std: {preservation_level, quantity_per_unit, spi_reference, mil_std_129_labeling (bool)}.
+        17. compliance: {jcp_certification_required (bool), itar_controlled (bool), security_clearance_needed, dd2345_required (bool)}.
+        18. project_scope: (For services) {task_descriptions, acreage_details, work_site_list (structured)}.
+        19. timeline_deliverables: {periods (table), reporting_deadlines (table), submittal_requirements}.
+        20. insurance_limits: {general_liability, auto_liability, workers_compensation} -> Exact dollar amounts.
+        21. wage_rates: {wd_number, primary_labor_categories (list with $/hr)}.
+        22. submission_checklist: MANDATORY - List every required form, volume, and document.
+        23. submission_instructions: {method (Email/Portal/Mail), agency_email, subject_line_format}.
+        24. evaluation_basis: e.g. "Lowest Price Technically Acceptable (LPTA)".
+        25. summary_recap: Numbered list of 10+ key data points for the bidder.
+        26. post_award_responsibilities: List of specific contractor duties.
         
-        Return strictly valid JSON.
-
-        Return strictly valid JSON.
+        RETURN ONLY VALID JSON. If a value is unknown, use "Information not provided in solicitation" instead of null.
         """
 
         try:
             analysis = {}
             if self.config.LLM_PROVIDER == "openai":
-                # OpenAI doesn't support the 'file_ref' object from Gemini, so we assume all parts are strings here
-                # (Fallback logic in _read_pdf_file handles string conversion for OpenAI)
                 combined_text = "\n\n".join([str(p) for p in content_parts if isinstance(p, str)])
                 
-                # ... (OpenAI limits handling omitted for brevity, assuming similar split logic if needed, 
-                # but for now simplicity to match structure) ...
-                
-                prompt = f"{system_instruction}\n\nDocument Content:\n{combined_text}\n\n{formatting_instruction}"
-
-                response = self.openai_client.chat.completions.create(
-                    model="gpt-3.5-turbo", 
-                    messages=[{"role": "user", "content": prompt}],
-                    response_format={"type": "json_object"},
-                    max_tokens=4000
-                )
-                analysis = json.loads(response.choices[0].message.content)
+                # Check for token limits (TPM)
+                if len(combined_text) > 40000: # ~60k tokens
+                    print(f"  Warning: Text too large for single OpenAI call ({len(combined_text)} chars). Chunking...")
+                    text_chunks = [combined_text[i:i + 35000] for i in range(0, len(combined_text), 35000)]
+                    chunk_analyses = []
+                    for idx, chunk in enumerate(text_chunks):
+                        print(f"    Analyzing text chunk {idx+1}/{len(text_chunks)}...")
+                        if idx > 0:
+                            import time
+                            print(f"      Waiting 20 seconds for rate limits...")
+                            time.sleep(20)
+                        prompt = f"{system_instruction}\n\nDocument Content (Part {idx+1}):\n{chunk}\n\n{formatting_instruction}"
+                        try:
+                            response = self.openai_client.chat.completions.create(
+                                model="gpt-4o-mini",
+                                messages=[{"role": "user", "content": prompt}],
+                                response_format={"type": "json_object"},
+                                max_tokens=4000
+                            )
+                            chunk_data = json.loads(response.choices[0].message.content)
+                            if chunk_data: chunk_analyses.append(chunk_data)
+                        except Exception as e:
+                            print(f"      Error in OpenAI chunk {idx+1}: {e}")
+                    analysis = self._merge_analyses(chunk_analyses)
+                else:
+                    prompt = f"{system_instruction}\n\nDocument Content:\n{combined_text}\n\n{formatting_instruction}"
+                    response = self.openai_client.chat.completions.create(
+                        model="gpt-4o-mini", 
+                        messages=[{"role": "user", "content": prompt}],
+                        response_format={"type": "json_object"},
+                        max_tokens=4000
+                    )
+                    analysis = json.loads(response.choices[0].message.content)
 
             else: # Gemini
-                model = genai.GenerativeModel('gemini-2.0-flash-exp', generation_config={"response_mime_type": "application/json"})
+                model = genai.GenerativeModel('gemini-2.5-flash-image')
+                file_refs = [p for p in content_parts if not isinstance(p, str)]
                 
-                # Construct message parts
-                message_parts = [system_instruction]
-                for part in content_parts:
-                    if isinstance(part, str):
-                        message_parts.append(part)
+                if len(file_refs) > 2:
+                    print(f"  Processing {len(file_refs)} documents individually to avoid token limits...")
+                    individual_analyses = []
+                    for idx, file_ref in enumerate(file_refs):
+                        print(f"    Analyzing document {idx+1}/{len(file_refs)}...")
+                        message_parts = [system_instruction, f"Analyze this document (part {idx+1} of {len(file_refs)}):", file_ref, formatting_instruction]
+                        
+                        try:
+                            response = model.generate_content(message_parts)
+                            if not response.parts:
+                                print(f"      - Warning: Empty or blocked response for document {idx+1}")
+                                continue
+                            doc_analysis = self._extract_json_from_response(response.text)
+                            if doc_analysis: individual_analyses.append(doc_analysis)
+                        except Exception as e:
+                            if "Token count exceeds" in str(e) or "400" in str(e):
+                                print(f"      - Document {idx+1} too large for multimodal. Falling back to text chunking...")
+                                text_chunks = self._extract_and_chunk_pdf(file_ref)
+                                chunk_analyses = []
+                                for c_idx, chunk in enumerate(text_chunks):
+                                    try:
+                                        c_response = model.generate_content([system_instruction, f"Text Chunk {c_idx+1}:", chunk, formatting_instruction])
+                                        if c_response.parts:
+                                            c_data = self._extract_json_from_response(c_response.text)
+                                            if c_data: chunk_analyses.append(c_data)
+                                    except: continue
+                                if chunk_analyses:
+                                    individual_analyses.append(self._merge_analyses(chunk_analyses))
+                            else:
+                                print(f"      Error analyzing document {idx+1}: {e}")
+                    
+                    analysis = self._merge_analyses(individual_analyses)
+                else:
+                    message_parts = [system_instruction]
+                    for p in content_parts: message_parts.append(p)
+                    message_parts.append(formatting_instruction)
+                    response = model.generate_content(message_parts)
+                    if response.parts:
+                        analysis = self._extract_json_from_response(response.text)
                     else:
-                        # It's a file reference
-                        message_parts.append("Refer to the following document attachment:")
-                        message_parts.append(part)
-                
-                message_parts.append(formatting_instruction)
-
-                response = None
-                max_retries = 3
-                import time
-                for attempt in range(max_retries):
-                    try:
-                        response = model.generate_content(message_parts)
-                        analysis = json.loads(response.text)
-                        break
-                    except Exception as e:
-                        if "429" in str(e) and attempt < max_retries - 1:
-                            wait_time = (attempt + 1) * 30
-                            print(f"      - Rate limit hit (429). Retrying in {wait_time}s...")
-                            time.sleep(wait_time)
-                        else:
-                            raise e
+                        analysis = {"error": "Empty response from Gemini"}
 
             return analysis
-
         except Exception as e:
             print(f"Error during LLM analysis: {e}")
-            return {"error": f"LLM analysis failed: {e}"}
+            return {"error": str(e)}
+
+    def _extract_json_from_response(self, text):
+        try:
+            match = re.search(r'\{.*\}', text, re.DOTALL)
+            if match:
+                return json.loads(match.group())
+            return json.loads(text)
+        except:
+            return None
+
+    def _extract_and_chunk_pdf(self, file_ref, chunk_size=15000):
+        filename = getattr(file_ref, 'display_name', os.path.basename(str(file_ref)))
+        local_path = os.path.join("downloads", filename)
+        if not os.path.exists(local_path): return []
+        full_text = ""
+        try:
+            with open(local_path, 'rb') as f:
+                reader = PyPDF2.PdfReader(f)
+                for page in reader.pages: full_text += page.extract_text() + "\n"
+        except: return []
+        return [full_text[i:i + chunk_size + 2000] for i in range(0, len(full_text), chunk_size)]
+
+    def _merge_analyses(self, analyses):
+        if not analyses: return {}
+        if len(analyses) == 1: return analyses[0]
+        merged = analyses[0].copy()
+        
+        def is_p(x):
+            if not x: return True
+            s = str(x).lower()
+            return any(p in s for p in ["information not available", "see solicitation", "contact co", "n/a", "not_found", "none", "{}"])
+
+        for analysis in analyses[1:]:
+            for key, value in analysis.items():
+                curr = merged.get(key)
+                if is_p(curr) and not is_p(value):
+                    merged[key] = value
+                elif isinstance(value, list) and isinstance(curr, list):
+                    merged[key].extend([v for v in value if v not in curr])
+                elif isinstance(value, dict) and isinstance(curr, dict):
+                    for dk, dv in value.items():
+                        if is_p(merged[key].get(dk)) and not is_p(dv):
+                            merged[key][dk] = dv
+                elif not is_p(value):
+                    merged[key] = value
+        return merged
+
+    def _research_missing_data(self, analysis):
+        """
+        Uses SerpAPI to find missing insurance, wage, or security data.
+        """
+        contract_id = analysis.get('contract_id') # This might be the hex ID
+        title = analysis.get('title', '')
+        agency = analysis.get('soliciting_entity', '')
+        
+        # Use a more searchable ID if available
+        search_id = contract_id
+        if len(str(contract_id)) > 20: # Likely a hex ID
+             # Try to find a real notice ID in the summary or checklist
+             id_match = re.search(r'([A-Z0-9-]{6,20})', str(analysis.get('summary', '')))
+             if id_match: search_id = id_match.group(1)
+
+        def is_p(x):
+            if not x: return True
+            s = str(x).lower()
+            return any(p in s for p in ["information not available", "see solicitation", "n/a", "none", "{}"])
+
+        # Target 1: Insurance
+        insurance = analysis.get('insurance_requirements', {})
+        if is_p(insurance.get('general_liability')) or is_p(insurance.get('workers_compensation')):
+            print(f"  Searching for missing insurance data for {title}...")
+            query = f"insurance requirements federal contract {agency} {title} {search_id} FAR 52.228-5 limits"
+            res = self._call_serpapi(query)
+            if res:
+                prompt = f"Extract specific insurance liability limits (dollar amounts) from these search results for {title}. Context: {res}\nReturn JSON: {{'general_liability': '...', 'auto_liability': '...', 'workers_compensation': '...'}}"
+                ext = self._get_simple_json_from_llm(prompt)
+                if ext:
+                    for k, v in ext.items():
+                        if not is_p(v): 
+                             if 'insurance_requirements' not in analysis: analysis['insurance_requirements'] = {}
+                             analysis['insurance_requirements'][k] = v
+
+        # Target 2: Wages
+        wages = analysis.get('wage_labor_requirements', {})
+        wd_number = wages.get('wage_determination')
+        if is_p(wd_number) or "Information not available" in str(wd_number):
+            print(f"  Searching for Wage Determination for {title}...")
+            query = f"wage determination for {agency} contract {title} {search_id}"
+            res = self._call_serpapi(query)
+            if res:
+                prompt = f"Identify the Wage Determination (WD) number (e.g. 2015-4191) and primary technician labor rates from these search results. Context: {res}\nReturn JSON: {{'wage_determination': '...', 'sample_rates': '...'}}"
+                ext = self._get_simple_json_from_llm(prompt)
+                if ext: 
+                    if 'wage_labor_requirements' not in analysis: analysis['wage_labor_requirements'] = {}
+                    analysis['wage_labor_requirements']['wage_determination'] = f"{ext.get('wage_determination')} - {ext.get('sample_rates')}"
+
+        return analysis
+
+    def _get_simple_json_from_llm(self, prompt):
+        try:
+            if self.config.LLM_PROVIDER == "openai":
+                response = self.openai_client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[{"role": "user", "content": prompt}],
+                    response_format={"type": "json_object"}
+                )
+                return json.loads(response.choices[0].message.content)
+            else:
+                model = genai.GenerativeModel('gemini-2.5-flash-image')
+                response = model.generate_content(prompt)
+                return self._extract_json_from_response(response.text)
+        except: return None
+
+    def _call_serpapi(self, query):
+        if not hasattr(config, 'SERPAPI_KEY') or not config.SERPAPI_KEY: return None
+        url = "https://serpapi.com/search"
+        params = {"q": query, "api_key": config.SERPAPI_KEY, "engine": "google", "num": 5}
+        try:
+            resp = requests.get(url, params=params)
+            data = resp.json()
+            results = []
+            for r in data.get('organic_results', []):
+                results.append(f"Title: {r.get('title')}\nSnippet: {r.get('snippet')}")
+            return "\n\n".join(results)
+        except: return None
+
 
     def create_summary_report(self, contract_id):
         solicitation_row = self.db_manager.get_solicitation_by_contract_id(contract_id)
@@ -307,13 +481,19 @@ class AttachmentReaderAgent:
                     else:
                         # It is a file reference (Gemini Vision)
                         content_parts.append(f"\n\n--- Attachment {i+1}: {attachment['file_name']} (See attached file) ---")
-                        content_parts.append(f"\n\n--- Attachment {i+1}: {attachment['file_name']} (See attached file) ---")
                         # Note: We can't extract links easily from image-only PDF refs unless we OCR first or ask LLM to output them.
                         # We will rely on the LLM to find links in the image text.
                         content_parts.append(content) # Add the file ref object
         
         # Analyze with LLM
         structured_analysis = self._analyze_content_with_llm(content_parts)
+        
+        # Enrich with Web Research if critical data is missing
+        if "error" not in structured_analysis:
+            structured_analysis['contract_id'] = contract_id # Ensure CID is there for research
+            structured_analysis = self._research_missing_data(structured_analysis)
+
+        # Robust handling: Ensure it is a dict
 
         # Robust handling: Ensure it is a dict
         if isinstance(structured_analysis, list):

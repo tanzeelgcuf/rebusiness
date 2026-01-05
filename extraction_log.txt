@@ -1,0 +1,122 @@
+2025-12-21 01:59:18,563 - INFO - --- Starting Batch Extraction Pipeline ---
+2025-12-21 01:59:18,570 - INFO - ====== WebDriver manager ======
+2025-12-21 01:59:18,902 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 01:59:19,086 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 01:59:19,252 - INFO - Driver [/Users/apple/.wdm/drivers/chromedriver/mac64/143.0.7499.169/chromedriver-mac-x64/chromedriver] found in cache
+2025-12-21 01:59:55,832 - INFO - --- Starting Batch Extraction Pipeline ---
+2025-12-21 01:59:55,840 - INFO - ====== WebDriver manager ======
+2025-12-21 01:59:56,143 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 01:59:56,324 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 01:59:56,480 - INFO - Driver [/Users/apple/.wdm/drivers/chromedriver/mac64/143.0.7499.169/chromedriver-mac-x64/chromedriver] found in cache
+2025-12-21 01:59:58,981 - INFO - solicitations.json is empty or missing. Populating from leads.csv...
+2025-12-21 01:59:59,006 - INFO - Saved 10 URLs to solicitations.json.
+2025-12-21 01:59:59,006 - INFO - Found 10 unique SAM.gov URLs to process.
+2025-12-21 01:59:59,006 - INFO - Processing (1/10): https://sam.gov/search/?index=opp&page=1&sort=-modifiedDate&pageSize=25&sfX=1&keywords=W9127826SSN251219
+2025-12-21 01:59:59,007 - WARNING -   Failed to download data for https://sam.gov/search/?index=opp&page=1&sort=-modifiedDate&pageSize=25&sfX=1&keywords=W9127826SSN251219
+2025-12-21 01:59:59,007 - INFO - Processing (2/10): https://sam.gov/opp/31125PR260000083/view
+2025-12-21 02:00:18,920 - INFO - ====== WebDriver manager ======
+2025-12-21 02:00:19,402 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:00:19,567 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:00:19,724 - INFO - Driver [/Users/apple/.wdm/drivers/chromedriver/mac64/143.0.7499.169/chromedriver-mac-x64/chromedriver] found in cache
+2025-12-21 02:00:44,980 - INFO - ====== WebDriver manager ======
+2025-12-21 02:00:45,296 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:00:45,454 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:00:45,604 - INFO - Driver [/Users/apple/.wdm/drivers/chromedriver/mac64/143.0.7499.169/chromedriver-mac-x64/chromedriver] found in cache
+2025-12-21 02:02:58,659 - INFO -   Scraped 31125PR260000083. Files: 0
+2025-12-21 02:03:00,086 - ERROR -   Extraction failed for 31125PR260000083: LLM analysis failed: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2025-12-21 02:03:05,087 - INFO - Processing (3/10): https://sam.gov/search/?index=opp&keywords=SPE7MC26Q0086
+2025-12-21 02:03:05,087 - WARNING -   Failed to download data for https://sam.gov/search/?index=opp&keywords=SPE7MC26Q0086
+2025-12-21 02:03:05,088 - INFO - Processing (4/10): https://sam.gov/opp/a813bd1ca6554c209c29d146d41c9b4f/view
+2025-12-21 02:03:23,110 - INFO - ====== WebDriver manager ======
+2025-12-21 02:03:23,487 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:03:23,639 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:03:23,787 - INFO - Driver [/Users/apple/.wdm/drivers/chromedriver/mac64/143.0.7499.169/chromedriver-mac-x64/chromedriver] found in cache
+2025-12-21 02:03:48,632 - INFO - ====== WebDriver manager ======
+2025-12-21 02:03:48,991 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:03:49,138 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:03:49,286 - INFO - Driver [/Users/apple/.wdm/drivers/chromedriver/mac64/143.0.7499.169/chromedriver-mac-x64/chromedriver] found in cache
+2025-12-21 02:06:01,204 - INFO -   Scraped a813bd1ca6554c209c29d146d41c9b4f. Files: 0
+2025-12-21 02:06:01,401 - ERROR -   Extraction failed for a813bd1ca6554c209c29d146d41c9b4f: LLM analysis failed: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2025-12-21 02:06:06,402 - INFO - Processing (5/10): https://sam.gov/search/?index=opp&keywords=36C10G26R0006
+2025-12-21 02:06:06,402 - WARNING -   Failed to download data for https://sam.gov/search/?index=opp&keywords=36C10G26R0006
+2025-12-21 02:06:06,402 - INFO - Processing (6/10): https://sam.gov/search/?page=1&pageSize=25&sort=-modifiedDate&sfm%5BsimpleSearch%5D%5Bkeyword%5D=140R2026Q0005
+2025-12-21 02:06:06,402 - WARNING -   Failed to download data for https://sam.gov/search/?page=1&pageSize=25&sort=-modifiedDate&sfm%5BsimpleSearch%5D%5Bkeyword%5D=140R2026Q0005
+2025-12-21 02:06:06,402 - INFO - Processing (7/10): https://sam.gov/search/?index=opp&keywords=191BWC26R0001
+2025-12-21 02:06:06,403 - WARNING -   Failed to download data for https://sam.gov/search/?index=opp&keywords=191BWC26R0001
+2025-12-21 02:06:06,403 - INFO - Processing (8/10): https://sam.gov/opp/W912HZ26Q1215/view
+2025-12-21 02:06:23,542 - INFO - ====== WebDriver manager ======
+2025-12-21 02:06:23,893 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:06:24,053 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:06:24,198 - INFO - Driver [/Users/apple/.wdm/drivers/chromedriver/mac64/143.0.7499.169/chromedriver-mac-x64/chromedriver] found in cache
+2025-12-21 02:06:49,108 - INFO - ====== WebDriver manager ======
+2025-12-21 02:06:49,474 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:06:49,624 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:06:49,773 - INFO - Driver [/Users/apple/.wdm/drivers/chromedriver/mac64/143.0.7499.169/chromedriver-mac-x64/chromedriver] found in cache
+2025-12-21 02:09:01,841 - INFO -   Scraped W912HZ26Q1215. Files: 0
+2025-12-21 02:09:02,033 - ERROR -   Extraction failed for W912HZ26Q1215: LLM analysis failed: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2025-12-21 02:09:07,034 - INFO - Processing (9/10): https://sam.gov/search/?index=opp&keywords=N0016425SC001
+2025-12-21 02:09:07,035 - WARNING -   Failed to download data for https://sam.gov/search/?index=opp&keywords=N0016425SC001
+2025-12-21 02:09:07,035 - INFO - Processing (10/10): https://sam.gov/search/?index=opp&keywords=15B31726Q00000003
+2025-12-21 02:09:07,035 - WARNING -   Failed to download data for https://sam.gov/search/?index=opp&keywords=15B31726Q00000003
+2025-12-21 02:09:07,132 - INFO - --- Batch Extraction Complete ---
+2025-12-21 02:09:07,132 - INFO - Processed: 0
+2025-12-21 02:09:07,132 - INFO - Errors: 10
+2025-12-21 02:20:37,403 - INFO - --- Starting Batch Extraction Pipeline ---
+2025-12-21 02:20:37,412 - INFO - ====== WebDriver manager ======
+2025-12-21 02:20:37,820 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:20:38,018 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:20:38,193 - INFO - Driver [/Users/apple/.wdm/drivers/chromedriver/mac64/143.0.7499.169/chromedriver-mac-x64/chromedriver] found in cache
+2025-12-21 02:20:40,291 - INFO - Found 10 unique SAM.gov URLs to process.
+2025-12-21 02:20:40,291 - WARNING - Skipping invalid solicitation URL (must be a direct '/opp/' link): https://sam.gov/search/?index=opp&page=1&sort=-modifiedDate&pageSize=25&sfX=1&keywords=W9127826SSN251219
+2025-12-21 02:20:40,398 - INFO - --- Batch Extraction Complete ---
+2025-12-21 02:20:40,398 - INFO - Processed: 0
+2025-12-21 02:20:40,398 - INFO - Errors: 0
+2025-12-21 02:21:38,046 - INFO - --- Starting Batch Extraction Pipeline ---
+2025-12-21 02:21:38,058 - INFO - ====== WebDriver manager ======
+2025-12-21 02:21:38,408 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:21:38,593 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:21:38,747 - INFO - Driver [/Users/apple/.wdm/drivers/chromedriver/mac64/143.0.7499.169/chromedriver-mac-x64/chromedriver] found in cache
+2025-12-21 02:21:40,624 - INFO - Found 10 unique SAM.gov URLs to process.
+2025-12-21 02:21:40,625 - WARNING - Skipping invalid solicitation URL (must be a direct '/opp/' link): https://sam.gov/search/?index=opp&page=1&sort=-modifiedDate&pageSize=25&sfX=1&keywords=W9127826SSN251219
+2025-12-21 02:21:40,625 - INFO - Processing (2/10): https://sam.gov/opp/31125PR260000083/view
+2025-12-21 02:21:59,816 - INFO - ====== WebDriver manager ======
+2025-12-21 02:22:00,246 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:22:00,411 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:22:00,590 - INFO - Driver [/Users/apple/.wdm/drivers/chromedriver/mac64/143.0.7499.169/chromedriver-mac-x64/chromedriver] found in cache
+2025-12-21 02:22:25,897 - INFO - ====== WebDriver manager ======
+2025-12-21 02:22:26,347 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:22:26,502 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:22:26,652 - INFO - Driver [/Users/apple/.wdm/drivers/chromedriver/mac64/143.0.7499.169/chromedriver-mac-x64/chromedriver] found in cache
+2025-12-21 02:24:39,319 - INFO -   Scraped 31125PR260000083. Files: 0
+2025-12-21 02:24:40,499 - ERROR -   Extraction failed for 31125PR260000083: LLM analysis failed: 404 models/gemini-1.5-flash-001 is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2025-12-21 02:24:45,504 - WARNING - Skipping invalid solicitation URL (must be a direct '/opp/' link): https://sam.gov/search/?index=opp&keywords=SPE7MC26Q0086
+2025-12-21 02:24:45,504 - INFO - Processing (4/10): https://sam.gov/opp/a813bd1ca6554c209c29d146d41c9b4f/view
+2025-12-21 02:25:02,762 - INFO - ====== WebDriver manager ======
+2025-12-21 02:25:03,054 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:25:03,204 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:25:03,344 - INFO - Driver [/Users/apple/.wdm/drivers/chromedriver/mac64/143.0.7499.169/chromedriver-mac-x64/chromedriver] found in cache
+2025-12-21 02:25:27,599 - INFO - ====== WebDriver manager ======
+2025-12-21 02:25:27,944 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:25:28,094 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:25:28,240 - INFO - Driver [/Users/apple/.wdm/drivers/chromedriver/mac64/143.0.7499.169/chromedriver-mac-x64/chromedriver] found in cache
+2025-12-21 02:27:40,645 - INFO -   Scraped a813bd1ca6554c209c29d146d41c9b4f. Files: 0
+2025-12-21 02:27:40,837 - ERROR -   Extraction failed for a813bd1ca6554c209c29d146d41c9b4f: LLM analysis failed: 404 models/gemini-1.5-flash-001 is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2025-12-21 02:27:45,840 - WARNING - Skipping invalid solicitation URL (must be a direct '/opp/' link): https://sam.gov/search/?index=opp&keywords=36C10G26R0006
+2025-12-21 02:27:45,840 - WARNING - Skipping invalid solicitation URL (must be a direct '/opp/' link): https://sam.gov/search/?page=1&pageSize=25&sort=-modifiedDate&sfm%5BsimpleSearch%5D%5Bkeyword%5D=140R2026Q0005
+2025-12-21 02:27:45,840 - WARNING - Skipping invalid solicitation URL (must be a direct '/opp/' link): https://sam.gov/search/?index=opp&keywords=191BWC26R0001
+2025-12-21 02:27:45,840 - INFO - Processing (8/10): https://sam.gov/opp/W912HZ26Q1215/view
+2025-12-21 02:28:03,258 - INFO - ====== WebDriver manager ======
+2025-12-21 02:28:06,722 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:28:06,895 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:28:07,055 - INFO - Driver [/Users/apple/.wdm/drivers/chromedriver/mac64/143.0.7499.169/chromedriver-mac-x64/chromedriver] found in cache
+2025-12-21 02:28:32,700 - INFO - ====== WebDriver manager ======
+2025-12-21 02:28:33,052 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:28:33,205 - INFO - Get LATEST chromedriver version for google-chrome
+2025-12-21 02:28:33,351 - INFO - Driver [/Users/apple/.wdm/drivers/chromedriver/mac64/143.0.7499.169/chromedriver-mac-x64/chromedriver] found in cache
+2025-12-21 02:30:46,008 - INFO -   Scraped W912HZ26Q1215. Files: 0
+2025-12-21 02:30:46,203 - ERROR -   Extraction failed for W912HZ26Q1215: LLM analysis failed: 404 models/gemini-1.5-flash-001 is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2025-12-21 02:30:51,208 - WARNING - Skipping invalid solicitation URL (must be a direct '/opp/' link): https://sam.gov/search/?index=opp&keywords=N0016425SC001
+2025-12-21 02:30:51,208 - WARNING - Skipping invalid solicitation URL (must be a direct '/opp/' link): https://sam.gov/search/?index=opp&keywords=15B31726Q00000003
+2025-12-21 02:30:51,376 - INFO - --- Batch Extraction Complete ---
+2025-12-21 02:30:51,376 - INFO - Processed: 0
+2025-12-21 02:30:51,376 - INFO - Errors: 3

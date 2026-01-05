@@ -34,7 +34,7 @@ class ThomasNetAgent:
             try:
                 import google.generativeai as genai
                 genai.configure(api_key=GEMINI_API_KEY)
-                self.model = genai.GenerativeModel('gemini-2.0-flash-exp')
+                self.model = genai.GenerativeModel('gemini-2.5-flash-image') # Migrated for higher quota
             except Exception as e:
                 print(f"Warning: Gemini import failed: {e}")
     
@@ -61,7 +61,7 @@ class ThomasNetAgent:
                 # Launch options
                 browser_context = p.chromium.launch_persistent_context(
                     user_data_dir,
-                    headless=False, # Headed for manual interaction if needed
+                    headless=True, # Run in background as requested
                     args=['--disable-blink-features=AutomationControlled'],
                     viewport={'width': 1366, 'height': 768},
                     user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
@@ -181,17 +181,24 @@ class ThomasNetAgent:
                             if not website:
                                 profile_href = name_el.get('href')
                                 if profile_href:
-                                     website = f"https://www.thomasnet.com{profile_href}" if profile_href.startswith('/') else profile_href
+                                    website = f"https://www.thomasnet.com{profile_href}" if profile_href.startswith('/') else profile_href
 
-                            if name: # Website is optional (can use ThomasNet profile for outreach if needed, or skip)
+                            # Extract description snippet for validation
+                            description = ""
+                            desc_el = item.select_one('[data-sentry-component="TrimmedDescription"]')
+                            if desc_el:
+                                description = desc_el.get_text(strip=True)
+
+                            if name: 
                                 # Deduplicate
                                 if not any(s['name'] == name for s in suppliers):
                                     suppliers.append({
                                         'name': name,
                                         'website': website,
-                                        'email': None, # To be filled by OutreachAgent
+                                        'description': description,
+                                        'email': None, 
                                         'phone': None, 
-                                        'location': None # Could extract address from card
+                                        'location': None 
                                     })
                         except Exception as e:
                             print(f"Error parsing item: {e}")
@@ -291,41 +298,51 @@ class ThomasNetAgent:
             
         return suppliers
 
-    def _enrich_supplier_details(self, company_name, product_context):
+    def _enrich_supplier_details(self, company_name, product_context, known_website=None):
         """
         [DEEP CRAWL UPGRADE]
-        Finds company website via DuckDuckGo, then VISITS the site to extract emails/forms.
+        Finds company website via DuckDuckGo (or uses known_website), then VISITS the site to extract emails/forms.
         """
         print(f"  Enriching details for: {company_name} (Deep Crawl Mode)...")
         try:
-            from duckduckgo_search import DDGS
-            query = f"{company_name} official site contact email"
-            # Limit results to find the best match
-            results = DDGS().text(query, region='us-en', max_results=3)
+            website_url = known_website
+            best_match = None # Initialize to avoid UnboundLocalError
             
-            ignored_domains = [
-                'youtube.com', 'facebook.com', 'linkedin.com', 'twitter.com', 
-                'instagram.com', 'pinterest.com', 'thomasnet.com', 'zoominfo.com',
-                'dnb.com', 'manta.com', 'bbb.org', 'mapquest.com', 'yellowpages.com'
-            ]
-            
-            best_match = None
-            
-            for res in results:
-                href = res['href']
-                domain = urlparse(href).netloc.lower()
+            if not website_url:
+                from duckduckgo_search import DDGS
+                query = f"{company_name} official site contact email"
+                # Limit results to find the best match
+                try:
+                    results = DDGS().text(query, region='us-en', max_results=3)
+                except Exception as e:
+                    print(f"    > Search Engine Error: {e}")
+                    return None
                 
-                if any(ignored in domain for ignored in ignored_domains):
-                    continue
+                ignored_domains = [
+                    'youtube.com', 'facebook.com', 'linkedin.com', 'twitter.com', 
+                    'instagram.com', 'pinterest.com', 'thomasnet.com', 'zoominfo.com',
+                    'dnb.com', 'manta.com', 'bbb.org', 'mapquest.com', 'yellowpages.com'
+                ]
+                
+                best_match = None
+                
+                for res in results:
+                    href = res['href']
+                    domain = urlparse(href).netloc.lower()
                     
-                best_match = res
-                break
-            
-            if not best_match:
-                print(f"  Could not find official site for {company_name}")
-                return None
+                    if any(ignored in domain for ignored in ignored_domains):
+                        continue
+                        
+                    best_match = res
+                    break
+                
+                if not best_match:
+                    print(f"  Could not find official site for {company_name}")
+                    return None
 
-            website_url = best_match['href']
+                website_url = best_match['href']
+
+            print(f"  Visiting Official Site: {website_url}")
             print(f"  Visiting Official Site: {website_url}")
             
             # --- DEEP CRAWL (Playwright) ---
@@ -335,15 +352,25 @@ class ThomasNetAgent:
             try:
                 # Use context from main thread if possible, or new ephemeral one
                 with sync_playwright() as p:
-                    # Headless for speed
+                    # Headless for background execution
                     browser = p.chromium.launch(headless=True)
-                    context = browser.new_context(user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)")
+                    context = browser.new_context(
+                        user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+                        viewport={'width': 1280, 'height': 720}
+                    )
                     page = context.new_page()
+                    page.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
                     
                     try:
                         page.goto(website_url, timeout=30000, wait_until="domcontentloaded")
                         
-                        # 1. Scrape Homepage
+                        # 1. Scrape Homepage & Footer
+                        # Scroll to bottom to trigger lazy loading / footer
+                        try:
+                            page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+                            time.sleep(2)
+                        except: pass
+                        
                         content = page.content()
                         crawled_email = self._extract_email(content)
                         
@@ -354,15 +381,35 @@ class ThomasNetAgent:
                                 
                         # 2. Visit "Contact" Page (if email not found or just to be thorough)
                         if not crawled_email:
-                            contact_link = page.get_by_text("Contact", exact=False).first
-                            if contact_link.count() > 0 and contact_link.is_visible():
-                                print("    > navigating to Contact page...")
-                                contact_link.click(timeout=5000)
-                                page.wait_for_load_state("domcontentloaded", timeout=15000)
-                                content = page.content()
-                                crawled_email = self._extract_email(content)
-                                if page.locator("form").count() > 0:
-                                     has_contact_form = True
+                            # Try robust selector for Contact links
+                            contact_link = None
+                            try:
+                                # Look for 'a' tags containing 'contact' in href or text
+                                contact_link = page.locator("a[href*='contact']").first
+                                if not contact_link.is_visible():
+                                    contact_link = page.get_by_text("Contact Us", exact=False).first
+                                if not contact_link.is_visible():
+                                    contact_link = page.get_by_text("Contact", exact=True).first
+                            except: pass
+
+                            if contact_link and contact_link.count() > 0 and contact_link.is_visible():
+                                print("    > navigating to Contact page (checking footer/page)...")
+                                try:
+                                    contact_link.click(timeout=5000)
+                                    page.wait_for_load_state("domcontentloaded", timeout=15000)
+                                    
+                                    # Scroll contact page too
+                                    try:
+                                        page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+                                        time.sleep(2)
+                                    except: pass
+                                    
+                                    content = page.content()
+                                    crawled_email = self._extract_email(content)
+                                    if page.locator("form").count() > 0:
+                                         has_contact_form = True
+                                except Exception as e:
+                                    print(f"    > Contact page nav failed: {e}")
                                      
                     except Exception as e:
                         print(f"    > Crawl warning: {e}")
@@ -372,14 +419,14 @@ class ThomasNetAgent:
                 print(f"    > Playwright error: {e}")
 
             # Fallback to snippet extract if crawl failed
-            if not crawled_email:
+            if not crawled_email and best_match:
                 crawled_email = self._extract_email(best_match['body'])
             
             return {
                 'name': company_name,
                 'website': website_url,
                 'email': crawled_email,
-                'phone': self._extract_phone(best_match['body']), # Basic snippet phone
+                'phone': self._extract_phone(best_match['body']) if best_match else None, 
                 'source': 'ThomasNet + Deep Crawl',
                 'has_form': has_contact_form,
                 'notes': f"Deep Crawl: Email={crawled_email}, Form={has_contact_form}"

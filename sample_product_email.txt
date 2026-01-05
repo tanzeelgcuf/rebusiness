@@ -1,0 +1,81 @@
+SUBJECT: Request for Quote - Cable Assembly Spec (NSN: 6150-01-501-1062) (SPRDL1-25-Q-0166)
+----------------------------------------
+Dear Vendor,
+
+We are writing to request a formal quote for Cable Assembly. Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
+
+If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+
+Thank you for your time and consideration.
+
+[Contracting Team]
+
+🔹 Overview
+Agency Issuing RFQ: Defense Logistics Agency (DLA) Weapons Support (Warren)
+6501 E. Eleven Mile Road, Warren, MI 48397-5000
+Type of Contract: Firm Fixed Price / 5-year IQC
+Set-Aside Type: 100% Small Business Set-Aside
+Solicitation Date: December 15, 2025
+Quotes Due: 2026-01-22
+Solicitation Title: Cable Assembly Spec (NSN: 6150-01-501-1062)
+Contract Number (if awarded): SPRDL1-25-Q-0166
+NAICS Code: 335931 – Cable and Wire Device Manufacturing
+Size Standard: 600 employees
+DPAS Rating: DO-A4 (Defense Priority and Allocation System)
+
+🔹 Items Required
+Item Requested: Cable Assembly
+Manufacturer CAGE: 19200
+Manufacturer Part Number: 12992465
+Description: Standard cable assembly for military use per Top Drawing No. 12992465.
+
+
+🔹 Contract Line Items (CLINs)
+   • CLIN: 0011 | Description: 1st Year – Cable Assembly Spec | Quantity: 118 EA | Contract Type: FFP | Inspection/Acceptance: Origin | Packaging: Military, Level B | Notes: Guaranteed Minimum
+   • CLIN: 0012 | Description: 2nd Year – Cable Assembly Spec | Quantity: 64 EA | Contract Type: FFP | Inspection/Acceptance: Origin | Packaging: Military, Level B | Notes: 2nd Ordering Year
+
+
+🔹 Inspection & Testing
+Inspection Point: Origin
+Acceptance Point: Origin
+Inspection Agency: DCMA (Defense Contract Management Agency)
+Requirement: Notify DCMA for inspection before shipping
+Initial Production Inspection (IPI): Required
+Quality Standard: ISO 9001:2015 or equivalent
+
+🔹 Delivery Requirements
+General Delivery Terms
+FOB Point: Destination
+Destination: Ship to DLA Weapons Support (Warren), 6501 East Eleven Mile Road, Warren, MI 48397-5000
+Inspection: Origin
+Acceptance: Origin
+
+Delivery Schedule
+Delivery must begin: 340 days ARO
+Deliveries to continue: 24 units every 30 days
+Acceleration: Early delivery accepted at no extra cost
+
+🔹 Data & Access Requirements
+Technical Data Package (TDP) available via SAM.gov link
+Suppliers must have a current DD2345 (JCP Certification) for militarily critical technical data
+Suppliers must follow ITAR/export-controlled document handling procedures
+
+🔹 Submission Details
+Quote Submission: Email proposal (PDF preferred) to john@campsable.com
+Subject line: Proposal Submission SPRDL1-25-Q-0166 (Company Name)
+Due Date: January 16, 2026
+Evaluation Basis: Lowest price, technically acceptable (LPTA)
+"All or None" clause applies — partial bids not accepted
+
+🔹 Summary of What They Require
+In Plain Terms:
+   • Supply Cable Assembly built to military specifications
+   • Meet ISO 9001:2015 or equivalent quality standard
+   • Inspect and accept at origin, coordinate with DCMA before shipment
+   • Deliver to DLA Weapons Support (Warren), 6501 East Eleven Mile Road, Warren, MI 48397-5000 FOB Destination
+   • Lead time: 340 days ARO
+   • Follow special packaging, preservation, and labeling per MIL-STD-2073-1 & MIL-STD-129
+   • Maintain traceability documentation for 10 years after final payment
+   • Possess approved JCP certification to access restricted Technical Data Packages (TDPs)
+
+-----End of letter/solicitation-----

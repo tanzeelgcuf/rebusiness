@@ -33,7 +33,7 @@ TWILIO_CONFIG = {
 OPENAI_API_KEY = "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"
 
 # LLM Provider ("gemini" or "openai") - Defaulting to gemini as requested
-LLM_PROVIDER = "gemini"
+LLM_PROVIDER = "openai"
 
 # Search Keywords - can remain as a list or be fetched from env if dynamic
 SEARCH_KEYWORDS = ["products", "supplies", "materials", "equipment", "procurement"]

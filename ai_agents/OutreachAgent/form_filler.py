@@ -30,7 +30,7 @@ class FormFiller:
         self.logger = logging.getLogger(__name__)
         if GEMINI_API_KEY:
             genai.configure(api_key=GEMINI_API_KEY)
-            self.model = genai.GenerativeModel('gemini-2.0-flash-exp')
+            self.model = genai.GenerativeModel('gemini-2.5-flash-image') # Migrated for higher quota
         else:
             self.model = None
             self.logger.warning("GEMINI_API_KEY not found. LLM features disabled.")
