@@ -1,0 +1,155 @@
+Notice ID: W912ES26BA007
+
+# FARGO-MOORHEAD FOREST PLANTING
+
+Dear Valued Supplier:
+
+We are writing to request a formal quote for fargo-moorhead forest planting. Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
+
+Your response is needed on or before January 22, 2025 in order for us to submit your bid.
+
+If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+
+Thank you for your time and consideration.
+
+[My signature info]
+
+🔹Summary of Project
+Title: FARGO-MOORHEAD FOREST PLANTING
+Type: 3-Year Service Contract (Firm Fixed Price)
+Purpose: Not specified
+Location: Cass, ND, Clay, MN
+
+Total Work Area:
+- Base Contract: 165.4 
+- Option: 10.4
+
+🔹What They Want (Scope of Work)
+| Category | Main Tasks |
+|---|---|
+| **Site Preparation** | Activities including mowing, broadcast herbicide spray, discing, and burning to prepare sites for planting. |
+| **Seeding and Planting** | Establishment of three distinct planting zones: Bank Stabilization, Floodplain Forest, and Oak Savanna, using specified seed mixes, live stakes, and bare-root/container trees. |
+| **Invasive Species Removal** | Control of woody and herbaceous invasive species within designated forest preservation areas using mechanical and chemical methods. |
+| **Maintenance and Monitoring** | Three years of ongoing site maintenance (mowing, spot spraying, etc.) and annual vegetation monitoring with detailed reporting to ensure performance standards are met. |
+| **Boulder Placement** | Placement of approximately 30 boulders to prevent vehicular access at the entrance to Site 38b. |
+
+
+🔹Timeline / Period of Performance
+| Year | Dates | Requirements |
+|---|---|---|
+| Year 1 | Award -> 31 Dec 2026 | All submittals by specified due dates, Site preparation, Tree planting and herbaceous seeding, Maintenance and monitoring, Initial invasive species removal, Submittal of annual monitoring report |
+| Year 2 | 01 Jan 2027 -> 31 Dec 2027 | Plant establishment, Maintenance and monitoring, Follow-up treatments of invasive species, Submittal of annual monitoring report |
+| Year 3 | 01 Jan 2028 -> 31 Dec 2028 | Plant establishment, Maintenance and monitoring, Final treatment of invasive species, Submittal of annual monitoring report, Meet all Final Vegetation Performance Standards |
+
+
+🔹Deliverables & Reporting Deadlines
+| Deliverable | Due From Award | Format / Medium | Submit To | Notes / Purpose |
+|---|---|---|---|---|
+| **Project Schedule** | Within 15 business days of award | Excel or PDF | Contracting Officer | Compliance requirement |
+| **Safety Plan** | Within 30 business days of award | Excel or PDF | Contracting Officer | Compliance requirement |
+| **Single Point of Contact (SPOC) Information** | Within 10 business days of award | Email | Contracting Officer | Compliance requirement |
+| **Herbicide Plan** | Within 30 days of award | Digital PDF | Contracting Officer | Compliance requirement |
+| **Material Safety and Product Labels** | Within 30 days of award | Digital PDF | Contracting Officer | Compliance requirement |
+| **Quality Control Plan** | Within 30 days of award | Draft: MS Word; Final: PDF | Contracting Officer | Compliance requirement |
+| **Site Preparation Plan** | Within 60 days of award | Digital PDF | Contracting Officer | Compliance requirement |
+| **Planting Plans** | Within 90 days of award | Digital PDF | Contracting Officer | Compliance requirement |
+| **Seed Substitutions** | Not later than 30 days prior to seeding | Digital PDF | Contracting Officer | Compliance requirement |
+| **Noxious and Invasive Species Control Plan** | Within 30 days of award | Digital PDF | Contracting Officer | Compliance requirement |
+| **Maintenance Plan** | Within 30 days of award | Digital PDF | Contracting Officer | Compliance requirement |
+| **Monitoring Reports** | Annually, by January 30th days | Digital PDF | Contracting Officer | Compliance requirement |
+| **Fatigue Management Plan** | Within 30 business days of award | Digital PDF | Contracting Officer | Compliance requirement |
+
+
+🔹Delivery / Work Locations
+- 8a: Clay, MN (28.8 acres) - Floodplain Forest (5.2 ac), Oak Savanna (6.5 ac), Forest Preservation (17.2 ac)
+- 22a: Clay, MN (28.0 acres) - Floodplain Forest (2.2 ac), Oak Savanna (3.1 ac), Forest Preservation (22.6 ac)
+- 32: Cass, ND (28.9 acres) - Floodplain Forest (11.7 ac), Oak Savanna (11.8 ac), Forest Preservation (5.5 ac)
+- 33: Cass, ND (9.0 acres) - Floodplain Forest (3.3 ac), Forest Preservation (5.7 ac)
+- 34: Cass, ND (9.1 acres) - Floodplain Forest (2.7 ac), Bank Stabilization (0.3 ac), Forest Preservation (6.1 ac)
+- 38b: Cass, ND (4.8 acres) - Floodplain Forest (2.1 ac), Forest Preservation (2.7 ac)
+- 42a: Cass, ND (32.8 acres) - Floodplain Forest (15.9 ac), Forest Preservation (16.9 ac)
+- 44: Clay, MN (15.9 acres) - Floodplain Forest (0.8 ac), Forest Preservation (15.1 ac)
+- Oxbow Country Club #2: Cass, ND (8.0 acres) - Floodplain Forest (3.2 ac), Forest Preservation (4.8 ac)
+- 8b (Option): Clay, MN (1.5 acres) - Floodplain Forest (1.0 ac), Forest Preservation (0.5 ac)
+- 22b (Option): Clay, MN (3.0 acres) - Floodplain Forest (0.2 ac), Oak Savanna (2.2 ac), Forest Preservation (0.6 ac)
+- 42b (Option): Cass, ND (5.9 acres) - Floodplain Forest (1.3 ac), Forest Preservation (4.6 ac)
+
+
+🔹Key Compliance Points
+- Requirements: Compliance with EM 385-1-1 Safety and Health Requirements Manual., Submission of Safety Plan, Herbicide Plan, QCP, Maintenance Plan, and others., Use of state-licensed commercial pesticide applicators., Obtaining NPDES/NDPDES permit coverage as necessary., Adherence to North Dakota and Minnesota noxious weed laws.
+- Insurance:
+  - General Liability: $1,000,000 per occurrence (Bodily Injury)
+  - Auto Liability: $500,000 per person / $1,000,000 per occurrence (Bodily Injury); $100,000 per occurrence (Property Damage)
+  - Workers' Compensation: Compliance with State of North Dakota and Minnesota Worker's Compensation Law
+- Wage Determination: SCA compliance required per WD 2015-4967 (MN) and WD 2015-4969 (ND).
+
+🔹Acceptance Criteria
+- Meet all performance standards and technical specifications.
+- Pass final walkthrough and inspection by the Contracting Officer.
+- Correct any deficiencies at contractor's expense before final sign-off.
+
+🟩In Summary
+They want:
+A qualified contractor to perform the requested services as specified in the Performance Work Statement (PWS).
+
+Time frame:
+- Contract award through 01 Jan 2028 -> 31 Dec 2028
+- Work starts immediately after award or Notice to Proceed.
+
+Delivery locations:
+Multiple site locations in Cass, ND, Clay, MN.
+
+---------
+🔹 OVERVIEW
+Project: FARGO-MOORHEAD FOREST PLANTING
+Owner / Agency: Government Agency
+Location: Cass, ND, Clay, MN
+Purpose: Environmental/Technical Services
+Duration: 3-Year Service Contract (Firm Fixed Price)
+
+🔹 ATTACHMENT 1 – DELIVERABLE SCHEDULE
+| Deliverable | Due From Award | Format / Medium | Submit To | Notes / Purpose |
+|---|---|---|---|---|
+| **Project Schedule** | Within 15 business days of award | Excel or PDF | Contracting Officer | Compliance requirement |
+| **Safety Plan** | Within 30 business days of award | Excel or PDF | Contracting Officer | Compliance requirement |
+| **Single Point of Contact (SPOC) Information** | Within 10 business days of award | Email | Contracting Officer | Compliance requirement |
+| **Herbicide Plan** | Within 30 days of award | Digital PDF | Contracting Officer | Compliance requirement |
+| **Material Safety and Product Labels** | Within 30 days of award | Digital PDF | Contracting Officer | Compliance requirement |
+| **Quality Control Plan** | Within 30 days of award | Draft: MS Word; Final: PDF | Contracting Officer | Compliance requirement |
+| **Site Preparation Plan** | Within 60 days of award | Digital PDF | Contracting Officer | Compliance requirement |
+| **Planting Plans** | Within 90 days of award | Digital PDF | Contracting Officer | Compliance requirement |
+| **Seed Substitutions** | Not later than 30 days prior to seeding | Digital PDF | Contracting Officer | Compliance requirement |
+| **Noxious and Invasive Species Control Plan** | Within 30 days of award | Digital PDF | Contracting Officer | Compliance requirement |
+| **Maintenance Plan** | Within 30 days of award | Digital PDF | Contracting Officer | Compliance requirement |
+| **Monitoring Reports** | Annually, by January 30th days | Digital PDF | Contracting Officer | Compliance requirement |
+| **Fatigue Management Plan** | Within 30 business days of award | Digital PDF | Contracting Officer | Compliance requirement |
+
+
+🔹 ATTACHMENT 2 – APPROVED LISTS & STANDARDS
+Refer to Attachment 2 for approved herbicide products and application standards.
+
+🔹 ATTACHMENT 4 – PROJECT MAPS & LAYOUTS
+Refer to Attachment 4 for detailed site boundaries and access points for the 12 work sites.
+
+🔹 KEY DATES & ACTIONS FOR VENDORS
+| Action | Deadline / Timing | Reference Doc |
+|---|---|---|
+| **Response Deadline** | January 22, 2025 | Camp Sable Request |
+| **Submission to Gov** | 2025-01-28 14:00 Central | SAM.gov Notice |
+| **Required Plans (Safety/QC)** | Within 30 days of award | Attachment 1 |
+
+🔹 SUMMARY FOR BIDDERS / CONTRACTORS
+You Will Be Responsible To:
+1. Prepare and submit all required plans and documentation.
+2. Perform all tasks listed in the 5 primary scope categories.
+3. Provide long-term maintenance and monitoring as required.
+4. Adhere to all federal and state labor/wage compliance standards.
+
+✅ Quick Vendor Tip
+For an "offer-ready" package:
+1. Create a submission calendar using the Attachment 1 deadlines.
+2. Ensure all safety and quality control plans follow the specified standards.
+3. Double-check all local licensing and permit requirements before bidding.
+4. Ensure all submittals are in PDF format and copy the Camp Sable point of contact on all correspondence.
+
+---end of RFQ---

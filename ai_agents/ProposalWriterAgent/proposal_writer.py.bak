@@ -1,0 +1,337 @@
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+import config
+from database_manager import DatabaseManager
+import json
+import re
+from datetime import datetime, timedelta
+
+def _subtract_business_days(date, days):
+    """Calculate date minus business days (excluding weekends)"""
+    current = date
+    while days > 0:
+        current -= timedelta(days=1)
+        if current.weekday() < 5:  # Monday = 0, Friday = 4
+            days -= 1
+    return current
+
+def _format_product_rfq(analysis, vendor_name="Valued Supplier"):
+    """Format output matching Claude Vendor List.odt exactly"""
+    notice_id = analysis.get('notice_id', 'N/A')
+    title = analysis.get('title', 'N/A')
+    
+    # Calculate internal deadline
+    due_date_str = analysis.get('submission', {}).get('due_date', '')
+    try:
+        # Try finding the First YYYY-MM-DD pattern
+        match = re.search(r'\d{4}-\d{2}-\d{2}', due_date_str)
+        if match:
+            official_due = datetime.strptime(match.group(), '%Y-%m-%d')
+            internal_due = _subtract_business_days(official_due, 4)
+            internal_due_formatted = internal_due.strftime('%B %d, %Y')
+        else:
+            internal_due_formatted = "4 business days before deadline"
+    except:
+        internal_due_formatted = "4 business days before deadline"
+    
+    overview = analysis.get('overview', {})
+    agency_name = overview.get('agency_name', 'Government Agency')
+    agency_address = overview.get('agency_address', 'Address not specified')
+    contract_type = overview.get('contract_type', 'Not specified')
+    set_aside = overview.get('set_aside', 'Not specified')
+    solicitation_date = overview.get('solicitation_date', 'Not specified')
+    quotes_due = analysis.get('submission', {}).get('due_date', 'See solicitation')
+    
+    specs = analysis.get('specifications', {})
+    manufacturer_cage = specs.get('manufacturer_cage', 'Not specified')
+    manufacturer_part = specs.get('manufacturer_part_number', 'Not specified')
+    nsn = specs.get('nsn', 'Not specified')
+    description = specs.get('description', 'Not specified')
+    
+    clins = analysis.get('clins', [])
+    clin_table = ""
+    if clins:
+        clin_table = "| CLIN | Description | Quantity (EA) | Contract Type | Inspection/Acceptance | Packaging | Notes |\n"
+        clin_table += "|---|---|---|---|---|---|---|\n"
+        for clin in clins:
+            clin_table += f"| {clin.get('clin', '')} | {clin.get('description', '')} | {clin.get('quantity', '')} {clin.get('unit', '')} | {clin.get('type', 'FFP')} | {clin.get('inspection_point', 'Origin')} | {clin.get('packaging', 'Military, Level B')} | {clin.get('notes', '')} |\n"
+    
+    delivery = analysis.get('delivery_requirements', {})
+    ship_to = delivery.get('ship_to_address', {})
+    if isinstance(ship_to, dict):
+        parts = [ship_to.get('organization'), ship_to.get('street'), ship_to.get('city'), ship_to.get('state'), ship_to.get('zip')]
+        non_empty = [p for p in parts if p and "Information not provided" not in str(p)]
+        ship_to_formatted = "\n".join(non_empty) if non_empty else "See Solicitation"
+    else:
+        ship_to_formatted = str(ship_to)
+    
+    lead_time = str(delivery.get('lead_time_days', 'Not specified'))
+    lt_suffix = " Days ARO" if "aro" not in lead_time.lower() and "day" in lead_time.lower() else ""
+    if "not specified" not in lead_time.lower() and "day" not in lead_time.lower():
+        lt_suffix = " Days ARO"
+
+    submission = analysis.get('submission', {})
+    submit_email = submission.get('email', 'Not specified')
+    required_forms = ', '.join(submission.get('required_forms', []))
+    
+    # Delivery Summary Table Section
+    delivery_summary = "| Item | Description | Qty | Delivery (Days ARO) | Frequency | Inspection | Ship-To | Notes |\n"
+    delivery_summary += "|---|---|---|---|---|---|---|---|\n"
+    if clins:
+        for clin in clins[:3]: # Representative sample
+            delivery_summary += f"| {clin.get('clin', '')} | {clin.get('description', '')[:30]} | {clin.get('quantity', '')} | {lead_time} | {delivery.get('delivery_frequency', 'As Ordered')} | {clin.get('inspection_point', 'Origin')} | {ship_to.get('city', 'Destination')} | {clin.get('notes', '')[:20]} |\n"
+
+    email_body = f"""Notice ID: {notice_id}
+
+# {title}
+
+Dear {vendor_name}:
+
+We are writing to request a formal quote for {title.lower()}. Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
+
+Your response is needed on or before {internal_due_formatted} in order for us to submit your bid.
+
+If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+
+Thank you for your time and consideration.
+
+[My signature info]
+
+🔹 Overview
+Agency Issuing RFQ:
+{agency_name}
+{agency_address}
+
+Type of Contract: {contract_type}
+Set-Aside Type: {set_aside}
+Solicitation Date: {solicitation_date}
+Quotes Due: {quotes_due}
+
+NAICS Code: {overview.get('naics_code', 'N/A')} -- {overview.get('naics_description', 'N/A')}
+Size Standard: {overview.get('size_standard', 'N/A')}
+
+🔹 Items Required
+Manufacturer CAGE: {manufacturer_cage}
+Manufacturer Part Number: {manufacturer_part}
+NSN: {nsn}
+
+Description: {description}
+
+{clin_table}
+
+🔹 Delivery Requirements
+Ship To:
+{ship_to_formatted}
+
+Lead Time: {lead_time}{lt_suffix}
+First Delivery: {delivery.get('calculated_first_delivery', 'Not specified')}
+Delivery Frequency: {delivery.get('delivery_frequency', 'As specified')}
+
+🔹 Submission Details
+Due Date: {quotes_due}
+Internal Deadline: {internal_due_formatted}
+
+Submit To: {submit_email}
+Required: {required_forms}
+
+🔹 Delivery Summary Table
+{delivery_summary}
+
+🔹 Summary of What They Require
+In Plain Terms:
+1. Supply {title} built to military specifications.
+2. Meet quality standards referenced in solicitation.
+3. Inspect and accept at {delivery.get('fob_point', 'Origin')}, coordinate with DCMA/Agency as required.
+4. Deliver to {ship_to.get('city', 'Destination')} FOB {delivery.get('fob_point', 'Origin')}.
+5. Lead time: {lead_time}{lt_suffix}.
+6. Participate in electronic submission processes.
+
+---end of RFQ---
+"""
+    return {"subject": f"RFQ: {notice_id} - {title}", "body": email_body}
+
+def _format_service_rfq(analysis, vendor_name="Valued Supplier"):
+    """Format output matching Claude Services List.odt exactly"""
+    notice_id = analysis.get('notice_id', 'N/A')
+    project_title = analysis.get('project_title', analysis.get('title', 'N/A'))
+    
+    due_date_str = analysis.get('submission', {}).get('due_date', '')
+    try:
+        match = re.search(r'\d{4}-\d{2}-\d{2}', due_date_str)
+        if match:
+            official_due = datetime.strptime(match.group(), '%Y-%m-%d')
+            internal_due = _subtract_business_days(official_due, 4)
+            internal_due_formatted = internal_due.strftime('%B %d, %Y')
+        else:
+            internal_due_formatted = "4 business days before deadline"
+    except:
+        internal_due_formatted = "4 business days before deadline"
+    
+    summary = analysis.get('project_summary', {})
+    overview = analysis.get('overview', {})
+    agency_name = overview.get('agency_name', 'Government Agency')
+    total_work = summary.get('total_work_area', {})
+    locations = summary.get('work_locations', [])
+    location_list = ""
+    loc_set = set()
+    for loc in locations:
+        c = str(loc.get('county') or '').strip()
+        s = str(loc.get('state') or '').strip()
+        site_id = str(loc.get('site_id') or '').strip()
+        if c or s: 
+            loc_set.add(f"{c}, {s}".strip(', '))
+            site_desc = f"{site_id}: {c}, {s}".strip(': ')
+            acreage = loc.get('acreage')
+            def safe_float(v):
+                try: return float(v)
+                except: return 0.0
+            units = f" ({acreage} acres)" if acreage and "not provided" not in str(acreage).lower() and safe_float(acreage) > 0 else ""
+            location_list += f"- {site_desc}{units} - {loc.get('description', '')}\n"
+    
+    if not location_list:
+        location_list = "- Work to be performed at Contractor's Facility.\n"
+    
+    location_summary = ', '.join(loc_set) if loc_set else "Contractor's Facility"
+    
+    scope_categories = analysis.get('scope_categories', [])
+    scope_table = "| Category | Main Tasks |\n|---|---|\n"
+    for cat in scope_categories:
+        scope_table += f"| **{cat.get('category', '')}** | {cat.get('description', '')} |\n"
+        
+    timeline = analysis.get('timeline', {})
+    periods = timeline.get('periods', [])
+    timeline_text = "| Year | Dates | Requirements |\n|---|---|---|\n"
+    for period in periods:
+        timeline_text += f"| {period.get('year', '')} | {period.get('date_range', '')} | {', '.join(period.get('activities', []))} |\n"
+        
+    deliverables = timeline.get('deliverables', [])
+    deliverable_table = "| Deliverable | Due From Award | Format / Medium | Submit To | Notes / Purpose |\n|---|---|---|---|---|\n"
+    for d in deliverables:
+        due = str(d.get('due_days', ''))
+        if "day" not in due.lower() and due:
+            due += " days"
+        deliverable_table += f"| **{d.get('name', '')}** | {due} | {d.get('format', 'Digital PDF')} | Contracting Officer | {d.get('notes', 'Compliance requirement')} |\n"
+        
+    compliance = analysis.get('compliance', {})
+    insurance = compliance.get('insurance', {})
+    submission = analysis.get('submission', {})
+    delivery = analysis.get('delivery_requirements', {})
+    
+    # Extract additional attachment info if available
+    attachments_info = analysis.get('attachment_summaries', {})
+    herbicide_list = attachments_info.get('herbicide_list', "Refer to Attachment 2 for approved herbicide products and application standards.")
+    mapbook_info = attachments_info.get('mapbook_details', f"Refer to Attachment 4 for detailed site boundaries and access points for the {len(locations)} work sites.")
+    
+    email_body = f"""Notice ID: {notice_id}
+
+# {project_title}
+
+Dear {vendor_name}:
+
+We are writing to request a formal quote for {project_title.lower()}. Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
+
+Your response is needed on or before {internal_due_formatted} in order for us to submit your bid.
+
+If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+
+Thank you for your time and consideration.
+
+[My signature info]
+
+🔹Summary of Project
+Title: {project_title}
+Type: {summary.get('contract_type', 'Service Contract')}
+Purpose: {summary.get('purpose', 'Not specified')}
+Location: {location_summary}
+
+Total Work Area:
+- Base Contract: {total_work.get('base_acres') if total_work.get('base_acres') and total_work.get('base_acres') != 0 else 'N/A (Repair Services)'} 
+- Option: {total_work.get('option_acres') if total_work.get('option_acres') and total_work.get('option_acres') != 0 else 'N/A (Repair Services)'}
+
+🔹What They Want (Scope of Work)
+{scope_table}
+
+🔹Timeline / Period of Performance
+{timeline_text}
+
+🔹Deliverables & Reporting Deadlines
+{deliverable_table}
+
+🔹Delivery / Work Locations
+{location_list}
+
+🔹Key Compliance Points
+- Requirements: {', '.join(compliance.get('key_requirements', []))}
+- Insurance:
+  - General Liability: {insurance.get('general_liability', 'Not specified')}
+  - Auto Liability: {insurance.get('auto_liability', 'Not specified')}
+  - Workers' Compensation: {insurance.get('workers_comp', 'Not specified')}
+- Wage Determination: {compliance.get('wage_determination', 'Not specified')}
+
+🔹Acceptance Criteria
+- Meet all performance standards and technical specifications.
+- Pass final walkthrough and inspection by the Contracting Officer.
+- Correct any deficiencies at contractor's expense before final sign-off.
+
+🟩In Summary
+They want:
+A qualified contractor to {summary.get('purpose', 'perform the requested services')} as specified in the Performance Work Statement (PWS).
+
+Time frame:
+- Contract award through {periods[-1].get('date_range').split('to')[-1].strip() if periods else 'End of Performance'}
+- Work starts immediately after award or Notice to Proceed.
+
+Delivery locations:
+Multiple site locations in {location_summary}.
+
+---------
+🔹 OVERVIEW
+Project: {project_title}
+Owner / Agency: {agency_name}
+Location: {location_summary}
+Purpose: {summary.get('purpose', 'Environmental/Technical Services')}
+Duration: {summary.get('contract_type', 'Defined term contract')}
+
+🔹 ATTACHMENT 1 – DELIVERABLE SCHEDULE
+{deliverable_table}
+
+🔹 ATTACHMENT 2 – APPROVED LISTS & STANDARDS
+{herbicide_list}
+
+🔹 ATTACHMENT 4 – PROJECT MAPS & LAYOUTS
+{mapbook_info}
+
+🔹 KEY DATES & ACTIONS FOR VENDORS
+| Action | Deadline / Timing | Reference Doc |
+|---|---|---|
+| **Response Deadline** | {internal_due_formatted} | Camp Sable Request |
+| **Submission to Gov** | {submission.get('due_date', 'See solicitation')} | SAM.gov Notice |
+| **Required Plans (Safety/QC)** | Within 30 days of award | Attachment 1 |
+
+🔹 SUMMARY FOR BIDDERS / CONTRACTORS
+You Will Be Responsible To:
+1. Prepare and submit all required plans and documentation.
+2. Perform all tasks listed in the {len(scope_categories)} primary scope categories.
+3. Provide long-term maintenance and monitoring as required.
+4. Adhere to all federal and state labor/wage compliance standards.
+
+✅ Quick Vendor Tip
+For an "offer-ready" package:
+1. Create a submission calendar using the Attachment 1 deadlines.
+2. Ensure all safety and quality control plans follow the specified standards.
+3. Double-check all local licensing and permit requirements before bidding.
+4. Ensure all submittals are in PDF format and copy the Camp Sable point of contact on all correspondence.
+
+---end of RFQ---
+"""
+    return {"subject": f"RFQ: {notice_id} - {project_title}", "body": email_body}
+
+def create_bid_request(analysis_summary, vendor_name="Valued Supplier"):
+    if not isinstance(analysis_summary, dict):
+        return {"subject": "Error", "body": "Invalid analysis"}
+    sol_type = analysis_summary.get('solicitation_type', 'PRODUCT').upper()
+    if 'PRODUCT' in sol_type:
+        return _format_product_rfq(analysis_summary, vendor_name)
+    else:
+        return _format_service_rfq(analysis_summary, vendor_name)

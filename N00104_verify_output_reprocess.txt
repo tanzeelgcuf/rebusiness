@@ -1,0 +1,94 @@
+Notice ID: N00104-25-Q-NF13
+
+# TEARDOWN, EVALUATE, REPAIR AND/OR MODIFY CABLE ASSEMBLY,SPEC (NSN 5995-01-604-0910)
+
+Dear Valued Supplier:
+
+We are writing to request a formal quote for teardown, evaluate, repair and/or modify cable assembly,spec (nsn 5995-01-604-0910). Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
+
+Your response is needed on or before February 23, 2026 in order for us to submit your bid.
+
+If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+
+Thank you for your time and consideration.
+
+[My signature info]
+
+✅ Quick Vendor Tip
+For an "offer-ready" package:
+	1.	Create a submission calendar using the solicitation deadlines.
+	2.	Ensure all safety and quality control plans follow the specified standards.
+	3.	Double-check all local licensing and permit requirements before bidding.
+	4.	Ensure all submittals are in PDF format and copy the Camp Sable Point of Contact on all correspondence.
+	5.	Review the Performance Work Statement (PWS) or Statement of Work (SOW) in detail.
+
+In short:
+The Government requires a qualified contractor to perform the requested teardown, evaluate, repair and/or modify cable assembly,spec (nsn 5995-01-604-0910) services. Success is measured by adherence to strict performance and quality standards.
+
+🔹 General Overview
+	•	Project Name: Teardown, Evaluate, Repair and/or Modify CABLE ASSEMBLY,SPEC (NSN 5995-01-604-0910)
+	•	Solicitation Number: N00104-25-Q-NF13
+	•	Agency: U.S. Army Corps of Engineers (USACE)
+	•	Delivery Period: See Performance Period
+	•	Location: See Work Locations
+	•	Type: Firm Fixed Price (FFP) after Teardown & Evaluation
+	•	Set-Aside: 100% for Women-Owned Small Business (WOSB) program participants
+
+🔹 Scope of Work
+	•	Teardown & Evaluation (TD&E): Perform inspection, disassembly, and tests on Government Furnished Property (GFP) to determine the extent of labor and material needed to restore the items to an operable condition.
+	•	Repair and Modification: Provide labor and material required to repair and/or modify the CABLE ASSEMBLY,SPEC units in accordance with drawings, technical orders, and approved repair standards. Repaired items must be mercury-free and serialized.
+	•	Reporting and Documentation: Submit a Firm-Fixed Price (FFP) quote after TD&E. Utilize the Commercial Asset Visibility Repairables Portal (CAV RP) for inventory transaction reporting.
+	•	Packaging and Marking: Preserve, package, pack, and mark all repaired items in accordance with MIL-STD-2073 and MIL-STD-129. Apply unique identification (IUID) markings per MIL-STD-130.
+	•	Contractor must perform all or none of the listed items.
+
+🔹 Key Requirements
+	1.	Security / Compliance
+		•	All personnel must complete required security training within 30 days.
+		•	Must comply with Force Protection (FPCON) and Health Protection (HPCON) levels.
+		•	Use E-Verify for employment eligibility.
+	2.	Wage & Labor Compliance
+		•	Federal Contractor Standards (SCA or Walsh-Healey as applicable)
+		•	If work overlaps states, pay the higher applicable wage rate.
+	3.	Insurance Requirements
+		•	General Liability: Standard Commercial Liability as per FAR Part 28 (General, Auto, Workers Comp)
+		•	Auto Liability: Standard Commercial Liability as per FAR Part 28 (General, Auto, Workers Comp)
+		•	Workers’ Compensation: Standard Commercial Liability as per FAR Part 28 (General, Auto, Workers Comp)
+		•	Employer’s Liability: $100,000
+
+🔹 Contract Clauses / Legal
+	•	Includes FAR and DFARS clauses on small business utilization, ethics, and EEO.
+	•	Limitations on Subcontracting: Prime must perform at least 50% of the service cost.
+	•	Prohibited Technologies: No use of Kaspersky, Huawei, ZTE, or ByteDance equipment.
+
+🔹 Bid Submission Instructions
+	1.	Due Date: 2026-02-27 16:30 ET
+	2.	Bid Delivery Options:
+		•	Hand-carried or mailed (no fax or email generally, unless specified).
+		•	Address:
+			NAVSUP WEAPON SYSTEMS SUPPORT MECH, 5450 CARLISLE PIKE, MECHANICSBURG, PA 17050-2411. Email to: HEATHER.R.JONES52.CIV@US.NAVY.MIL
+
+	3.	Required with Bid:
+		•	Completed SF 18 (Request for Quotations)
+		•	Completed Section B (Schedule of Supplies/Services and Prices)
+		•	Completed Section K (Representations, Certifications)
+
+
+🔹 Post-Award Responsibilities
+	•	Provide self-performance breakdown if required.
+	•	Maintain training, insurance, and payroll documentation.
+	•	Submit invoices electronically.
+
+🔹 ⚙️ Base Contract Scope
+Locations / CLINs (Base):
+	•	Site N/A (Contractor's Facility (TBD at Award), ): 0 ac - Repair of electronic cable assemblies.
+
+🔹 🟩 Option 1 Scope
+Locations / CLINs (Option):
+	•	No option items identified.
+
+
+🔹 Deliverables & Reporting Deadlines
+	•	Firm-Fixed Price (FFP) Quote for Full Repair Effort (Due: 90 days after receipt of carcass(es)) - Detailed pricing proposal
+	•	Repaired CABLE ASSEMBLY,SPEC units (Due: 160 days (Requested RTAT) after receipt of carcass(es)) - Physical units
+
+---end of RFQ---

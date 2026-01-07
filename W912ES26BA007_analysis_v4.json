@@ -1,0 +1,99 @@
+{
+  "solicitation_type": "SERVICE",
+  "notice_id": "W912ES-24-Q-FMMRP",
+  "project_title": "Establish, Monitor, and Maintain Native Forest Habitat for the Fargo-Moorhead Metropolitan Flood Risk Management Project",
+  "project_summary": {
+    "contract_type": "Firm-Fixed-Price with multiple option years",
+    "purpose": "To perform all necessary actions to establish, monitor, and maintain native forest habitat as part of the environmental mitigation requirements for the Fargo-Moorhead Metropolitan Flood Risk Management Project.",
+    "total_work_area": {
+      "base_acres": "To be specified in Performance Work Statement (PWS)",
+      "option_acres": "To be specified in Performance Work Statement (PWS)"
+    },
+    "work_locations": [
+      {
+        "site_id": "Various Mitigation Sites",
+        "county": "Cass County & Clay County",
+        "state": "ND & MN",
+        "acreage": "To be specified in PWS",
+        "description": "Designated environmental mitigation areas within the Fargo-Moorhead project footprint."
+      }
+    ]
+  },
+  "scope_categories": [
+    {
+      "category": "Site Preparation & Forest Establishment",
+      "description": "Includes soil preparation, invasive species control, and planting of native trees, shrubs, and understory species according to the specified planting plan."
+    },
+    {
+      "category": "Monitoring & Reporting",
+      "description": "Conduct periodic site inspections to monitor plant survival, growth rates, invasive species presence, and overall habitat health. Submit detailed annual monitoring reports."
+    },
+    {
+      "category": "Habitat Maintenance",
+      "description": "Perform required maintenance activities including, but not limited to, weed control (mechanical and chemical), pest management, replanting of failed stock, and protection of seedlings."
+    }
+  ],
+  "timeline": {
+    "periods": [
+      {
+        "year": "Base Year 1",
+        "date_range": "Date of Award through 365 days",
+        "activities": [
+          "Initial Site Preparation",
+          "First Season Planting",
+          "Initial Maintenance & Monitoring"
+        ]
+      },
+      {
+        "year": "Option Years 2-5",
+        "date_range": "Exercised annually",
+        "activities": [
+          "Ongoing Maintenance",
+          "Invasive Species Control",
+          "Annual Monitoring and Reporting",
+          "Supplemental Planting as required"
+        ]
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Comprehensive Work Plan & Safety Plan",
+        "due_days": 30,
+        "format": "PDF"
+      },
+      {
+        "name": "Annual Monitoring Report",
+        "due_days": 365,
+        "format": "PDF with supporting data and photographs"
+      }
+    ]
+  },
+  "compliance": {
+    "key_requirements": [
+      "Contractor must possess all required state licenses for herbicide/pesticide application in both North Dakota and Minnesota.",
+      "Compliance with all federal, state, and local environmental laws and regulations.",
+      "Personnel must have demonstrated experience in large-scale ecological restoration."
+    ],
+    "insurance": {
+      "general_liability": "Standard Commercial General Liability as per FAR Part 28",
+      "auto_liability": "Standard Automobile Liability as per FAR Part 28",
+      "workers_comp": "Workers' Compensation as required by state law (ND & MN)"
+    },
+    "wage_determination": "Federal Contractor Standards (SCA or Walsh-Healey as applicable)"
+  },
+  "submission": {
+    "method": "Email",
+    "address": "USACE, St. Paul District, Attn: Contracting Division, 180 5th Street East, Suite 700, St. Paul, MN 55101",
+    "due_date": "Information not provided in solicitation summary",
+    "required_documents": [
+      "SF 1449",
+      "Technical Capability Statement",
+      "Past Performance Information",
+      "Price Proposal"
+    ]
+  },
+  "contract_id": "W912ES26BA007",
+  "external_resource_links": [],
+  "title": "Fargo-Moorhead Forest Mitigation Planting",
+  "url": "https://sam.gov/opp/W912ES26BA007/view"
+}
