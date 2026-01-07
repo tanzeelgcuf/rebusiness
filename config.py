@@ -67,3 +67,12 @@ SOLICITATION_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 
 # Cloud SQL connection details are handled in database_manager.py using env vars.
 # No direct database connection strings needed here.
+
+# RFQ Generation Configuration
+RFQ_USE_BOLD_FORMATTING = False
+RFQ_DEADLINE_OFFSET_BUSINESS_DAYS = 4
+RFQ_OUTPUT_FORMAT = "docx"
+RFQ_REMOVE_GOVERNMENT_DEADLINE = True
+RFQ_SHOW_ONLY_CAMPABLE_EMAIL = True
+RFQ_VENDOR_EMAIL = "john@campsable.com"
+RFQ_COMPANY_NAME = "Camp Sable, LLC"

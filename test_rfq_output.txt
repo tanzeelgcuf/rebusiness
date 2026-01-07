@@ -1,64 +1,92 @@
 Subject: RFQ: N0010425QNF13 - 59--CABLE ASSEMBLY,SPEC, IN REPAIR/MODIFICATION OF
 
-Notice ID: N0010425QNF13
-
-# 59--CABLE ASSEMBLY,SPEC, IN REPAIR/MODIFICATION OF
+Notice ID: N0010425QNF13; 59--CABLE ASSEMBLY,SPEC, IN REPAIR/MODIFICATION OF
 
 Dear Test Vendor:
 
-We are writing to request a formal quote for 59--cable assembly,spec, in repair/modification of. Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
-
-Your response is needed on or before February 23, 2026 in order for us to submit your bid.
+We are writing to request a formal quote for a 59--cable assembly,spec, in repair/modification of. Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
 
 If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
-[My signature info]
+John Campbell
+Procurement Manager
+Campsable LLC
 
-## Overview
 
-**Agency Issuing RFQ:**
-DEPT OF THE NAVY, NAVSUP WEAPON SYSTEMS SUPPORT MECH
-NAVSUP Weapon Systems Support, 5450 Carlisle Pike, Mechanicsburg, PA 17055
+## 🔹 OVERVIEW
+• **Agency:** DEPT OF THE NAVY, NAVSUP WEAPON SYSTEMS SUPPORT MECH
+  P O BOX 2020 5450 CARLISLE PIKE, MECHANICSBURG, PA 17050-0788 USA
+• **Type of Contract:** Firm Fixed Price
+• **Set-Aside:** Total Small Business Set-Aside
+• **Dates:** Oct 01, 2025
+• **Quotes Due:** Feb 27, 2026 03:30 pm EST
+• **Title:** 59--CABLE ASSEMBLY,SPEC, IN REPAIR/MODIFICATION OF
+• **Contract Number:** N0010425QNF13
+• **NAICS:** 335931 – Current-Carrying Wiring Device Manufacturing
+• **Size Standard:** 600 Employees
+• **DPAS Rating:** DO
 
-**Type of Contract:** Firm Fixed Price
-**Set-Aside Type:** Small Business
-**Solicitation Date:** 2025-10-01
-**Quotes Due:** 2026-02-27 03:30 PM EST
+## 🔹 ITEMS REQUIRED
+• **Item:** CABLE ASSEMBLY,SPEC
+• **Manufacturer CAGE:** 53711
+• **Manufacturer Part Number:** 6964587
+• **Description:** This is a requirement for the repair and modification of a CABLE ASSEMBLY,SPEC. The contractor will perform a teardown & evaluation (TD&E) within 90 days of receiving the carcass and then submit a Firm-Fixed Price quote for the full repair effort. The repair must meet the operational and functional requirements as specified by CAGE 53711, P/N 6964587, and associated drawings. The item must be mercury-free and serialized. All work must be performed in accordance with the contractor's standard repair practices and relevant technical documents.
 
-**NAICS Code:** 335931 -- Current-Carrying Wiring Device Manufacturing
-**Size Standard:** 600 employees
+| CLIN | Description | Quantity | Unit | Contract Type | Inspection | Packaging | Notes |
+|---|---|---|---|---|---|---|---|
+| 0001AA | Repair of CABLE ASSEMBLY,SPEC, NSN 5995016040910 | 2 | Each | Firm Fixed Price | Origin | MIL-STD-2073 | Vendor shall have 90 days after receipt of carcass(es) to complete a teardown & evaluation (TD&E) and submit a Firm-Fixed Price (FFP) quote for the full repair effort. |
 
-## Items Required
+• **Total Contract Quantity Range:**
+  Guaranteed Minimum: 2
+  Maximum Quantity: 2
 
-**Manufacturer CAGE:** Information not provided in solicitation
-**Manufacturer Part Number:** Information not provided in solicitation
-**NSN:** Information not provided in solicitation
+• **Packaging:** MIL-STD-2073
+  Preservation: Method 31, Level A
+  Quantity per Unit: 1
+  SPI Reference: 
 
-**Description:** CABLE ASSEMBLY,SPEC, IN REPAIR/MODIFICATION OF
+## 🔹 INSPECTION & TESTING
+• **Inspection Point:** Origin
+• **Acceptance Point:** Origin
+• **Inspection Agency:** Government
+• Contractor is responsible for all inspection requirements as specified in the solicitation.
+• Perform all inspection and testing as specified in the original manufacturer's specifications and drawings.
+• Keep complete records of all inspection work available to the Government for 365 days after final delivery.
+• **Quality Standard:** Original manufacturer's specifications and drawings
+• **Destructive Testing:** Included in unit price
 
-### CLIN Table
+## 🔹 DELIVERY REQUIREMENTS
+### General Delivery Terms
+• **FOB Point:** Origin
+• **Destination:** DDSP, New Cumberland, PA 17070-5002 (DODAAC: W25G1U)
+• **Schedule:** 160 Days Repair Turn Around Time (RTAT) after receipt of asset.
+• **Acceleration:** 
+• **Note:** "Days" means calendar days after order issuance.
+• **Estimated Duration:** The Contractor must obtain final inspection and acceptance by the Government for all assets within the RTAT. Price reductions will be incurred for not meeting the required RTAT.
 
-| CLIN | Description | Quantity | Type | Inspection | Quality | Notes |\n|------|-------------|----------|------|------------|---------|-------|\n| Information not provided in solicitation | Information not provided in solicitation | Information not provided in solicitation Information not provided in solicitation | FFP | Origin | Information not provided in solicitation | Information not provided in solicitation |\n
+## 🔹 DATA & ACCESS REQUIREMENTS
+• Drawings are included in the solicitation with Distribution Statement D (authorized to DoD and DoD contractors only). Access must be requested on the individual solicitation page on SAM.gov. After requesting access, an email must be sent to the POC listed on the solicitation.
 
-## Delivery Requirements
+## 🔹 SUBMISSION DETAILS
+• **Quote Submission:** Email
+• **Email:** HEATHER.R.JONES52.CIV@US.NAVY.MIL
+• **Subject Line:** Quote for N0010425QNF13 - CABLE ASSEMBLY,SPEC
+• **Due Date:** 4 business days prior
+• **Evaluation Basis:** Award will be based on solicitation requirements. Quotes must specify any exceptions. The cost of new (actual or estimated) must be included for evaluation purposes. Consideration for award will only be given to authorized distributors of the original manufacturer's item.
 
-**Ship To:**
-Information not provided in solicitation
-Information not provided in solicitation
-Information not provided in solicitation, Information not provided in solicitation Information not provided in solicitation
+## 🔹 DELIVERY SUMMARY TABLE
+| CLIN | Item | Description | Qty | Delivery | Frequency | Inspection | Ship-To | Notes |
+|---|---|---|---|---|---|---|---|---|
+| 0001AA | CABLE ASSEMBLY,SPEC | Repair/Modification of NSN 5995016040910 | 2 | 160 Days RTAT | One-time | Origin | DDSP, New Cumberland, PA 17070-5002 (DODAAC: W25G1U) | Requires 90-day Teardown & Evaluation (TD&E) prior to FFP quote submission. |
 
-**Lead Time:** Information not provided in solicitation Days ARO
-**First Delivery:** Information not provided in solicitation
-**Delivery Frequency:** Information not provided in solicitation
+## 🔹 SUMMARY OF WHAT THEY REQUIRE
+• The US Navy requires repair services for two (2) CABLE ASSEMBLY,SPEC units (NSN 5995016040910).
+• Vendors must first provide an estimated repair price, then perform a 90-day teardown and evaluation (TD&E) upon receiving the items, and finally submit a Firm-Fixed-Price quote for the full repair.
+• The requested Repair Turn Around Time (RTAT) is 160 days after receiving the items.
+• The repair must conform to the original manufacturer's specifications (CAGE 53711, P/N 6964587) and associated drawings.
+• Quotes are due by February 27, 2026, and must be submitted by an authorized distributor of the original manufacturer.
+• Packaging must adhere to MIL-STD-2073, and items must be marked per MIL-STD-129 and MIL-STD-130, including serialization.
 
-## Submission Details
-
-**Due Date:** 2026-02-27 03:30 PM EST
-**Internal Deadline:** February 23, 2026
-
-**Submit To:** HEATHER.R.JONES52.CIV@US.NAVY.MIL
-**Required:** SF 1449
-
----end of RFQ---
+-----End of letter/solicitation-----

@@ -4,58 +4,155 @@
   "title": "59--CABLE ASSEMBLY,SPEC, IN REPAIR/MODIFICATION OF",
   "overview": {
     "agency_name": "DEPT OF THE NAVY, NAVSUP WEAPON SYSTEMS SUPPORT MECH",
-    "agency_address": "NAVSUP Weapon Systems Support, 5450 Carlisle Pike, Mechanicsburg, PA 17055",
+    "agency_address": "P O BOX 2020 5450 CARLISLE PIKE, MECHANICSBURG, PA 17050-0788 USA",
     "contract_type": "Firm Fixed Price",
-    "set_aside": "Small Business",
-    "solicitation_date": "2025-10-01",
-    "quotes_due": "2026-02-27 03:30 PM EST",
+    "set_aside": "Total Small Business Set-Aside",
+    "solicitation_date": "Oct 01, 2025",
+    "quotes_due": "Feb 27, 2026 03:30 pm EST",
     "naics_code": "335931",
     "naics_description": "Current-Carrying Wiring Device Manufacturing",
-    "size_standard": "600 employees"
+    "size_standard": "600 Employees",
+    "dpas_rating": "DO"
   },
   "specifications": {
-    "manufacturer_cage": "Information not provided in solicitation",
-    "manufacturer_part_number": "Information not provided in solicitation",
-    "nsn": "Information not provided in solicitation",
-    "description": "CABLE ASSEMBLY,SPEC, IN REPAIR/MODIFICATION OF"
+    "item_requested": "CABLE ASSEMBLY,SPEC",
+    "manufacturer_cage": "53711",
+    "manufacturer_part_number": "6964587",
+    "nsn": "5995016040910",
+    "description": "This is a requirement for the repair and modification of a CABLE ASSEMBLY,SPEC. The contractor will perform a teardown & evaluation (TD&E) within 90 days of receiving the carcass and then submit a Firm-Fixed Price quote for the full repair effort. The repair must meet the operational and functional requirements as specified by CAGE 53711, P/N 6964587, and associated drawings. The item must be mercury-free and serialized. All work must be performed in accordance with the contractor's standard repair practices and relevant technical documents."
   },
   "clins": [
     {
-      "clin": "Information not provided in solicitation",
-      "description": "Information not provided in solicitation",
-      "quantity": "Information not provided in solicitation",
-      "unit": "Information not provided in solicitation",
-      "type": "FFP",
-      "inspection_point": "Origin",
-      "acceptance_point": "Origin",
-      "quality_level": "Information not provided in solicitation",
-      "packaging": "Information not provided in solicitation",
-      "notes": "Information not provided in solicitation"
+      "clin": "0001AA",
+      "description": "Repair of CABLE ASSEMBLY,SPEC, NSN 5995016040910",
+      "quantity": "2",
+      "unit": "Each",
+      "contract_type": "Firm Fixed Price",
+      "inspection": "Origin",
+      "packaging": "MIL-STD-2073",
+      "notes": "Vendor shall have 90 days after receipt of carcass(es) to complete a teardown & evaluation (TD&E) and submit a Firm-Fixed Price (FFP) quote for the full repair effort."
     }
   ],
-  "delivery_requirements": {
-    "fob_point": "Information not provided in solicitation",
-    "ship_to_address": {
-      "organization": "Information not provided in solicitation",
-      "street": "Information not provided in solicitation",
-      "city": "Information not provided in solicitation",
-      "state": "Information not provided in solicitation",
-      "zip": "Information not provided in solicitation"
-    },
-    "lead_time_days": "Information not provided in solicitation",
-    "delivery_frequency": "Information not provided in solicitation",
-    "calculated_first_delivery": "Information not provided in solicitation"
+  "quantity_range": {
+    "min": "2",
+    "max": "2"
   },
-  "submission": {
-    "method": "Information not provided in solicitation",
-    "email": "HEATHER.R.JONES52.CIV@US.NAVY.MIL",
-    "due_date": "2026-02-27 03:30 PM EST",
-    "required_forms": [
-      "SF 1449"
+  "packaging": {
+    "mil_std": "MIL-STD-2073",
+    "preservation": "Method 31, Level A",
+    "qty_per_unit": "1",
+    "spi": ""
+  },
+  "inspection_testing": {
+    "points": "Origin",
+    "agency": "Government",
+    "requirements": [
+      "Contractor is responsible for all inspection requirements as specified in the solicitation.",
+      "Perform all inspection and testing as specified in the original manufacturer's specifications and drawings.",
+      "Keep complete records of all inspection work available to the Government for 365 days after final delivery."
     ],
-    "evaluation_basis": "Information not provided in solicitation"
+    "quality_standard": "Original manufacturer's specifications and drawings"
   },
+  "delivery_requirements": {
+    "fob": "Origin",
+    "destination_address": "DDSP, New Cumberland, PA 17070-5002 (DODAAC: W25G1U)",
+    "schedule": "160 Days Repair Turn Around Time (RTAT) after receipt of asset.",
+    "acceleration": "",
+    "duration_notes": "The Contractor must obtain final inspection and acceptance by the Government for all assets within the RTAT. Price reductions will be incurred for not meeting the required RTAT."
+  },
+  "data_access": [
+    "Drawings are included in the solicitation with Distribution Statement D (authorized to DoD and DoD contractors only). Access must be requested on the individual solicitation page on SAM.gov. After requesting access, an email must be sent to the POC listed on the solicitation."
+  ],
+  "submission": {
+    "method": "Email",
+    "email": "HEATHER.R.JONES52.CIV@US.NAVY.MIL",
+    "subject": "Quote for N0010425QNF13 - CABLE ASSEMBLY,SPEC",
+    "due_date": "Feb 27, 2026 03:30 pm EST",
+    "evaluation": "Award will be based on solicitation requirements. Quotes must specify any exceptions. The cost of new (actual or estimated) must be included for evaluation purposes. Consideration for award will only be given to authorized distributors of the original manufacturer's item."
+  },
+  "delivery_summary_table": [
+    {
+      "clin": "0001AA",
+      "item": "CABLE ASSEMBLY,SPEC",
+      "description": "Repair/Modification of NSN 5995016040910",
+      "qty": "2",
+      "delivery": "160 Days RTAT",
+      "frequency": "One-time",
+      "inspection": "Origin",
+      "ship_to": "DDSP, New Cumberland, PA 17070-5002 (DODAAC: W25G1U)",
+      "notes": "Requires 90-day Teardown & Evaluation (TD&E) prior to FFP quote submission."
+    }
+  ],
+  "plain_terms_summary": [
+    "The US Navy requires repair services for two (2) CABLE ASSEMBLY,SPEC units (NSN 5995016040910).",
+    "Vendors must first provide an estimated repair price, then perform a 90-day teardown and evaluation (TD&E) upon receiving the items, and finally submit a Firm-Fixed-Price quote for the full repair.",
+    "The requested Repair Turn Around Time (RTAT) is 160 days after receiving the items.",
+    "The repair must conform to the original manufacturer's specifications (CAGE 53711, P/N 6964587) and associated drawings.",
+    "Quotes are due by February 27, 2026, and must be submitted by an authorized distributor of the original manufacturer.",
+    "Packaging must adhere to MIL-STD-2073, and items must be marked per MIL-STD-129 and MIL-STD-130, including serialization."
+  ],
   "contract_id": "218fe9a046",
-  "external_resource_links": [],
+  "external_resource_links": [
+    "http://quicksearch.dla.mil/",
+    "https://www.dsp.dla.mil/Programs/DMSMS/",
+    "https://www.dsp.dla.mil/Publications/Case-Studies/",
+    "https://jdeis.js.mil/jdeis/new_pubs/dictionary.pdf",
+    "https://www.dsp.dla.mil/Policy-Guidance/FAQs/Qualification/",
+    "https://www.dsp.dla.mil/Policy-Guidance/FAQs/Commercial-Item-Descriptions/",
+    "https://www.dsp.dla.mil/Get-Involved/Training-Events/",
+    "https://www.dsp.dla.mil/Specs-Standards/Types-of-DSP-Documents/",
+    "https://www.dsp.dla.mil/Programs/GIDEP/",
+    "https://www.shelflife.dla.mil/",
+    "https://www.dsp.dla.mil/Specs-Standards/List-of-DISR-documents/",
+    "https://www.dsp.dla.mil/Policy-Guidance/FAQs/Data-Item-Descriptions/",
+    "https://www.dsp.dla.mil/Contact-Us1/",
+    "https://www.dsp.dla.mil/Programs/International-Standardization/",
+    "https://www.dsp.dla.mil/Specs-Standards/COVID-19-Related-Standards/",
+    "https://www.dsp.dla.mil/Policy-Guidance/FAQs/Inactive-for-New-Design-Documents/",
+    "https://assist.dla.mil",
+    "https://errors.edgesuite.net/18.91a64668.1767644214.ff67d3cf",
+    "https://quicksearch.dla.mil/qsDocDetails.aspx?ident_number=113351",
+    "https://www.neco.navy.mil/biz_ops/840-v5soln.aspx?soln=N0010425QNF130001",
+    "https://www.dsp.dla.mil/Portals/26/Images/Journal/160415-DGZ853-001.gif",
+    "https://assistca.dla.mil/online/faqs/ASSIST_FAQs.pdf",
+    "https://assist.dla.mil/online/start/",
+    "https://www.dsp.dla.mil/Resources/Literature-/",
+    "https://asc.ansi.org",
+    "https://www.dsp.dla.mil/Portals/26/dodlogo.png?ver=6BqpSIFmn-YVURLllxQgOg%3d%3d",
+    "https://www.dsp.dla.mil/Specs-Standards/",
+    "https://www.dsp.dla.mil/Policy-Guidance/FAQs/Data-Requirements-in-Specs-Standards/",
+    "https://www.dsp.dla.mil/Home/Article/4117175/new-mosa-enabling-standard-in-assist/",
+    "https://quicksearch.dla.mil/qsDocDetails.aspx?ident_number=283456",
+    "https://www.dsp.dla.mil/Resources/Related-Websites/",
+    "https://www.dsp.dla.mil/Specs-Standards/International-Standardization-Documents/",
+    "https://www.dsp.dla.mil/Programs/MOSA/",
+    "https://www.dsp.dla.mil/Policy-Guidance/FAQs/Detailed-Military-Specifications-Standards/",
+    "https://www.dsp.dla.mil/",
+    "https://www.dsp.dla.mil/Programs/Item-Reduction/",
+    "https://www.dsp.dla.mil/Resources/Standardization-Template/",
+    "https://www.dsp.dla.mil/Publications/Conference-Proceedings-and-Papers/",
+    "http://www.dsp.dla.mil/",
+    "https://www.dsp.dla.mil/Home/DSPO-Leadership/",
+    "https://www.dsp.dla.mil/Programs/Joint-Standardization-Boards/",
+    "https://www.dsp.dla.mil/Home/Article/2856924/defense-standardization-executive-encourages-dod-participation-in-non-governmen/",
+    "https://www.dsp.dla.mil/Home/Article/3384575/the-united-states-government-national-standards-strategy/",
+    "https://www.dsp.dla.mil/Home/Management-Structure/",
+    "https://www.dsp.dla.mil/Policy-Guidance/FAQs/Performance-Specifications/",
+    "https://www.dsp.dla.mil/Policy-Guidance/FAQs/Referencing-Documents-in-Specs-Standards/",
+    "https://www.dsp.dla.mil/Policy-Guidance/FAQs/Locating-and-Ordering-Documents/",
+    "https://www.dsp.dla.mil/Programs/",
+    "https://www.dsp.dla.mil/Home/History-of-the-DSP/",
+    "https://www.dsp.dla.mil/Policy-Guidance/Key-Policy-Documents/",
+    "https://www.dsp.dla.mil/Programs/Achievement-Awards/",
+    "https://www.dsp.dla.mil/DSPTurns70/",
+    "https://www.dsp.dla.mil/Publications/DSP-Journal/",
+    "https://www.dsp.dla.mil/Programs/Non-Government-Standards/",
+    "https://www.dsp.dla.mil/Programs/Parts-Management/",
+    "https://qpldocs.dla.mil",
+    "https://www.dsp.dla.mil/Programs/Qualification/",
+    "https://www.dsp.dla.mil/Policy-Guidance/FAQs/Canceled-Documents/",
+    "https://www.dsp.dla.mil/Specs-Standards/Access-DSP-Documents/",
+    "https://quicksearch.dla.mil/"
+  ],
   "url": "https://sam.gov/opp/92341e2e45ca4323919060d2d4cfc62f/view"
 }

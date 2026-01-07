@@ -36,10 +36,25 @@ def test_fargo_moorhead_solicitation():
     # Attachments are handled within process_detail_page (via ensure_solicitation_directory and _deep_download_attachments)
     # The sol_data should contain basic info, the actual documents are in the directory.
     
+    print(f"Scraped sol_data: {json.dumps(sol_data, indent=2)}")
+    
+    from database_manager import DatabaseManager
+    db_manager = DatabaseManager()
+    db_manager.add_solicitation(
+        sol_data.get('contract_id'),
+        sol_url,
+        sol_data.get('title'),
+        sol_data.get('description'),
+        "USA",
+        None,
+        None,
+        json.dumps(sol_data)
+    )
+
     # Process with AttachmentReaderAgent
     print("--- Analyzing Content ---")
     reader_agent = AttachmentReaderAgent()
-    analysis = reader_agent.create_summary_report(sol_data)
+    analysis = reader_agent.create_summary_report(sol_data.get('contract_id'))
     
     print("--- Analysis Result ---")
     print(json.dumps(analysis, indent=2))

@@ -221,6 +221,21 @@ class DatabaseManager:
         except sqlite3.OperationalError:
             pass # Columns likely exist
 
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS rfq_outputs (
+                id INTEGER PRIMARY KEY,
+                contract_id TEXT NOT NULL UNIQUE,
+                rfq_type TEXT NOT NULL,  -- "PRODUCT" or "SERVICE"
+                rfq_content TEXT NOT NULL,
+                format TEXT DEFAULT 'markdown',
+                generated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                sent_to_vendor BOOLEAN DEFAULT 0,
+                vendor_email_recipient TEXT,
+                sent_date TIMESTAMP,
+                FOREIGN KEY (contract_id) REFERENCES solicitations(contract_id)
+            )
+        """)
+
         conn.commit()
         self._close_db()
         print("Database tables created or already exist.")
@@ -799,3 +814,83 @@ class DatabaseManager:
              return dict(row) if row else None
          finally:
              self._close_db()
+    def add_rfq_output(self, contract_id, rfq_type, rfq_content, format="markdown", sent_to_vendor=False):
+        """
+        Stores generated RFQ markdown output.
+        
+        Args:
+            contract_id: Contract ID
+            rfq_type: "PRODUCT" or "SERVICE"
+            rfq_content: Full RFQ markdown content
+            format: "markdown" or "docx"
+            sent_to_vendor: Whether this has been sent to vendor
+        """
+        conn = self._connect_db()
+        cursor = conn.cursor()
+        try:
+            # Create table if not exists (add this to create_tables too)
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS rfq_outputs (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    contract_id TEXT NOT NULL UNIQUE,
+                    rfq_type TEXT NOT NULL,
+                    rfq_content TEXT NOT NULL,
+                    format TEXT DEFAULT 'markdown',
+                    generated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    sent_to_vendor BOOLEAN DEFAULT 0,
+                    vendor_email_recipient TEXT,
+                    sent_date TIMESTAMP,
+                    FOREIGN KEY (contract_id) REFERENCES solicitations(contract_id)
+                )
+            """)
+            
+            # Insert or update
+            cursor.execute("""
+                INSERT INTO rfq_outputs (contract_id, rfq_type, rfq_content, format, sent_to_vendor)
+                VALUES (?, ?, ?, ?, ?)
+                ON CONFLICT(contract_id) DO UPDATE SET
+                    rfq_type=?,
+                    rfq_content=?,
+                    format=?,
+                    generated_date=CURRENT_TIMESTAMP
+            """, (contract_id, rfq_type, rfq_content, format, sent_to_vendor,
+                  rfq_type, rfq_content, format))
+            
+            conn.commit()
+            print(f"Stored RFQ for {contract_id} ({rfq_type}) in database.")
+            return True
+        except Exception as e:
+            print(f"Error storing RFQ for {contract_id}: {e}")
+            conn.rollback()
+            return False
+        finally:
+            self._close_db()
+
+    def get_rfq_output(self, contract_id):
+        """Retrieves the RFQ output for a contract."""
+        conn = self._connect_db()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("SELECT * FROM rfq_outputs WHERE contract_id = ?", (contract_id,))
+            row = cursor.fetchone()
+            return dict(row) if row else None
+        finally:
+            self._close_db()
+
+    def mark_rfq_sent(self, contract_id, recipient_email):
+        """Marks an RFQ as sent to a vendor."""
+        conn = self._connect_db()
+        cursor = conn.cursor()
+        try:
+            cursor.execute(
+                "UPDATE rfq_outputs SET sent_to_vendor = 1, vendor_email_recipient = ?, sent_date = CURRENT_TIMESTAMP WHERE contract_id = ?",
+                (recipient_email, contract_id)
+            )
+            conn.commit()
+            return True
+        except Exception as e:
+            print(f"Error marking RFQ for {contract_id} as sent: {e}")
+            conn.rollback()
+            return False
+        finally:
+            self._close_db()

@@ -48,14 +48,14 @@ def test_real_solicitation(url):
         
         # Save to database
         db_manager.add_solicitation(
-            contract_id=contract_id,
-            url=url,
-            title=solicitation_data.get('title'),
-            description=solicitation_data.get('description'),
-            location="USA",
-            product_requirements=None,
-            analysis_summary=None,
-            data=json.dumps(solicitation_data)
+            contract_id,
+            url,
+            solicitation_data.get('title'),
+            solicitation_data.get('description'),
+            "USA",
+            None,
+            None,
+            json.dumps(solicitation_data)
         )
         print(f"✓ Saved to database")
         
