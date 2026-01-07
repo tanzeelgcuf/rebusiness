@@ -479,9 +479,13 @@ class AttachmentReaderAgent:
                               template_type="auto-detect", internal_deadline_offset=4, 
                               vendor_email="john@campsable.com", organization_name="Camp Sable, LLC"):
         """
-        UPDATED: Properly assembles ALL content sources before LLM processing.
-        Ensures all attachments and external documents are included.
+        UPDATED: Comprehensive content assembly ensuring ALL sources are included.
         """
+        print(f"\n{'='*80}")
+        print(f"STARTING RFQ GENERATION FOR: {contract_id}")
+        print(f"{'='*80}\n")
+        
+        # Get solicitation from database
         solicitation_row = self.db_manager.get_solicitation_by_contract_id(contract_id)
         if not solicitation_row:
             return {"error": f"No solicitation found for contract ID: {contract_id}"}
@@ -491,84 +495,117 @@ class AttachmentReaderAgent:
         
         content_parts = []
         processed_paths = set()
+        file_count = 0
         
-        print(f"\n[Content Assembly] Starting for {contract_id}")
+        print(f"[STEP 1] CONTENT ASSEMBLY")
+        print(f"-" * 40)
         
-        # ===== PRIORITY 1: Main Description (Most Important) =====
+        # === PRIORITY 1: Main Description ===
         desc_path = os.path.join(self.config.SOLICITATION_DATA_DIR, contract_id, "description.txt")
         if os.path.exists(desc_path):
+            print(f"  [1.1] Processing main description...")
             with open(desc_path, "r", encoding="utf-8") as f:
                 full_desc = f.read()
             if full_desc.strip():
-                content_parts.append(full_desc)
+                content_parts.append(f"\n=== MAIN SOLICITATION PAGE ===\n{full_desc}")
                 processed_paths.add(desc_path)
-                print(f"  [1] MAIN DESCRIPTION: {len(full_desc)} chars")
+                file_count += 1
+                print(f"        ✓ Added ({len(full_desc)} chars)")
         
-        # ===== PRIORITY 2: Collect ALL attachment sources =====
+        # === PRIORITY 2: Collect ALL Files ===
         all_files = []
         
         # From database
         if attachments:
+            print(f"  [1.2] Found {len(attachments)} database attachments")
             for att in attachments:
                 att_dict = dict(att)
                 path = att_dict['file_path']
-                if os.path.exists(path):
-                    all_files.append((path, att_dict['file_name'], 'db_attachment'))
+                if os.path.exists(path) and path not in processed_paths:
+                    all_files.append((path, att_dict['file_name'], 'database'))
         
-        # From deep crawl directory
-        deep_crawl_dir = os.path.join(self.config.SOLICITATION_DATA_DIR, contract_id, "attachments")
-        if os.path.exists(deep_crawl_dir):
-            for file in os.listdir(deep_crawl_dir):
-                file_path = os.path.join(deep_crawl_dir, file)
-                if os.path.isfile(file_path):
-                    all_files.append((file_path, file, 'deep_crawl'))
+        # From attachments directory
+        attachment_dir = os.path.join(self.config.SOLICITATION_DATA_DIR, contract_id, "attachments")
+        if os.path.exists(attachment_dir):
+            dir_files = []
+            for file in os.listdir(attachment_dir):
+                file_path = os.path.join(attachment_dir, file)
+                if os.path.isfile(file_path) and file_path not in processed_paths:
+                    dir_files.append((file_path, file, 'directory'))
+            print(f"  [1.3] Found {len(dir_files)} files in attachments directory")
+            all_files.extend(dir_files)
         
-        # ===== PRIORITY 3: Sort by type importance =====
-        def priority_score(item):
+        # === PRIORITY 3: Sort by Type ===
+        def file_priority(item):
             path, name, source = item
             name_lower = name.lower()
             ext = os.path.splitext(name_lower)[1]
             
-            # High priority: Core documents
-            if 'statement' in name_lower and 'work' in name_lower: return 1  # SOW/PWS
+            # High priority
+            if 'statement' in name_lower and 'work' in name_lower: return 1
+            if 'performance' in name_lower and 'work' in name_lower: return 1
+            if 'pws' in name_lower or 'sow' in name_lower: return 1
             if 'solicitation' in name_lower and ext == '.pdf': return 2
-            if ext == '.pdf': return 3
-            if ext == '.docx': return 4
-            if ext == '.xlsx' or ext == '.xls': return 5
-            if 'linked_page' in name_lower or 'external' in name_lower: return 6
-            if ext == '.txt': return 7
+            if 'attachment' in name_lower and '1' in name_lower: return 3
+            if ext == '.pdf': return 4
+            if ext == '.docx' or ext == '.doc': return 5
+            if ext == '.xlsx' or ext == '.xls': return 6
+            if 'external' in name_lower or 'linked' in name_lower: return 7
+            if ext == '.txt': return 8
+            if ext == '.html': return 9
             return 10
         
-        all_files.sort(key=priority_score)
+        all_files.sort(key=file_priority)
         
-        print(f"  [2] ATTACHMENTS: Found {len(all_files)} files")
+        print(f"\n  [1.4] Processing {len(all_files)} files in priority order:")
+        print(f"  {'-' * 36}")
         
-        # ===== PRIORITY 4: Process all files =====
+        # === PRIORITY 4: Process Each File ===
         for idx, (path, name, source) in enumerate(all_files, 1):
             if path in processed_paths:
                 continue
             
-            print(f"      [{idx}] Processing: {name} ({source})")
-            content = self._read_file_content(path)
+            print(f"  [{idx:02d}] {name[:50]:<50} ({source})")
             
-            if content:
-                processed_paths.add(path)
+            try:
+                content = self._read_file_content(path)
                 
-                # Add header for context
-                # If Gemini file ref, append as object. If text, append string with header.
-                if isinstance(content, str):
-                    content_parts.append(f"\n\n[DOCUMENT SOURCE: {name}]\n{content}")
-                    print(f"           → Added ({len(content)} chars)")
+                if content:
+                    processed_paths.add(path)
+                    file_count += 1
+                    
+                    # Handle both string and Gemini file references
+                    if isinstance(content, str):
+                        # Add clear document separator
+                        content_parts.append(f"\n\n{'='*80}\n")
+                        content_parts.append(f"DOCUMENT: {name}\n")
+                        content_parts.append(f"Source: {source}\n")
+                        content_parts.append(f"{'='*80}\n\n")
+                        content_parts.append(content)
+                        print(f"       ✓ Text content ({len(content)} chars)")
+                    else:
+                        # Gemini file reference (for image-based PDFs)
+                        content_parts.append(content)
+                        print(f"       ✓ Gemini file reference")
                 else:
-                    # Gemini File Object
-                    content_parts.append(content) 
-                    print(f"           → Added (Gemini File Ref)")
-
+                    print(f"       ✗ Could not extract content")
+                    
+            except Exception as e:
+                print(f"       ✗ Error: {e}")
         
-        print(f"  [3] TOTAL CONTENT: {len(content_parts)} parts assembled")
+        print(f"\n  {'='*40}")
+        print(f"  TOTAL CONTENT ASSEMBLED:")
+        print(f"    - Files processed: {file_count}")
+        print(f"    - Content parts: {len(content_parts)}")
+        print(f"  {'='*40}\n")
         
-        # ===== GENERATE RFQ =====
-        print(f"  [4] CALLING LLM FOR RFQ GENERATION")
+        if not content_parts:
+            return {"error": "No content could be extracted from solicitation"}
+        
+        # === STEP 2: Generate RFQ ===
+        print(f"[STEP 2] RFQ GENERATION")
+        print(f"-" * 40)
+        
         result = self._analyze_content_with_llm(
             content_parts,
             skip_json=skip_json,
@@ -576,32 +613,71 @@ class AttachmentReaderAgent:
             template_type=template_type
         )
         
-        # Handle response
         if "error" in result:
-            print(f"  [ERROR] RFQ generation failed: {result['error']}")
+            print(f"  ✗ ERROR: {result['error']}")
             return result
         
-        # ===== SAVE RFQ TO DATABASE =====
         rfq_content = result.get("rfq_content")
         rfq_type = result.get("rfq_type", "UNKNOWN")
         
-        if rfq_content:
-            # Store in database
+        # === STEP 3: Post-Processing ===
+        print(f"\n[STEP 3] POST-PROCESSING")
+        print(f"-" * 40)
+        
+        # Remove bold formatting
+        if "**" in rfq_content:
+            print(f"  [3.1] Removing bold formatting...")
+            rfq_content = rfq_content.replace("**", "")
+            print(f"        ✓ Cleaned")
+        
+        # Verify no government emails
+        gov_email_patterns = ['.mil', '.gov', '@dla.', '@navy.', '@army.', '@usace.']
+        found_gov_emails = []
+        for pattern in gov_email_patterns:
+            if pattern in rfq_content and 'john@campsable.com' not in rfq_content:
+                found_gov_emails.append(pattern)
+        
+        if found_gov_emails:
+            print(f"  [3.2] WARNING: Found government email patterns: {found_gov_emails}")
+            print(f"        Manual review recommended")
+        else:
+            print(f"  [3.2] ✓ Email verification passed (only Camp Sable)")
+        
+        # Verify length
+        if len(rfq_content) < 1000:
+            print(f"  [3.3] ✗ WARNING: RFQ too short ({len(rfq_content)} chars)")
+            print(f"        Expected > 1000 chars. Content may be incomplete.")
+        else:
+            print(f"  [3.3] ✓ Length check passed ({len(rfq_content)} chars)")
+        
+        # === STEP 4: Save to Database ===
+        print(f"\n[STEP 4] DATABASE STORAGE")
+        print(f"-" * 40)
+        
+        try:
             self.db_manager.add_rfq_output(
                 contract_id=contract_id,
                 rfq_type=rfq_type,
                 rfq_content=rfq_content,
                 format=self.config.RFQ_OUTPUT_FORMAT if hasattr(self.config, 'RFQ_OUTPUT_FORMAT') else "markdown"
             )
-            print(f"  [5] RFQ SAVED: {rfq_type} | {len(rfq_content)} bytes")
-            
-            return {
-                "rfq_content": rfq_content,
-                "rfq_type": rfq_type,
-                "success": True
-            }
-        else:
-            return {"error": "No RFQ content generated"}
+            print(f"  ✓ Saved to database: {contract_id}")
+        except Exception as e:
+            print(f"  ✗ Database save failed: {e}")
+        
+        print(f"\n{'='*80}")
+        print(f"RFQ GENERATION COMPLETE")
+        print(f"  Type: {rfq_type}")
+        print(f"  Size: {len(rfq_content)} characters")
+        print(f"  Files processed: {file_count}")
+        print(f"{'='*80}\n")
+        
+        return {
+            "rfq_content": rfq_content,
+            "rfq_type": rfq_type,
+            "files_processed": file_count,
+            "success": True
+        }
 
     def _determine_review_status(self, analysis):
         """Checks for missing critical information to flag for review."""

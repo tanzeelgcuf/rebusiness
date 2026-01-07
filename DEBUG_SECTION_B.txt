@@ -1,0 +1,28 @@
+
+SECTION B
+SUPPLIES OR SERVICES AND PRICES/COSTS
+WSSTERMBA00
+CONTACT INFORMATION
+When a DCMA office is shown on a Contract/Purchase Order, the Administrative Contracting Officer (ACO) is the primary
+point of contact and all inquiries shall initially be directed to that office for necessary action.
+Inquiries and correspondence directed to the Post Award PCO should be addressed as follows:
+Code: ( <N744.24> ) Weapon System LRC: ( <CFC> )
+Telephone: ( <771-229-0476> )
+E-Mail: ( <HEATHER.R.JONES52.CIV@US.NAVY.MIL> )
+In the event that the listed PCO contact information is no longer valid and a follow-on PCO cannot be identified,
+contact itimp.wss.fct@navy.mil.
+WSSTERMBZ01
+IMPORTANT NOTICE REGARDING INVENTORY TRANSACTION REPORTING
+Inventory transaction reporting requirements have changed for NAVSUP Weapon System Support (NAVSUPWSS) contracts.
+These requirements are detailed in Section F, and the contractor should read this section carefully to ensure
+compliance. Detailed information on Commercial Asset Visibility (CAV) Repairables Portal(RP) reporting requirements
+can be found in the CAV Statement of Work (SOW) located at:
+https://www.navsup.navy.mil/NAVSUP-Enterprise/NAVSUP-Weapon-Systems-Support/ Provisions-Instructions-and-Contract/
+Questions can be addressed to usn.philadelphia.navsupwssphil.mbx.cavsaar@us.navy.mil for NAVSUP WSS Philadelphia
+solicitations and contracts (document numbers beginning with N00383) and to
+usn.mechanicsburg.navsupwssmech.mbx.mech-cav-saar@us.navy.mil for NAVSUP WSS Mechanicsburg solicitations and
+contracts (document numbers beginning with N00104).
+(09-23)
+WSSTERMBZ04
+IMPORTANT NOTICE REGARDING HAZARDOUS MATERIAL
+FAR clause 52.223-3, Hazardous Material Identification and Material Safety Data, is incorporated by reference in

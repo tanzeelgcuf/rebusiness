@@ -460,73 +460,134 @@ class SamGovAgent:
         print(f"    [Deep Crawl] Saved failure info: {text_filename}")
     def _process_external_link(self, page, url, save_dir):
         """
-        Visit an external link and attempt to download files using Playwright.
-        Also saves page content for AttachmentReaderAgent extraction.
+        Enhanced external link processor with multiple fallback strategies.
+        Handles restricted portals like neco.navy.mil with retry logic.
         """
-        print(f"    [Deep Link] Visiting: {url}")
+        print(f"    [External Link] Processing: {url}")
+        
+        # Skip if already processed
+        if url in self.visited_links:
+            print(f"    [External Link] Already visited, skipping")
+            return
+        
+        self.visited_links.add(url)
+        
         try:
-            # We use the existing page to share session/cookies if applicable, 
-            # BUT we must be careful not to losing context.
-            # Ideally, we open a new tab/page for this external excursion.
-            # check if self.context exists
             ex_page = self.context.new_page()
             
             try:
-                # 1. Try Direct Download
+                # Strategy 1: Direct download attempt
+                print(f"    [Strategy 1] Attempting direct download...")
                 try:
-                    with ex_page.expect_download(timeout=10000) as download_info:
-                        ex_page.goto(url, timeout=20000)
+                    with ex_page.expect_download(timeout=15000) as download_info:
+                        ex_page.goto(url, timeout=30000, wait_until="domcontentloaded")
                     
                     download = download_info.value
-                    safe_name = f"external_{int(time.time())}_{download.suggested_filename}"
-                    download.save_as(os.path.join(save_dir, safe_name))
-                    print(f"    [Deep Link] Direct Download Success: {safe_name}")
+                    safe_name = f"ext_{int(time.time())}_{download.suggested_filename}"
+                    save_path = os.path.join(save_dir, safe_name)
+                    download.save_as(save_path)
+                    print(f"    [Success] Direct download: {safe_name}")
                     return
                 except:
-                    # Page loaded normally (no auto download)
+                    # Not a direct download
                     pass
                 
-                # 2. Page Analysis - Save content for extraction
-                ex_page.wait_for_load_state("domcontentloaded", timeout=5000)
+                # Strategy 2: Page loaded - extract content
+                print(f"    [Strategy 2] Extracting page content...")
+                ex_page.wait_for_load_state("domcontentloaded", timeout=10000)
                 
-                # CRITICAL: Save page content as text file
+                # Save full HTML for complex pages
+                page_html = ex_page.content()
+                safe_name = re.sub(r'[^a-zA-Z0-9]', '_', url.split('//')[1][:50])
+                html_path = os.path.join(save_dir, f"external_{safe_name}.html")
+                
+                with open(html_path, 'w', encoding='utf-8') as f:
+                    f.write(f"<!-- Source: {url} -->\n")
+                    f.write(page_html)
+                print(f"    [Success] Saved HTML: external_{safe_name}.html")
+                
+                # Extract visible text
                 try:
                     page_text = ex_page.locator("body").inner_text()
-                    if page_text and len(page_text) > 100:
-                        safe_name = re.sub(r'[^a-zA-Z0-9]', '_', url.split('//')[1][:50])
-                        text_filename = f"external_link_{safe_name}.txt"
-                        text_path = os.path.join(save_dir, text_filename)
-                        
+                    if page_text and len(page_text) > 200:
+                        text_path = os.path.join(save_dir, f"external_{safe_name}.txt")
                         with open(text_path, 'w', encoding='utf-8') as f:
                             f.write(f"Source URL: {url}\n")
                             f.write("="*80 + "\n\n")
                             f.write(page_text)
-                        
-                        print(f"    [Deep Link] Saved page content: {text_filename} ({len(page_text)} chars)")
+                        print(f"    [Success] Saved text: {len(page_text)} chars")
                 except Exception as e:
-                    print(f"    [Deep Link] Could not save page text: {e}")
+                    print(f"    [Warning] Could not extract text: {e}")
                 
-                # Look for explicit download buttons
-                buttons = ex_page.get_by_text("Download", exact=False)
-                if buttons.count() > 0:
-                     print(f"    [Deep Link] Found 'Download' elements. Clicking top one...")
-                     try:
-                         with ex_page.expect_download(timeout=10000) as download_info:
-                             buttons.first.click()
-                         download = download_info.value
-                         safe_name = f"external_{int(time.time())}_{download.suggested_filename}"
-                         download.save_as(os.path.join(save_dir, safe_name))
-                         print(f"    [Deep Link] Click Download Success: {safe_name}")
-                     except:
-                         pass
-                         
+                # Strategy 3: Look for download buttons/links
+                print(f"    [Strategy 3] Searching for download elements...")
+                download_selectors = [
+                    "a:has-text('Download')",
+                    "button:has-text('Download')",
+                    "a:has-text('PDF')",
+                    "a[href$='.pdf']",
+                    "a[href$='.docx']",
+                    "a[href$='.xlsx']",
+                    "a:has-text('Additional Documents')",
+                    "a:has-text('Attachments')"
+                ]
+                
+                for selector in download_selectors:
+                    try:
+                        elements = ex_page.query_selector_all(selector)
+                        if elements:
+                            print(f"    [Found] {len(elements)} elements matching '{selector}'")
+                            for idx, elem in enumerate(elements[:5]):  # Limit to 5
+                                try:
+                                    href = elem.get_attribute('href')
+                                    if href:
+                                        # Handle relative URLs
+                                        if not href.startswith('http'):
+                                            from urllib.parse import urljoin
+                                            href = urljoin(url, href)
+                                        
+                                        print(f"      [Downloading] Link {idx+1}: {href[:60]}...")
+                                        
+                                        # Try download
+                                        with ex_page.expect_download(timeout=10000) as dl_info:
+                                            elem.click()
+                                        
+                                        dl = dl_info.value
+                                        dl_name = f"ext_link_{idx}_{dl.suggested_filename}"
+                                        dl.save_as(os.path.join(save_dir, dl_name))
+                                        print(f"      [Success] Downloaded: {dl_name}")
+                                except Exception as e:
+                                    # Not a download or failed
+                                    continue
+                    except:
+                        continue
+                
+                # Strategy 4: Screenshot for complex layouts
+                try:
+                    screenshot_path = os.path.join(save_dir, f"screenshot_{safe_name}.png")
+                    ex_page.screenshot(path=screenshot_path, full_page=True)
+                    print(f"    [Success] Saved screenshot")
+                except:
+                    pass
+                    
             except Exception as e:
-                print(f"    [Deep Link] Failed to process {url}: {e}")
+                print(f"    [Error] Processing failed: {e}")
+                
+                # Strategy 5: Save error info for LLM
+                error_path = os.path.join(save_dir, f"FAILED_ACCESS_{safe_name}.txt")
+                with open(error_path, 'w', encoding='utf-8') as f:
+                    f.write(f"FAILED TO ACCESS: {url}\n")
+                    f.write(f"Error: {str(e)}\n")
+                    f.write("="*80 + "\n\n")
+                    f.write("This link was found but could not be accessed.\n")
+                    f.write("LLM: Please try to infer data from other sources or mark as unavailable.\n")
+                print(f"    [Saved] Failure info for LLM processing")
+                
             finally:
                 ex_page.close()
                 
         except Exception as e:
-            print(f"    [Deep Link] Critical Error: {e}")
+            print(f"    [Critical Error] {e}")
 
     def search_for_new_solicitations(self, search_term):
         print("--- Searching for new solicitations (Playwright) ---")
@@ -882,22 +943,11 @@ class SamGovAgent:
             # Use the new helper method to find and fetch external links
             external_links = self._extract_external_links(detail_page.content(), base_url=url)
             if external_links:
-                print(f"    [Deep Dive] Found {len(external_links)} potential external links. analyzing...")
-                clicked_count = 0
-                for link in external_links:
-                    if clicked_count >= 10: break # Safety limit (increased for portals)
-                    # Filter out purely navigational/junk links if regex wasn't enough
-                    if "sam.gov" in link and "opp" not in link: continue 
-                    
-                    self._process_external_link(detail_page, link, attachment_dir) 
-                    
-                    # New Recursive Crawl for critical external portals
-                    if depth_enabled := False: 
-                         # self.visited_links is a set on the class, careful about resets
-                         # Use at least depth 2 for portals to reach the actual files
-                         self._recursive_crawl(link, depth=1, max_depth=2, target_dir=attachment_dir)
-
-                    clicked_count += 1
+                print(f"    [Deep Crawl] Found {len(external_links)} external links")
+                for idx, link in enumerate(external_links[:15], 1):  # Increased limit
+                    print(f"    [Link {idx}/{len(external_links)}] Processing...")
+                    self._process_external_link(detail_page, link, attachment_dir)
+                    time.sleep(1)  # Rate limiting
 
             # --- REGISTER ALL DOWNLOADS IN DB ---
             self._register_attachments_in_db(contract_id, attachment_dir)

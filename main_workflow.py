@@ -17,6 +17,7 @@ from database_manager import DatabaseManager
 # Setup Logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger()
+from datetime import datetime
 
 KEYWORD_CHECKPOINT_FILE = "keyword_checkpoint.json"
 
@@ -59,34 +60,36 @@ def process_single_url(url, db_manager, scraper):
         result = reader.create_summary_report(contract_id, skip_json=True, strict_fidelity=True)
         
         if "error" in result:
-            logger.error(f"  Extraction/Analysis failed for {contract_id}: {result['error']}")
+            logger.error(f"  [!] Extraction/Analysis failed for {contract_id}: {result['error']}")
         else:
             rfq_content = result.get("rfq_content")
             rfq_type = result.get("rfq_type", "UNKNOWN")
             
             if rfq_content:
                 # 4. Store the high-fidelity RFQ in DB
-                db_manager.add_rfq_output(contract_id, rfq_type, rfq_content, format=config.RFQ_OUTPUT_FORMAT)
-                logger.info(f"  Success! RFQ Generated ({rfq_type}) and saved to DB.")
+                db_manager.add_rfq_output(contract_id, rfq_type, rfq_content, format="docx")
+                logger.info(f"  [+] RFQ Content Generated ({rfq_type} | {len(rfq_content)} chars)")
                 
-                # 5. Save as .docx file
+                # 5. Save as .docx file (PRIMARY FORMAT)
                 filename = f"{contract_id}_RFQ_{rfq_type}.docx"
-                output_path = os.path.join("rfq_outputs", filename)
-                os.makedirs("rfq_outputs", exist_ok=True)
+                output_dir = os.path.join("rfq_downloads", datetime.now().strftime("%Y-%m-%d"))
+                os.makedirs(output_dir, exist_ok=True)
+                output_path = os.path.join(output_dir, filename)
                 
-                # Convert Markdown to DOCX
+                logger.info(f"  [>] Converting to DOCX...")
                 from utils.doc_converter import convert_md_to_docx
+                
                 if convert_md_to_docx(rfq_content, output_path):
-                    logger.info(f"  Saved RFQ DOCX to: {output_path}")
+                    logger.info(f"  [SUCCESS] Saved DOCX: {output_path}")
                 else:
                     # Fallback to Markdown
                     md_path = output_path.replace(".docx", ".md")
                     with open(md_path, "w", encoding="utf-8") as f:
                         f.write(rfq_content)
-                    logger.warning(f"  DOCX conversion failed. Saved as MD: {md_path}")
+                    logger.warning(f"  [FALLBACK] DOCX conversion failed. Saved as MD: {md_path}")
 
             else:
-                logger.error(f"  No RFQ content returned for {contract_id}")
+                logger.error(f"  [!] No RFQ content returned for {contract_id}")
 
     except Exception as e:
         logger.error(f"Scraper failed for {url}: {e}")
@@ -223,7 +226,7 @@ def process_extract_and_generate_rfq(url, args):
         )
         
         if "error" in result:
-            logger.error(f"Generation failed: {result['error']}")
+            logger.error(f"  [!] Generation failed: {result['error']}")
         else:
             # Result is dict {"rfq_content": ..., "rfq_type": ...}
             rfq_content = result.get("rfq_content")
@@ -232,24 +235,27 @@ def process_extract_and_generate_rfq(url, args):
             if rfq_content:
                 # Save to DB first
                 # Note: config.RFQ_OUTPUT_FORMAT drives the stored format meta, but we store raw content usually
-                db_manager.add_rfq_output(contract_id, rfq_type, rfq_content, format=config.RFQ_OUTPUT_FORMAT)
+                db_manager.add_rfq_output(contract_id, rfq_type, rfq_content, format="docx")
                 
                 # Save to file
-                output_filename = f"{contract_id}_RFQ_{rfq_type}.{config.RFQ_OUTPUT_FORMAT}"
-                output_path = os.path.join(os.getcwd(), output_filename)
+                filename = f"{contract_id}_RFQ_{rfq_type}.docx"
+                output_dir = os.path.join("rfq_downloads", datetime.now().strftime("%Y-%m-%d"))
+                os.makedirs(output_dir, exist_ok=True)
+                output_path = os.path.join(output_dir, filename)
                 
-                if config.RFQ_OUTPUT_FORMAT == "docx":
-                    from utils.doc_converter import convert_md_to_docx
-                    if convert_md_to_docx(rfq_content, output_path):
-                         logger.info(f"Success! RFQ ({rfq_type}) saved to {output_filename} and DB.")
-                    else:
-                         logger.error(f"Failed to save DOCX to {output_filename}")
+                logger.info(f"  [>] Converting to DOCX...")
+                from utils.doc_converter import convert_md_to_docx
+                
+                if convert_md_to_docx(rfq_content, output_path):
+                     logger.info(f"  [SUCCESS] RFQ ({rfq_type}) saved to {output_path} and DB.")
                 else:
-                    with open(output_path, "w", encoding="utf-8") as f:
-                        f.write(rfq_content)
-                    logger.info(f"Success! RFQ ({rfq_type}) saved to {output_filename} and DB.")
+                     # Fallback
+                     md_path = output_path.replace(".docx", ".md")
+                     with open(md_path, "w", encoding="utf-8") as f:
+                         f.write(rfq_content)
+                     logger.warning(f"  [FALLBACK] Failed to save DOCX. Saved MD to {md_path}")
             else:
-                logger.error("No RFQ content returned.")
+                logger.error("  [!] No RFQ content returned.")
 
     except Exception as e:
         logger.error(f"Failed to process: {e}")

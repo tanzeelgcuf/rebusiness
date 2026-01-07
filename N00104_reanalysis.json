@@ -1,0 +1,182 @@
+{
+  "solicitation_type": "SERVICE",
+  "notice_id": "N00104-25-Q-NF13",
+  "project_title": "Teardown, Evaluate, Repair and/or Modify CABLE ASSEMBLY,SPEC (NSN 5995-01-604-0910)",
+  "in_summary": {
+    "they_want": "The government requires teardown, evaluation, and firm-fixed-price repair services for two CABLE ASSEMBLY,SPEC units (NSN 5995-01-604-0910) to restore them to a fully operable condition in accordance with specified drawings and standards.",
+    "time_frame": "A Repair Turn Around Time (RTAT) of 160 days is requested from receipt of the item ('carcass').",
+    "delivery_locations": "Repaired units are to be shipped to DLA DISTRIBUTION, DDSP NEW CUMBERLAND FACILITY, 2083 NORMANDY DRIVE DOOR 113 TO 134, NEW CUMBERLAND, PA 17070-5002."
+  },
+  "acceptance_criteria": [
+    "Final inspection and acceptance will be performed by the Government at the contractor's facility (Origin).",
+    "The contractor must obtain final Government acceptance for all assets within the established Repair Turn Around Time (RTAT) of 160 days.",
+    "Repaired items must be restored to an 'operable condition,' defined as capable of functioning and performing as a new unit, though not necessarily having the appearance of newness.",
+    "Failure to meet the required RTAT will incur a price reduction per unit."
+  ],
+  "attachment_summaries": {
+    "attachment_1": "This attachment, titled 'NOTES', provides administrative guidance on how to order referenced documents (e.g., Military/Federal Specifications, Ordnance Standards), a notice that only authorized distributors will be considered for award, and definitions for the seven types of Distribution Statement codes (A, B, C, D, E, F, X) used on technical documents."
+  },
+  "project_overview": {
+    "agency_name": "NAVSUP Weapon Systems Support (NAVSUP WSS), Mechanicsburg",
+    "office_location": "5450 CARLISLE PIKE, MECHANICSBURG, PA 17050-2411",
+    "purpose": "To acquire teardown, evaluation, and repair services for CABLE ASSEMBLY,SPEC units, restoring them to an operable condition as defined by the manufacturer's original specifications and drawings."
+  },
+  "project_summary": {
+    "contract_type": "Firm Fixed Price (FFP) after Teardown & Evaluation",
+    "purpose": "To repair CABLE ASSEMBLY,SPEC units to restore them to an operable condition capable of functioning and performing as new.",
+    "total_work_area": {
+      "base_acres": "N/A - Technical Service (Repair of 2 Units)",
+      "option_acres": 0
+    },
+    "work_locations": [
+      {
+        "site_id": "N/A",
+        "county": "Contractor's Facility (TBD at Award)",
+        "state": "",
+        "acreage": 0,
+        "description": "Repair of electronic cable assemblies."
+      }
+    ]
+  },
+  "scope_categories": [
+    {
+      "category": "Teardown & Evaluation (TD&E)",
+      "description": "Perform inspection, disassembly, and tests on Government Furnished Property (GFP) to determine the extent of labor and material needed to restore the items to an operable condition."
+    },
+    {
+      "category": "Repair and Modification",
+      "description": "Provide labor and material required to repair and/or modify the CABLE ASSEMBLY,SPEC units in accordance with drawings, technical orders, and approved repair standards. Repaired items must be mercury-free and serialized."
+    },
+    {
+      "category": "Reporting and Documentation",
+      "description": "Submit a Firm-Fixed Price (FFP) quote after TD&E. Utilize the Commercial Asset Visibility Repairables Portal (CAV RP) for inventory transaction reporting."
+    },
+    {
+      "category": "Packaging and Marking",
+      "description": "Preserve, package, pack, and mark all repaired items in accordance with MIL-STD-2073 and MIL-STD-129. Apply unique identification (IUID) markings per MIL-STD-130."
+    }
+  ],
+  "timeline": {
+    "periods": [
+      {
+        "year": "Year 1",
+        "date_range": "From date of award through completion of repair.",
+        "activities": [
+          "Receipt of 'carcass' (item to be repaired).",
+          "Complete Teardown & Evaluation (TD&E) within 90 days of receipt.",
+          "Submit a Firm-Fixed Price (FFP) quote for full repair at 90 days.",
+          "Complete full repair and obtain Government acceptance within 160-day Repair Turn Around Time (RTAT)."
+        ]
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Firm-Fixed Price (FFP) Quote for Full Repair Effort",
+        "due_days": "90 days after receipt of carcass(es)",
+        "format": "Detailed pricing proposal"
+      },
+      {
+        "name": "Repaired CABLE ASSEMBLY,SPEC units",
+        "due_days": "160 days (Requested RTAT) after receipt of carcass(es)",
+        "format": "Physical units"
+      }
+    ]
+  },
+  "compliance": {
+    "key_requirements": [
+      "Material must be Mercury-Free.",
+      "Repaired units must be physically marked and identified in accordance with MIL-STD-129 and MIL-STD-130.",
+      "Serialization is required in accordance with Drawing 6964587 note 14 per 6964860.",
+      "Commercial Asset Visibility Repairables Portal (CAV RP) reporting is mandatory.",
+      "Packaging must conform to MIL-STD-2073.",
+      "Repair must adhere to all drawings and specifications listed, including Drawing 6964587 and MIL-STD-681."
+    ],
+    "insurance": {
+      "general_liability": "Standard Commercial Liability as per FAR Part 28 (General, Auto, Workers Comp)",
+      "auto_liability": "Standard Commercial Liability as per FAR Part 28 (General, Auto, Workers Comp)",
+      "workers_comp": "Standard Commercial Liability as per FAR Part 28 (General, Auto, Workers Comp)"
+    },
+    "wage_determination": "Federal Contractor Standards (SCA or Walsh-Healey as applicable)"
+  },
+  "submission": {
+    "method": "Email",
+    "address": "NAVSUP WEAPON SYSTEMS SUPPORT MECH, 5450 CARLISLE PIKE, MECHANICSBURG, PA 17050-2411. Email to: HEATHER.R.JONES52.CIV@US.NAVY.MIL",
+    "due_date": "2026-02-27 16:30 ET",
+    "required_documents": [
+      "Completed SF 18 (Request for Quotations)",
+      "Completed Section B (Schedule of Supplies/Services and Prices)",
+      "Completed Section K (Representations, Certifications)"
+    ]
+  },
+  "contract_id": "N0010425QNF13",
+  "external_resource_links": [
+    "https://www.dla.mil/HQ/",
+    "https://wawf.eb.mil/",
+    "https://www.fsrs.gov",
+    "https://www.sprs.csd.disa.mil/",
+    "https://orca.bpn.gov/login.aspx",
+    "https://www.neco.navy.mil/secure/register/login.aspx",
+    "https://public.cyber.mil/eca/",
+    "https://applications.navsup.navy.mil/neco/buyer/login.aspx",
+    "https://www.neco.navy.mil/link/codes.aspx",
+    "https://www.navsup.navy.mil/NAVSUP-Enterprise/NAVSUP-Weapon-Systems-Support",
+    "http://www.acq.osd.mil/dpap/dars/class_deviations.html",
+    "www.acq.osd.mil/dpap/dars/dfarspgi/current/",
+    "https://www.neco.navy.mil/link/header.html",
+    "https://forms.documentservices.dla.mil/order/",
+    "https://www.navsup.navy.mil/NAVSUP-Enterprise/NAVSUP-Weapon-Systems-Support/",
+    "https://www.neco.navy.mil/biz_ops/840-clauseRef.aspx?hkey=244152798",
+    "https://sam.gov",
+    "https://dodprocurementtoolbox.com/sitepages/gfp-resources",
+    "https://quicksearch.dla.mil/&nbsp",
+    "https://www.navsup.navy.mil/NAVSUP-Enterprise/NAVSUP-Weapon-Systems-Support/Pro",
+    "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-171r2.pdf",
+    "http://www.dlis.dla.mil/ccal/",
+    "https://www.acq.osd.mil/asda/dpc/ce/ds/unique-id.html",
+    "https://www.neco.navy.mil/biz_ops/~/Content/neco.style.css",
+    "https://www.sam.gov",
+    "https://www.neco.navy.mil/biz_ops/840-v5soln.aspx?soln=N0010425QNF13",
+    "https://www.neco.navy.mil/synopsis/synopsis.aspx",
+    "https://piee.eb.mil/",
+    "https://errors.edgesuite.net/18.68d02e17.1767653939.46adf9c7",
+    "https://www.neco.navy.mil/Faq/faq.aspx",
+    "http://www.aimglobal.org/?Reg_Authority15459",
+    "http://qpldocs.dla.mil/",
+    "https://www.esd.whs.mil/dd",
+    "https://home.daas.dla.mil/daashome/daasinq.asp",
+    "https://assist.dla.mil",
+    "http://www.archives.gov/cui/registry/category-list.html",
+    "http://www.fsrs.gov",
+    "https://www.dsp.dla.mil/",
+    "https://www.neco.navy.mil/link/nnotes.aspx",
+    "https://quicksearch.dla.mil/",
+    "https://www.neco.navy.mil/link/feedback.aspx?subj=NECO_Comment",
+    "https://errors.edgesuite.net/18.68d02e17.1767653938.46addfb9",
+    "http://quicksearch.dla.mil/",
+    "http://dx.doi.org/10.6028/NIST.SP.800-171",
+    "https://www.neco.navy.mil/secure/register/register.aspx?from=1",
+    "https://www.neco.navy.mil/link/linkspage.aspx?site=1",
+    "https://www.fedramp.gov/documents-templates/",
+    "http://www.mhi.org",
+    "https://dibnet.dod.mil",
+    "https://www.sam.gov/",
+    "http://www.dsp.dla.mil/",
+    "https://www.neco.navy.mil/Content/css/main?v=JU7vXEvMSDQ4E6dcHq1E7-KXeMXg0bTR08LyOtPjupM1",
+    "https://applications.navsup.navy.mil/neco/secure/admin/Helpdesk_Login.aspx",
+    "https://www.neco.navy.mil/index.aspx",
+    "http://support.outreachsystems.com/resources/tables/pscs/",
+    "https://www.neco.navy.mil/synopsis/synopsis.aspx?solnum=N0010425QNF13",
+    "www.acquisition.gov",
+    "http://quicksearch.dla.mil",
+    "https://www.sba.gov/document/support--table-size-standards",
+    "https://www.neco.navy.mil/biz_ops/search_edi.aspx",
+    "https://piee.eb.mil",
+    "https://www.sam.gov.(see",
+    "https://www.neco.navy.mil/secure/register/login.aspx?soln=N0010425QNF13",
+    "http://www.sec.gov/answers/execomp.htm",
+    "https://www.neco.navy.mil/link/abbreviations.aspx",
+    "http://dodprocurementtoolbox.com/site/uidregistry/"
+  ],
+  "title": "REPAIR OF CABLE ASSEMBLY,SPEC",
+  "url": "https://www.neco.navy.mil/biz_ops/840-v5soln.aspx?soln=N0010425QNF13"
+}

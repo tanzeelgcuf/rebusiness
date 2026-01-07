@@ -1,0 +1,234 @@
+{
+  "solicitation_type": "SERVICE",
+  "notice_id": "W912ES26BA007",
+  "project_title": "Fargo-Moorhead Forest Planting",
+  "project_summary": {
+    "contract_type": "3-Year Service Contract (Firm Fixed Price)",
+    "purpose": "To plant, monitor, and maintain native forest habitat as environmental mitigation for impacts associated with the Fargo-Moorhead Metropolitan Area Flood Risk Management Project (FMM Project).",
+    "total_work_area": {
+      "base_acres": 165.4,
+      "option_acres": 10.4
+    },
+    "work_locations": [
+      {
+        "site_id": "8a",
+        "county": "Clay",
+        "state": "MN",
+        "acreage": 28.8,
+        "description": "Floodplain forest planting (5.2 acres), oak savanna planting (6.5 acres), and forest preservation (17.2 acres)."
+      },
+      {
+        "site_id": "22a",
+        "county": "Clay",
+        "state": "MN",
+        "acreage": 28,
+        "description": "Floodplain forest planting (2.2 acres), oak savanna planting (3.1 acres), and forest preservation (22.6 acres)."
+      },
+      {
+        "site_id": "32",
+        "county": "Cass",
+        "state": "ND",
+        "acreage": 28.9,
+        "description": "Floodplain forest planting (11.7 acres), oak savanna planting (11.8 acres), and forest preservation (5.5 acres)."
+      },
+      {
+        "site_id": "33",
+        "county": "Cass",
+        "state": "ND",
+        "acreage": 9,
+        "description": "Floodplain forest planting (3.3 acres) and forest preservation (5.7 acres)."
+      },
+      {
+        "site_id": "34",
+        "county": "Cass",
+        "state": "ND",
+        "acreage": 9.1,
+        "description": "Floodplain forest planting (2.7 acres), bank stabilization (0.3 acres), and forest preservation (6.1 acres)."
+      },
+      {
+        "site_id": "38b",
+        "county": "Cass",
+        "state": "ND",
+        "acreage": 4.8,
+        "description": "Floodplain forest planting (2.1 acres) and forest preservation (2.7 acres)."
+      },
+      {
+        "site_id": "42a",
+        "county": "Cass",
+        "state": "ND",
+        "acreage": 32.8,
+        "description": "Floodplain forest planting (15.9 acres) and forest preservation (16.9 acres)."
+      },
+      {
+        "site_id": "44",
+        "county": "Clay",
+        "state": "MN",
+        "acreage": 15.9,
+        "description": "Floodplain forest planting (0.8 acres) and forest preservation (15.1 acres)."
+      },
+      {
+        "site_id": "Oxbow Country Club #2 Sites",
+        "county": "Cass",
+        "state": "ND",
+        "acreage": 8,
+        "description": "Floodplain forest planting (3.2 acres) and forest preservation (4.8 acres)."
+      }
+    ]
+  },
+  "scope_categories": [
+    {
+      "category": "Site Preparation",
+      "description": "Prepare 68.8 acres (Base) and 4.8 acres (Option) for planting via mowing, broadcast spray, discing, and burning."
+    },
+    {
+      "category": "Seeding and Planting",
+      "description": "Planting in three distinct zones: Bank Stabilization, Floodplain Forest, and Oak Savanna, using specified seed mixes (e.g., BWSR 34-262) and tree stock from regional sources."
+    },
+    {
+      "category": "Invasive Species Removal",
+      "description": "Control woody and herbaceous invasive species within 96.5 acres (Base) and 5.6 acres (Option) of forest preservation areas using mechanical and chemical means."
+    },
+    {
+      "category": "Maintenance and Monitoring",
+      "description": "Conduct 3 years of maintenance activities including mowing, mulching, spot spraying, and anti-herbivory measures. Conduct annual vegetation monitoring and submit detailed reports."
+    },
+    {
+      "category": "Boulder Placement",
+      "description": "Place approximately 30 boulders at the entrance to Site 38b to prevent vehicular access."
+    }
+  ],
+  "timeline": {
+    "periods": [
+      {
+        "year": "Year 1",
+        "date_range": "Award to 31 Dec 2026",
+        "activities": [
+          "Submittals",
+          "Site preparation",
+          "Tree planting",
+          "Herbaceous seeding",
+          "Maintenance & Monitoring",
+          "Initial invasive species removal"
+        ]
+      },
+      {
+        "year": "Year 2",
+        "date_range": "01 Jan 2027 to 31 Dec 2027",
+        "activities": [
+          "Plant establishment",
+          "Maintenance & Monitoring",
+          "Repair",
+          "Follow-up invasive species treatments"
+        ]
+      },
+      {
+        "year": "Year 3",
+        "date_range": "01 Jan 2028 to 31 Dec 2028",
+        "activities": [
+          "Plant establishment",
+          "Maintenance & Monitoring",
+          "Final invasive species treatments",
+          "Meet final performance standards"
+        ]
+      }
+    ],
+    "deliverables": [
+      {
+        "name": "Project Schedule",
+        "due_days": 15,
+        "format": "Excel or PDF"
+      },
+      {
+        "name": "Safety Plan (APP & AHA)",
+        "due_days": 30,
+        "format": "Excel or PDF"
+      },
+      {
+        "name": "Herbicide Plan",
+        "due_days": 30,
+        "format": "Digital PDF"
+      },
+      {
+        "name": "Quality Control Plan",
+        "due_days": 30,
+        "format": "Digital MS Word (Draft); PDF (Final)"
+      },
+      {
+        "name": "Site Preparation Plan",
+        "due_days": 60,
+        "format": "Digital PDF"
+      },
+      {
+        "name": "Planting Plans",
+        "due_days": 90,
+        "format": "Digital PDF"
+      },
+      {
+        "name": "Annual Monitoring Reports",
+        "due_days": null,
+        "format": "Annually by January 30th in Digital PDF"
+      }
+    ]
+  },
+  "compliance": {
+    "key_requirements": [
+      "Safety Plan compliant with EM 385-1-1",
+      "Obtain necessary permits including NPDES/NDPDES",
+      "Herbicide applicators must possess valid state commercial pesticide applicator's license",
+      "Quality Control Plan (QCP)",
+      "Fatigue Management Plan (FMP)"
+    ],
+    "insurance": {
+      "general_liability": "$1,000,000 per occurrence (Bodily Injury)",
+      "auto_liability": "Bodily Injury: $500,000 per person / $1,000,000 per occurrence; Property Damage: $100,000 per occurrence",
+      "workers_comp": "Compliance with State of North Dakota and Minnesota Law; Employer's Liability: $100,000"
+    },
+    "wage_determination": "SCA compliance required per WD 2015-4967 rev 30 (MN) and WD 2015-4969 rev 30 (ND)."
+  },
+  "submission": {
+    "method": "Hand-carried or Mail",
+    "address": "Contracting Division\nAttn: Ken Eshom (IFB No: W912ES2BA007)\nUSACE - ST. PAUL\n332 Minnesota Street, Suite E1500\nSaint Paul, MN 55101-1678",
+    "due_date": "2025-01-28 14:00 CT",
+    "required_documents": [
+      "SF 1449 (Completed)",
+      "Itemized pricing on attachment 'FMM Forrest Mitigation Planting Pricing.pdf'",
+      "52.212-3 Offeror Representations and Certifications",
+      "Bid Bond (SF 24)",
+      "Signed copies of all solicitation amendments"
+    ]
+  },
+  "contract_id": "W912ES26BA007",
+  "external_resource_links": [
+    "https://www.ndda.nd.gov/divisions/plant-industries/noxious-weeds",
+    "https://www.usace.army.mil/Missions/Safety-and-Occupational-Health/",
+    "https://www.mda.state.mn.us/plants-insects/minnesota-",
+    "https://www.fedshirevets.gov/",
+    "https://www.sam.gov",
+    "https://sam.gov/content/entity-landing",
+    "https://bwsr.state.mn.us/sites/default/files/2021-02/seedmix-substitution.pdf",
+    "https://cemvp.maps.arcgis.com/apps/instant/attachmentviewer/index.html?appid=e93bc70d4",
+    "https://www",
+    "https://www.projnet",
+    "https://www.acquisition.gov",
+    "https://wct",
+    "https://www.mda.state.mn.us/plants-insects/minnesota-noxious-",
+    "https://www.e-verify.gov/",
+    "https://www.publications.usace.army.mil/Portals/76/EM%20385-1-1%",
+    "https://www.uschamberfoundation",
+    "www.dol.gov/whd/govcontracts",
+    "https://www.gsa.gov/reference/forms/bid-bond",
+    "https://www.dol.gov/vets/",
+    "https://www.projnet.org",
+    "https://www.dnr.state.mn.us/invasives/terrestrialplants/index.html",
+    "https://www.irs.gov/help/tax-law-questions",
+    "www.irs.gov/w14",
+    "https://sam.gov/content",
+    "https://www.publications.usace.army.mil/Portals/76/EM%20385-1-",
+    "http://rmsdocumentation.com",
+    "https://www.acquisition.gov/browse/index/farDFARS",
+    "https://www.mda.state.mn.us/plants-",
+    "https://www.acquisition.gov/browse/index/far"
+  ],
+  "title": "Fargo-Moorhead Forest Mitigation Planting",
+  "url": "https://sam.gov/opp/W912ES26BA007/view"
+}

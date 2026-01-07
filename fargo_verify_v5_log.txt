@@ -1,0 +1,7 @@
+Registering attachment: linked_page_alt_ua_www_saj_usace_army_mil_.txt
+Traceback (most recent call last):
+  File "/Users/apple/Downloads/rebusinessautomationproject/test_fargo_moorhead_local.py", line 76, in <module>
+    test_fargo_moorhead_local()
+  File "/Users/apple/Downloads/rebusinessautomationproject/test_fargo_moorhead_local.py", line 43, in test_fargo_moorhead_local
+    cursor.execute("""
+sqlite3.OperationalError: table attachments has no column named file_type

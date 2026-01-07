@@ -1,0 +1,33 @@
+/Users/apple/Downloads/rebusinessautomationproject/ai_agents/AttachmentReaderAgent/attachment_reader_agent.py:7: FutureWarning: 
+
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+
+  import google.generativeai as genai
+....
+----------------------------------------------------------------------
+Ran 4 tests in 0.157s
+
+OK
+Dropped 'vendors' table to refresh schema.
+Database tables created or already exist.
+    [Type Detection] Product Score: 1, Service Score: 0
+    [Auto-Detect] Solicitation identified as: PRODUCT
+    - Generating PRODUCT RFQ with LLM (Fidelity Mode)...
+    [Success] Generated 211 bytes of Markdown RFQ.
+Dropped 'vendors' table to refresh schema.
+Database tables created or already exist.
+    [Type Detection] Product Score: 0, Service Score: 1
+    [Auto-Detect] Solicitation identified as: SERVICE
+    - Generating SERVICE RFQ with LLM (Fidelity Mode)...
+    [Success] Generated 195 bytes of Markdown RFQ.
+Dropped 'vendors' table to refresh schema.
+Database tables created or already exist.
+Dropped 'vendors' table to refresh schema.
+Database tables created or already exist.
+    [Type Detection] Product Score: 3, Service Score: 0
+    [Type Detection] Product Score: 0, Service Score: 3
+    [Type Detection] Product Score: 1, Service Score: 1
