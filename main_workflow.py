@@ -23,12 +23,11 @@ KEYWORD_CHECKPOINT_FILE = "keyword_checkpoint.json"
 def process_single_url(url, db_manager, scraper):
     """
     Runs the modern extraction pipeline on a single URL.
-    Scrape -> Deep Crawl -> Download -> Vision Extract -> DB Save
+    Scrape -> Deep Crawl -> Download -> Vision Extract -> DB Save -> RFQ Gen -> DOCX Save
     """
     logger.info(f"Processing URL: {url}")
     
     # 1. Scrape & Download (Deep Crawl using SamGovAgent)
-    # We reuse the passed scraper instance (SamGovAgent) to keep the same Playwright context.
     try:
         logger.info(f"  Scraping detail page with SamGovAgent (Deep Fetch)...")
         solicitation_data = scraper.process_detail_page(url)
@@ -53,17 +52,41 @@ def process_single_url(url, db_manager, scraper):
         )
         logger.info(f"  Saved basic info for {contract_id} to DB.")
 
-        # 3. Extract Products with Gemini Vision (Deep Analysis)
+        # 3. Extract Products & Generate RFQ (Direct Markdown)
         reader = AttachmentReaderAgent()
-        logger.info(f"  Running AI Analysis on downloaded files...")
-        analysis = reader.create_summary_report(contract_id)
+        logger.info(f"  Running AI Analysis & RFQ Generation...")
         
-        if "error" in analysis:
-            logger.error(f"  Extraction/Analysis failed for {contract_id}: {analysis['error']}")
+        result = reader.create_summary_report(contract_id, skip_json=True, strict_fidelity=True)
+        
+        if "error" in result:
+            logger.error(f"  Extraction/Analysis failed for {contract_id}: {result['error']}")
         else:
-            db_manager.add_solicitation_analysis(contract_id, json.dumps(analysis))
-            prod_count = len(analysis.get('product_details', []))
-            logger.info(f"  Success! Extracted {prod_count} products for {contract_id}.")
+            rfq_content = result.get("rfq_content")
+            rfq_type = result.get("rfq_type", "UNKNOWN")
+            
+            if rfq_content:
+                # 4. Store the high-fidelity RFQ in DB
+                db_manager.add_rfq_output(contract_id, rfq_type, rfq_content, format=config.RFQ_OUTPUT_FORMAT)
+                logger.info(f"  Success! RFQ Generated ({rfq_type}) and saved to DB.")
+                
+                # 5. Save as .docx file
+                filename = f"{contract_id}_RFQ_{rfq_type}.docx"
+                output_path = os.path.join("rfq_outputs", filename)
+                os.makedirs("rfq_outputs", exist_ok=True)
+                
+                # Convert Markdown to DOCX
+                from utils.doc_converter import convert_md_to_docx
+                if convert_md_to_docx(rfq_content, output_path):
+                    logger.info(f"  Saved RFQ DOCX to: {output_path}")
+                else:
+                    # Fallback to Markdown
+                    md_path = output_path.replace(".docx", ".md")
+                    with open(md_path, "w", encoding="utf-8") as f:
+                        f.write(rfq_content)
+                    logger.warning(f"  DOCX conversion failed. Saved as MD: {md_path}")
+
+            else:
+                logger.error(f"  No RFQ content returned for {contract_id}")
 
     except Exception as e:
         logger.error(f"Scraper failed for {url}: {e}")
@@ -83,6 +106,7 @@ def main_job(target_keyword=None, force_start_page=None, force_num_pages=None):
     
     db_manager = DatabaseManager()
     sam_agent = SamGovAgent()
+    sam_agent.start_browser()
     
     try:
         # 1. Configuration & State Management
@@ -148,16 +172,117 @@ def main_job(target_keyword=None, force_start_page=None, force_num_pages=None):
         sam_agent.close()
         logger.info("=== JOB FINISHED ===")
 
+def process_extract_and_generate_rfq(url, args):
+    """
+    Directly extracts solicitation data and generates a high-fidelity RFQ.
+    """
+    logger.info(f"=== Extract and Generate RFQ Mode ===")
+    logger.info(f"URL: {url}")
+    
+    db_manager = DatabaseManager()
+    sam_agent = SamGovAgent()
+    sam_agent.start_browser()
+    
+    try:
+        # 1. Scrape & Download (Aggressive crawl if specified)
+        logger.info(f"Scraping with SamGovAgent...")
+        solicitation_data = sam_agent.process_detail_page(url)
+        
+        if not solicitation_data:
+            logger.error("Failed to scrape solicitation data.")
+            return
+
+        contract_id = solicitation_data.get('contract_id')
+        logger.info(f"Contract ID: {contract_id}")
+
+        # Ensure solicitation is in DB
+        db_manager.add_solicitation(
+            contract_id=contract_id,
+            url=url,
+            title=solicitation_data.get('title'),
+            description=solicitation_data.get('description'),
+            location="USA",
+            product_requirements=None,
+            analysis_summary=None,
+            data=json.dumps(solicitation_data)
+        )
+
+        # 2. Extract and Generate
+        reader = AttachmentReaderAgent()
+        logger.info(f"Running high-fidelity extraction and RFQ generation...")
+        
+        # Use new logic in AttachmentReaderAgent
+        result = reader.create_summary_report(
+            contract_id,
+            skip_json=True, # Always skip JSON for this mode
+            strict_fidelity=args.strict_fidelity,
+            template_type=args.template_type,
+            internal_deadline_offset=args.internal_deadline_offset,
+            vendor_email=args.vendor_email,
+            organization_name=args.organization_name
+        )
+        
+        if "error" in result:
+            logger.error(f"Generation failed: {result['error']}")
+        else:
+            # Result is dict {"rfq_content": ..., "rfq_type": ...}
+            rfq_content = result.get("rfq_content")
+            rfq_type = result.get("rfq_type", "UNKNOWN")
+            
+            if rfq_content:
+                # Save to DB first
+                # Note: config.RFQ_OUTPUT_FORMAT drives the stored format meta, but we store raw content usually
+                db_manager.add_rfq_output(contract_id, rfq_type, rfq_content, format=config.RFQ_OUTPUT_FORMAT)
+                
+                # Save to file
+                output_filename = f"{contract_id}_RFQ_{rfq_type}.{config.RFQ_OUTPUT_FORMAT}"
+                output_path = os.path.join(os.getcwd(), output_filename)
+                
+                if config.RFQ_OUTPUT_FORMAT == "docx":
+                    from utils.doc_converter import convert_md_to_docx
+                    if convert_md_to_docx(rfq_content, output_path):
+                         logger.info(f"Success! RFQ ({rfq_type}) saved to {output_filename} and DB.")
+                    else:
+                         logger.error(f"Failed to save DOCX to {output_filename}")
+                else:
+                    with open(output_path, "w", encoding="utf-8") as f:
+                        f.write(rfq_content)
+                    logger.info(f"Success! RFQ ({rfq_type}) saved to {output_filename} and DB.")
+            else:
+                logger.error("No RFQ content returned.")
+
+    except Exception as e:
+        logger.error(f"Failed to process: {e}")
+    finally:
+        sam_agent.close()
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="SAM.gov Scraper Workflow")
-    parser.add_argument("--keyword", type=str, help="Override keyword to scrape (e.g., 'product')")
-    parser.add_argument("--page", type=int, help="Start page number (default: 1)")
-    parser.add_argument("--pages", type=int, help="Number of pages to scrape (default: 10)")
-    parser.add_argument("--loop", action="store_true", help="Run in continuous schedule loop (standard mode)")
+    parser.add_argument("--mode", type=str, default="default", help="Operation mode (e.g., 'extract-and-generate-rfq')")
+    parser.add_argument("--url", type=str, help="SAM.gov URL for direct processing")
+    parser.add_argument("--keyword", type=str, help="Override keyword to scrape")
+    parser.add_argument("--page", type=int, help="Start page number")
+    parser.add_argument("--pages", type=int, help="Number of pages to scrape")
+    parser.add_argument("--loop", action="store_true", help="Run in continuous schedule loop")
+    
+    # New flags for RFQ generation
+    parser.add_argument("--aggressive-crawl", action="store_true", help="Deep crawl all attachments")
+    parser.add_argument("--skip-json", action="store_true", help="Direct markdown generation")
+    parser.add_argument("--output-format", type=str, default="markdown", help="Output format (markdown)")
+    parser.add_argument("--template-type", type=str, default="auto-detect", help="PRODUCT or SERVICE")
+    parser.add_argument("--strict-fidelity", action="store_true", help="Zero-placeholder policy")
+    parser.add_argument("--internal-deadline-offset", type=int, default=4, help="Business days before official")
+    parser.add_argument("--vendor-email", type=str, default="john@campsable.com", help="Vendor contact email")
+    parser.add_argument("--organization-name", type=str, default="Camp Sable, LLC", help="Organization name")
     
     args = parser.parse_args()
 
-    if args.keyword:
+    if args.mode == "extract-and-generate-rfq":
+        if not args.url:
+            print("Error: --url is required for extract-and-generate-rfq mode.")
+            sys.exit(1)
+        process_extract_and_generate_rfq(args.url, args)
+    elif args.keyword:
         # Manual Run
         main_job(target_keyword=args.keyword, force_start_page=args.page, force_num_pages=args.pages)
     elif args.loop:
@@ -171,5 +296,5 @@ if __name__ == "__main__":
             schedule.run_pending()
             time.sleep(1)
     else:
-        # Default behavior: Just run one batch Job (useful for testing/cron)
+        # Default behavior: Just run one batch Job
         main_job()

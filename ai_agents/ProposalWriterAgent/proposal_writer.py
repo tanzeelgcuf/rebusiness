@@ -1,8 +1,16 @@
+
 import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 import config
 from database_manager import DatabaseManager
+import logging
+import warnings
+
+# DEPRECATION NOTICE
+warnings.warn("The ProposalWriterAgent module is deprecated. RFQ generation is now handled directly by AttachmentReaderAgent.", DeprecationWarning, stacklevel=2)
+print("WARNING: ai_agents/ProposalWriterAgent/proposal_writer.py is DEPRECATED and should not be used.")
+
 import json
 import re
 from datetime import datetime, timedelta
@@ -16,272 +24,457 @@ def _subtract_business_days(date, days):
             days -= 1
     return current
 
-def _format_product_rfq(analysis, vendor_name="Valued Supplier"):
-    """Format output matching Claude Vendor List.odt exactly"""
+def _format_product_rfq(analysis, vendor_name="Valued Supplier", internal_deadline_offset=4):
+    """Format output matching Claude Vendor List.odt with 100% fidelity"""
     notice_id = analysis.get('notice_id', 'N/A')
     title = analysis.get('title', 'N/A')
     
     # Calculate internal deadline
-    due_date_str = analysis.get('submission', {}).get('due_date', '')
-    try:
-        # Try finding the First YYYY-MM-DD pattern
-        match = re.search(r'\d{4}-\d{2}-\d{2}', due_date_str)
-        if match:
-            official_due = datetime.strptime(match.group(), '%Y-%m-%d')
-            internal_due = _subtract_business_days(official_due, 4)
-            internal_due_formatted = internal_due.strftime('%B %d, %Y')
-        else:
-            internal_due_formatted = "4 business days before deadline"
-    except:
-        internal_due_formatted = "4 business days before deadline"
-    
-    overview = analysis.get('overview', {})
-    agency_name = overview.get('agency_name', 'Government Agency')
-    agency_address = overview.get('agency_address', 'Address not specified')
-    contract_type = overview.get('contract_type', 'Not specified')
-    set_aside = overview.get('set_aside', 'Not specified')
-    solicitation_date = overview.get('solicitation_date', 'Not specified')
-    quotes_due = analysis.get('submission', {}).get('due_date', 'See solicitation')
-    
-    specs = analysis.get('specifications', {})
-    manufacturer_cage = specs.get('manufacturer_cage', 'Not specified')
-    manufacturer_part = specs.get('manufacturer_part_number', 'Not specified')
-    nsn = specs.get('nsn', 'Not specified')
-    description = specs.get('description', 'Not specified')
-    
-    clins = analysis.get('clins', [])
-    clin_table = ""
-    if clins:
-        clin_table = "| CLIN | Description | Quantity (EA) | Contract Type | Inspection/Acceptance | Packaging | Notes |\n"
-        clin_table += "|---|---|---|---|---|---|---|\n"
-        for clin in clins:
-            clin_table += f"| {clin.get('clin', '')} | {clin.get('description', '')} | {clin.get('quantity', '')} {clin.get('unit', '')} | {clin.get('type', 'FFP')} | {clin.get('inspection_point', 'Origin')} | {clin.get('packaging', 'Military, Level B')} | {clin.get('notes', '')} |\n"
-    
-    delivery = analysis.get('delivery_requirements', {})
-    ship_to = delivery.get('ship_to_address', {})
-    if isinstance(ship_to, dict):
-        parts = [ship_to.get('organization'), ship_to.get('street'), ship_to.get('city'), ship_to.get('state'), ship_to.get('zip')]
-        non_empty = [p for p in parts if p and "Information not provided" not in str(p)]
-        ship_to_formatted = "\n".join(non_empty) if non_empty else "See Solicitation"
-    else:
-        ship_to_formatted = str(ship_to)
-    
-    lead_time = str(delivery.get('lead_time_days', 'Not specified'))
-    lt_suffix = " Days ARO" if "aro" not in lead_time.lower() and "day" in lead_time.lower() else ""
-    if "not specified" not in lead_time.lower() and "day" not in lead_time.lower():
-        lt_suffix = " Days ARO"
-
     submission = analysis.get('submission', {})
-    submit_email = submission.get('email', 'Not specified')
-    required_forms = ', '.join(submission.get('required_forms', []))
+    due_date_str = submission.get('due_date', '')
+    internal_due_formatted = f"{internal_deadline_offset} business days prior"
+    try:
+        match = re.search(r'(\d{4}-\d{2}-\d{2})|(\d{1,2}/\d{1,2}/\d{2,4})', due_date_str)
+        if match:
+            date_str = match.group()
+            try:
+                official_due = datetime.strptime(date_str, '%Y-%m-%d')
+            except:
+                official_due = datetime.strptime(date_str, '%m/%d/%Y')
+            internal_due = _subtract_business_days(official_due, internal_deadline_offset)
+            internal_due_formatted = internal_due.strftime('%B %d, %Y')
+    except:
+        pass
     
-    # Delivery Summary Table Section
-    delivery_summary = "| Item | Description | Qty | Delivery (Days ARO) | Frequency | Inspection | Ship-To | Notes |\n"
-    delivery_summary += "|---|---|---|---|---|---|---|---|\n"
-    if clins:
-        for clin in clins[:3]: # Representative sample
-            delivery_summary += f"| {clin.get('clin', '')} | {clin.get('description', '')[:30]} | {clin.get('quantity', '')} | {lead_time} | {delivery.get('delivery_frequency', 'As Ordered')} | {clin.get('inspection_point', 'Origin')} | {ship_to.get('city', 'Destination')} | {clin.get('notes', '')[:20]} |\n"
+    # Header / Intro
+    email_intro = f"""Notice ID: {notice_id}
+Subject: RFQ for {title}
 
-    email_body = f"""Notice ID: {notice_id}
-
-# {title}
-
-Dear {vendor_name}:
+Dear [Vendor]:
 
 We are writing to request a formal quote for {title.lower()}. Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
 
-Your response is needed on or before {internal_due_formatted} in order for us to submit your bid.
-
 If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
-[My signature info]
+John Campbell
+Procurement Manager
+Campsable LLC
 
-🔹 Overview
-Agency Issuing RFQ:
-{agency_name}
-{agency_address}
-
-Type of Contract: {contract_type}
-Set-Aside Type: {set_aside}
-Solicitation Date: {solicitation_date}
-Quotes Due: {quotes_due}
-
-NAICS Code: {overview.get('naics_code', 'N/A')} -- {overview.get('naics_description', 'N/A')}
-Size Standard: {overview.get('size_standard', 'N/A')}
-
-🔹 Items Required
-Manufacturer CAGE: {manufacturer_cage}
-Manufacturer Part Number: {manufacturer_part}
-NSN: {nsn}
-
-Description: {description}
-
-{clin_table}
-
-🔹 Delivery Requirements
-Ship To:
-{ship_to_formatted}
-
-Lead Time: {lead_time}{lt_suffix}
-First Delivery: {delivery.get('calculated_first_delivery', 'Not specified')}
-Delivery Frequency: {delivery.get('delivery_frequency', 'As specified')}
-
-🔹 Submission Details
-Due Date: {quotes_due}
-Internal Deadline: {internal_due_formatted}
-
-Submit To: {submit_email}
-Required: {required_forms}
-
-🔹 Delivery Summary Table
-{delivery_summary}
-
-🔹 Summary of What They Require
-In Plain Terms:
-1. Supply {title} built to military specifications.
-2. Meet quality standards referenced in solicitation.
-3. Inspect and accept at {delivery.get('fob_point', 'Origin')}, coordinate with DCMA/Agency as required.
-4. Deliver to {ship_to.get('city', 'Destination')} FOB {delivery.get('fob_point', 'Origin')}.
-5. Lead time: {lead_time}{lt_suffix}.
-6. Participate in electronic submission processes.
-
----end of RFQ---
 """
-    return {"subject": f"RFQ: {notice_id} - {title}", "body": email_body}
 
-def _format_service_rfq(analysis, vendor_name="Valued Supplier"):
-    """Format output matching Claude Services List.odt exactly"""
-    notice_id = analysis.get('notice_id', 'N/A')
-    project_title = analysis.get('project_title', analysis.get('title', 'N/A'))
-    
-    due_date_str = analysis.get('submission', {}).get('due_date', '')
-    try:
-        match = re.search(r'\d{4}-\d{2}-\d{2}', due_date_str)
-        if match:
-            official_due = datetime.strptime(match.group(), '%Y-%m-%d')
-            internal_due = _subtract_business_days(official_due, 4)
-            internal_due_formatted = internal_due.strftime('%B %d, %Y')
-        else:
-            internal_due_formatted = "4 business days before deadline"
-    except:
-        internal_due_formatted = "4 business days before deadline"
-    
-    summary = analysis.get('project_summary', {})
     overview = analysis.get('overview', {})
-    agency_name = overview.get('agency_name', 'Government Agency')
-    total_work = summary.get('total_work_area', {})
-    locations = summary.get('work_locations', [])
-    location_list = ""
-    loc_set = set()
-    for loc in locations:
-        c = str(loc.get('county') or '').strip()
-        s = str(loc.get('state') or '').strip()
-        site_id = str(loc.get('site_id') or '').strip()
-        if c or s: 
-            loc_set.add(f"{c}, {s}".strip(', '))
-            site_desc = f"{site_id}: {c}, {s}".strip(': ')
-            acreage = loc.get('acreage')
-            def safe_float(v):
-                try: return float(v)
-                except: return 0.0
-            units = f" ({acreage} acres)" if acreage and "not provided" not in str(acreage).lower() and safe_float(acreage) > 0 else ""
-            location_list += f"- {site_desc}{units} - {loc.get('description', '')}\n"
-    
-    if not location_list:
-        location_list = "- Work to be performed at Contractor's Facility.\n"
-    
-    location_summary = ', '.join(loc_set) if loc_set else "Contractor's Facility"
-    
-    scope_categories = analysis.get('scope_categories', [])
-    scope_table = "| Category | Main Tasks |\n|---|---|\n"
-    for cat in scope_categories:
-        scope_table += f"| **{cat.get('category', '')}** | {cat.get('description', '')} |\n"
-        
-    timeline = analysis.get('timeline', {})
-    periods = timeline.get('periods', [])
-    timeline_text = "| Year | Dates | Requirements |\n|---|---|---|\n"
-    for period in periods:
-        timeline_text += f"| {period.get('year', '')} | {period.get('date_range', '')} | {', '.join(period.get('activities', []))} |\n"
-        
-    deliverables = timeline.get('deliverables', [])
-    deliverable_table = "| Deliverable | Due From Award | Format / Medium | Submit To |\n|---|---|---|---|\n"
-    for d in deliverables:
-        deliverable_table += f"| **{d.get('name', '')}** | {d.get('due_days', '')} days | {d.get('format', 'PDF')} | Contracting Officer |\n"
-        
-    compliance = analysis.get('compliance', {})
-    insurance = compliance.get('insurance', {})
-    submission = analysis.get('submission', {})
-    delivery = analysis.get('delivery_requirements', {})
-    
-    email_body = f"""Notice ID: {notice_id}
+    sections = [email_intro]
 
-# {project_title}
+    # 1. Overview
+    sections.append(f"### 🔹 Overview")
+    sections.append(f"| Category | Details |")
+    sections.append(f"|---|---|")
+    sections.append(f"| **Procuring Agency** | {overview.get('agency_name', 'Not included in solicitation')} |")
+    sections.append(f"| **Agency Address** | {overview.get('agency_address', 'Not included in solicitation')} |")
+    sections.append(f"| **Contract Type** | {overview.get('contract_type', 'Firm Fixed Price')} |")
+    sections.append(f"| **Set-Aside Type** | {overview.get('set_aside', 'Not included in solicitation')} |")
+    sections.append(f"| **Published Dates** | {overview.get('solicitation_date', 'Not included in solicitation')} |")
+    sections.append(f"| **Official Deadline** | **{submission.get('due_date', 'Not included in solicitation')}** |")
+    sections.append(f"| **Internal Deadline** | **{internal_due_formatted}** |")
+    sections.append(f"| **NAICS Code** | {overview.get('naics_code', 'Not included in solicitation')} – {overview.get('naics_description', '')} |")
+    sections.append(f"| **Size Standard** | {overview.get('size_standard', 'Not included in solicitation')} |")
+    sections.append(f"| **DPAS Rating** | {overview.get('dpas_rating', 'Not included in solicitation')} |\n")
 
-Dear {vendor_name}:
+    # 2. Items Required
+    specs = analysis.get('specifications', {})
+    clins = analysis.get('clins', [])
+    qty_range = analysis.get('quantity_range', {})
 
-We are writing to request a formal quote for {project_title.lower()}. Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
+    sections.append(f"### 🔹 Items Required")
+    sections.append(f"• **Item Requested:** {specs.get('item_requested', title)}")
+    sections.append(f"• **Manufacturer CAGE:** {specs.get('manufacturer_cage', 'Not included in solicitation')}")
+    sections.append(f"• **Manufacturer Part Number:** {specs.get('manufacturer_part_number', 'Not included in solicitation')}")
+    sections.append(f"• **NSN:** {specs.get('nsn', 'Not included in solicitation')}")
+    sections.append(f"• **Description:** {specs.get('description', 'Not included in solicitation')}\n")
+    
+    if clins:
+        sections.append("| CLIN | Description | Quantity | Unit | Contract Type | Inspection | Packaging | Notes |")
+        sections.append("|---|---|---|---|---|---|---|---|")
+        for c in clins:
+            sections.append(f"| {c.get('clin')} | {c.get('description')} | {c.get('quantity', 'N/A')} | {c.get('unit', 'EA')} | {c.get('contract_type', 'FFP')} | {c.get('inspection')} | {c.get('packaging')} | {c.get('notes')} |")
+    
+    sections.append(f"\n#### Quantity & Ordering Information")
+    sections.append(f"| Category | Quantity | Unit |")
+    sections.append(f"|---|---|---|")
+    sections.append(f"| **Minimum Order Quantity** | {qty_range.get('min', 'Not included')} | EA |")
+    sections.append(f"| **Maximum Order Quantity** | {qty_range.get('max', 'Not included')} | EA |")
+    sections.append(f"| **Guaranteed Minimum (Contract)** | {qty_range.get('min_contract', 'Not included')} | EA |")
+    sections.append(f"| **Maximum Contract Quantity** | {qty_range.get('max_contract', 'Not included')} | EA |\n")
 
-Your response is needed on or before {internal_due_formatted} in order for us to submit your bid.
+    # 3. Packaging Requirements
+    pkg = analysis.get('packaging', {})
+    sections.append(f"### 🔹 Packaging Requirements")
+    sections.append(f"• **Standard:** {pkg.get('mil_std', 'Not included in solicitation')}")
+    sections.append(f"• **Preservation Level:** {pkg.get('preservation', 'Not included in solicitation')}")
+    sections.append(f"• **Quantity per Unit:** {pkg.get('qty_per_unit', 'Not included in solicitation')}")
+    sections.append(f"• **SPI Reference:** {pkg.get('spi', 'Not included in solicitation')}")
+    sections.append(f"• **Labeling:** {pkg.get('labeling', 'Standard Military Labeling Required')}\n")
+
+    # 4. Inspection & Testing
+    it = analysis.get('inspection_testing', {})
+    sections.append(f"### 🔹 Inspection & Testing")
+    sections.append(f"• **Inspection Point:** {it.get('inspection_point', 'Not included in solicitation')}")
+    sections.append(f"• **Acceptance Point:** {it.get('acceptance_point', 'Not included in solicitation')}")
+    sections.append(f"• **Inspection Agency:** {it.get('inspection_agency', 'DCMA or Government')}")
+    sections.append(f"• **FAT Requirement:** {it.get('fat', 'Not included in solicitation')}")
+    sections.append(f"• **Quality Standard:** {it.get('quality_standard', 'ISO 9001:2015 or equivalent')}")
+    sections.append(f"• **Sampling Plan:** {it.get('sampling_plan', 'MIL-STD-1916 or equivalent')}\n")
+
+    # 5. Delivery Requirements
+    dr = analysis.get('delivery_requirements', {})
+    sections.append(f"### 🔹 Delivery Requirements")
+    sections.append(f"• **FOB Point:** {dr.get('fob', 'Destination')}")
+    sections.append(f"• **Complete Delivery Address:** {dr.get('destination_address', 'Not included in solicitation')}")
+    sections.append(f"• **Delivery Schedule:** {dr.get('schedule', 'Not included in solicitation')}")
+    sections.append(f"• **Acceleration:** {dr.get('acceleration', 'Not included in solicitation')}")
+    sections.append(f"• **Overall Contract Duration:** {dr.get('duration', 'Not included in solicitation')}\n")
+
+    # 6. Data & Access Requirements
+    da = analysis.get('data_access', [])
+    sections.append(f"### 🔹 Data & Access Requirements")
+    if isinstance(da, list):
+        for item in da:
+            sections.append(f"• {item}")
+    else:
+        sections.append(f"• Technical Data Package (TDP) access via SAM.gov.")
+    sections.append(f"• **JCP Certification Required:** {analysis.get('jcp_required', 'Yes (DD2345)')}")
+    sections.append("")
+
+    # 7. Required Certifications & Compliance
+    certs = analysis.get('certifications', ['ISO 9001:2015', 'ITAR Compliance (if applicable)', 'JCP Certification'])
+    sections.append(f"### 🔹 Required Certifications & Compliance")
+    for cert in certs:
+        sections.append(f"• {cert}")
+    sections.append("")
+
+    # 8. Submission Details
+    sub = analysis.get('submission', {})
+    sections.append(f"### 🔹 Submission Details")
+    sections.append(f"• **Method:** {sub.get('method', 'Electronic Submission (Email)')}")
+    sections.append(f"• **Email for Quotes:** {sub.get('email', 'john@campsable.com')}")
+    sections.append(f"• **Subject Line Format:** {sub.get('subject', f'[Quote] {notice_id} - {title}')}")
+    sections.append(f"• **Due Date:** **{sub.get('due_date', 'Not included')}**")
+    sections.append(f"• **Internal Submission Deadline:** **{internal_due_formatted}**")
+    sections.append(f"• **Submission Requirements:** {sub.get('evaluation', 'LPTA - Technical, Past Performance, Price')}\n")
+
+    # 9. Delivery Summary Table
+    summary_table = analysis.get('delivery_summary_table', [])
+    sections.append(f"### 🔹 Delivery Summary Table")
+    if summary_table:
+        sections.append("| CLIN | Item | Quantity | Unit | Delivery Point | Frequency | Inspection | Ship-To | Notes |")
+        sections.append("|---|---|---|---|---|---|---|---|---|")
+        for st in summary_table:
+            sections.append(f"| {st.get('clin')} | {st.get('item')} | {st.get('qty')} | {st.get('unit', 'EA')} | {st.get('delivery')} | {st.get('frequency')} | {st.get('inspection')} | {st.get('ship_to')} | {st.get('notes')} |")
+    else:
+        sections.append("*See CLIN table above for delivery details.*")
+    sections.append("")
+
+    # 10. Summary of What They Require
+    plain_terms = analysis.get('plain_terms_summary', [])
+    sections.append(f"### 🟩 SUMMARY OF WHAT THEY REQUIRE")
+    if plain_terms:
+        for pt in plain_terms:
+            sections.append(f"• {pt}")
+    else:
+        sections.append("• Supply [item] per technical specifications.")
+        sections.append("• Meet required quality and packaging standards.")
+        sections.append("• Deliver to specified destination within timeline.")
+    
+    sections.append("")
+
+    # 11. Key Takeaways for Bidders
+    takeaways = analysis.get('key_takeaways', [])
+    if not takeaways:
+        takeaways = [
+            f"Item: {specs.get('item_requested', title)}",
+            "Exact part number and CAGE compliance required",
+            "Quality standard: ISO 9001:2015 (or equivalent) mandatory",
+            f"Delivery terms: FOB {dr.get('fob', 'Destination')}",
+            "Strict adherence to ASTM D3951 and labeling requirements",
+            "ITAR / JCP certification mandatory (if applicable)",
+            "CMMC Level 1 Self-Assessment required prior to award",
+            f"Internal quote deadline: {internal_due_formatted}",
+            "Wide Area WorkFlow (WAWF) participation required"
+        ]
+    sections.append(f"### 🟩 KEY TAKEAWAYS FOR BIDDERS")
+    for i, t in enumerate(takeaways, 1):
+        sections.append(f"{i}. {t}")
+
+    sections.append("\n-----------")
+    sections.append("End of solicitation details.")
+
+    full_body = "\n".join(sections)
+    return {"subject": f"RFQ: {notice_id} - {title}", "body": full_body}
+
+
+def _format_service_rfq(analysis, vendor_name="Valued Supplier", internal_deadline_offset=4):
+    """Format output matching Claude Services List.odt with 100% fidelity"""
+    notice_id = analysis.get('notice_id', 'N/A')
+    title = analysis.get('project_title', 'N/A')
+    
+    # Calculate internal deadline
+    submission = analysis.get('bid_instructions', analysis.get('bid_submission', {}))
+    due_date_str = submission.get('due_date', '')
+    internal_due_formatted = f"{internal_deadline_offset} business days prior"
+    try:
+        match = re.search(r'(\d{4}-\d{2}-\d{2})|(\d{1,2}/\d{1,2}/\d{2,4})', due_date_str)
+        if match:
+            date_str = match.group()
+            try:
+                official_due = datetime.strptime(date_str, '%Y-%m-%d')
+            except:
+                official_due = datetime.strptime(date_str, '%m/%d/%Y')
+            internal_due = _subtract_business_days(official_due, internal_deadline_offset)
+            internal_due_formatted = internal_due.strftime('%B %d, %Y')
+    except:
+        pass
+
+    # Header / Intro
+    email_intro = f"""{title.upper()}
+Notice ID {notice_id}
+
+Dear [Vendor]:
+
+We are writing to request a formal quote for {title.lower()}. Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
+
+Your response is needed on or before **{internal_due_formatted}** in order for us to submit your bid.
+
+There are other documents that I can send you, if this is a project that you would be interested in bidding. 
 
 If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
-[My signature info]
+John Campbell
+Procurement Manager
+Campsable LLC
 
-🔹Summary of Project
-Title: {project_title}
-Type: {summary.get('contract_type', 'Service Contract')}
-Purpose: {summary.get('purpose', 'Not specified')}
-Location: {location_summary}
-
-Total Work Area:
-- Base Contract: {total_work.get('base_acres') if total_work.get('base_acres') and total_work.get('base_acres') != 0 else 'N/A (Repair Services)'} 
-- Option: {total_work.get('option_acres') if total_work.get('option_acres') and total_work.get('option_acres') != 0 else 'N/A (Repair Services)'}
-
-🔹What They Want (Scope of Work)
-{scope_table}
-
-🔹Timeline / Period of Performance
-{timeline_text}
-
-🔹Deliverables & Reporting Deadlines
-{deliverable_table}
-
-🔹Delivery / Work Locations
-{location_list}
-
-🔹Key Compliance Points
-- Requirements: {', '.join(compliance.get('key_requirements', []))}
-- Insurance:
-  - General Liability: {insurance.get('general_liability', 'Not specified')}
-  - Auto Liability: {insurance.get('auto_liability', 'Not specified')}
-  - Workers' Compensation: {insurance.get('workers_comp', 'Not specified')}
-- Wage Determination: {compliance.get('wage_determination', 'Not specified')}
-
-🔹Acceptance Criteria
-To be accepted by the Contracting Officer, each item must meet performance standards (e.g., operational testing, technical manual compliance) and pass final inspection (e.g., {delivery.get('fob_point', 'Origin')} inspection).
-
-🟩In Summary
-The Government requires a qualified contractor to perform {project_title} over a {summary.get('contract_type', 'defined')} term. 
-
-In Plain Terms:
-1. Provide {project_title} in strict accordance with military specifications, including {', '.join(compliance.get('key_requirements', [])[:5])} and all applicable technical drawings.
-2. Meet all quality standards specified in the solicitation, ensuring compliance with {compliance.get('wage_determination', 'Federal Contractor Standards')} and standard military repair practices.
-3. Final inspection and acceptance will take place at {delivery.get('fob_point', 'Origin')}. Coordination with {agency_name} or the assigned Quality Assurance Representative (QAR) is required for final sign-off.
-4. Success is defined by the timely delivery of items meeting all functional and performance requirements as verified by Government inspection.
-
----end of RFQ---
 """
-    return {"subject": f"RFQ: {notice_id} - {project_title}", "body": email_body}
 
-def create_bid_request(analysis_summary, vendor_name="Valued Supplier"):
+    overview = analysis.get('project_overview', {})
+    in_sum = analysis.get('in_summary', {})
+    
+    # 0. IN SUMMARY (Exactly 3 bullets)
+    in_summary_snippet = f"""### 🟩 IN SUMMARY
+• **They want:** {in_sum.get('they_want', 'Not included in solicitation')}
+• **Time frame:** {in_sum.get('time_frame', 'Not included in solicitation')}
+• **Delivery locations:** {in_sum.get('delivery_locations', 'Not included in solicitation')}
+"""
+    sections = [email_intro, in_summary_snippet]
+
+    # 1. Summary of Project
+    sections.append(f"### 🔹 Summary of Project")
+    sections.append(f"• **Title:** {overview.get('title', title)}")
+    sections.append(f"• **Type:** {overview.get('type', 'Service Contract')}")
+    sections.append(f"• **Purpose:** {overview.get('purpose', 'Not included in solicitation')}")
+    sections.append(f"• **Location:** {overview.get('location', 'Not included in solicitation')}")
+    sections.append(f"• **Total Work Area:** {overview.get('total_work_area', 'Not included in solicitation')}")
+    sections.append(f"• **Project Objective:** {overview.get('objective', 'Not included in solicitation')}\n")
+
+    # 2. What They Want (Scope of Work)
+    scope_table = analysis.get('scope_table', [])
+    sections.append(f"### 🔹 What They Want (Scope of Work)")
+    if scope_table:
+        sections.append("| Category | Main Tasks |")
+        sections.append("|---|---|")
+        for s in scope_table:
+            sections.append(f"| {s.get('category')} | {s.get('main_tasks')} |")
+    else:
+        sections.append("*As specified in the PWS*")
+    sections.append("")
+
+    # 3. Timeline / Period of Performance
+    timeline = analysis.get('timeline_table', [])
+    sections.append(f"### 🔹 Timeline / Period of Performance")
+    if timeline:
+        sections.append("| Year | Dates | Requirements |")
+        sections.append("|---|---|---|")
+        for t in timeline:
+            sections.append(f"| **{t.get('year')}** | {t.get('dates')} | {t.get('requirements')} |")
+    else:
+        sections.append("*To be determined at award*")
+    sections.append("")
+
+    # 4. Deliverables & Reporting Deadlines
+    deliverables = analysis.get('deliverables_table', [])
+    sections.append(f"### 🔹 Deliverables & Reporting Deadlines")
+    if deliverables:
+        sections.append("| Deliverable | Quantity | Deadline | Format | Submit To | Notes |")
+        sections.append("|---|---|---|---|---|---|")
+        for d in deliverables:
+            sections.append(f"| {d.get('deliverable')} | {d.get('quantity', '1')} | {d.get('due_from_award')} | {d.get('format')} | {d.get('submit_to')} | {d.get('notes')} |")
+    else:
+        sections.append("*Standard reporting as per PWS*")
+    sections.append("")
+
+    # 5. Delivery / Work Locations
+    work_locations = analysis.get('work_locations', {})
+    sites = work_locations.get('sites', [])
+    sections.append(f"### 🔹 Delivery / Work Locations")
+    sections.append(f"**Summary:** {work_locations.get('summary', 'Not included in solicitation')}")
+    if sites:
+        sections.append("\n| Site ID | Location | Type | Acreage |")
+        sections.append("|---|---|---|---|")
+        for s in sites:
+            sections.append(f"| {s.get('site_id')} | {s.get('location')} | {s.get('planting_type', 'N/A')} | {s.get('acreage')} |")
+    sections.append("")
+
+    # 6. Key Compliance Points
+    compliance = analysis.get('compliance_points', [])
+    sections.append(f"### 🔹 Key Compliance Points")
+    if compliance:
+        for c in compliance:
+            sections.append(f"• {c}")
+    else:
+        sections.append("• Standard government security and performance compliance applies.")
+    sections.append("")
+
+    # 7. Acceptance Criteria
+    criteria = analysis.get('acceptance_criteria', [])
+    sections.append(f"### 🔹 Acceptance Criteria")
+    if criteria:
+        for c in criteria:
+            sections.append(f"• {c}")
+    else:
+        sections.append("• Government inspection and acceptance per PWS standards.")
+    sections.append("")
+
+    # 8. Removed Duplicate In Summary
+
+    # 9. General Overview
+    sections.append(f"### 🔹 General Overview")
+    sections.append(f"• **Agency:** {overview.get('agency', 'Not included in solicitation')}")
+    sections.append(f"• **Solicitation Identification:** {notice_id}")
+    sections.append(f"• **NAICS:** {analysis.get('naics', 'Not included')}\n")
+
+    # 10. Key Requirements
+    wages = analysis.get('wage_labor', {})
+    insurance = analysis.get('insurance', {})
+    security = analysis.get('security_compliance', {})
+
+    sections.append(f"### 🔹 KEY REQUIREMENTS")
+    
+    sections.append("#### Certification & Capability")
+    sections.append(f"• {analysis.get('cert_capability', 'Standard industry certifications required.')}")
+    
+    sections.append("\n#### Technical Standards")
+    sections.append(f"• {analysis.get('tech_standards', 'Compliance with all government technical standards.')}")
+
+    sections.append("\n#### Packaging & Labeling")
+    sections.append(f"• {analysis.get('packaging_labeling', 'Standard commercial packaging or as specified in PWS.')}")
+
+    sections.append("\n#### Wage & Labor Compliance")
+    sections.append(f"• **Applicable Wage Determination:** {wages.get('type', 'Service Contract Act')}")
+    if wages.get('states'):
+        sections.append(f"• **States:** {', '.join(wages.get('states'))}")
+    sections.append(f"• **Notes:** {wages.get('notes', 'Not included in solicitation')}")
+    
+    sections.append("\n#### Security & Compliance")
+    for req in security.get('requirements', []):
+        sections.append(f"• {req}")
+    if security.get('training_deadline'):
+        sections.append(f"• Deadline: {security.get('training_deadline')}")
+
+    sections.append("\n#### Insurance Requirements")
+    sections.append(f"• **General Liability:** {insurance.get('general_liability', 'Not included')}")
+    sections.append(f"• **Auto Liability:** {insurance.get('auto_liability', 'Not included')}")
+    sections.append(f"• **Workers’ Compensation:** {insurance.get('workers_comp', 'Not included')}")
+    sections.append(f"• **Employer’s Liability:** {insurance.get('employers_liability', 'Not included')}")
+    sections.append("")
+
+    # 11. Bid Submission Instructions
+    bid_ins = analysis.get('bid_instructions', {})
+    sections.append(f"### 🔹 BID SUBMISSION INSTRUCTIONS")
+    
+    sections.append("#### Submission Method & Contact")
+    sections.append(f"• **Format:** {bid_ins.get('delivery_options', 'Email proposal (PDF)')}")
+    sections.append(f"• **Email Address:** john@campsable.com")
+    sections.append(f"• **Deadline:** **{bid_ins.get('due_date', due_date_str)}**")
+    
+    sections.append("\n#### Required Quote Content")
+    req_docs = bid_ins.get('required_with_bid', ['Technical Proposal', 'Past Performance', 'Price Proposal'])
+    for i, doc in enumerate(req_docs, 1):
+        sections.append(f"{i}. {doc}")
+    
+    sections.append("\n#### Evaluation Criteria")
+    sections.append(f"• {analysis.get('evaluation_criteria', 'Lowest Price Technically Acceptable (LPTA)')}\n")
+
+    # 12. ⚙️ BASE CONTRACT SCOPE
+    clins = analysis.get('clins_breakdown', {})
+    base_clins = clins.get('base', [])
+    sections.append(f"### 🔹 ⚙️ BASE CONTRACT SCOPE")
+    if base_clins:
+        sections.append("| CLIN | Item Description | Quantity | Unit | Notes |")
+        sections.append("|---|---|---|---|---|")
+        for c in base_clins:
+            sections.append(f"| {c.get('clin')} | {c.get('description')} | {c.get('qty')} | {c.get('unit')} | {c.get('notes', '')} |")
+    else:
+        sections.append("*Refer to SF 1449 for itemized base pricing.*")
+    sections.append("")
+
+    # 13. 🟩 OPTION 1 SCOPE
+    option_clins = clins.get('options', [])
+    sections.append(f"### 🔹 🟩 OPTION 1 SCOPE")
+    if option_clins:
+        sections.append("| CLIN | Item Description | Quantity | Unit | Notes |")
+        sections.append("|---|---|---|---|---|")
+        for c in option_clins:
+            sections.append(f"| {c.get('clin')} | {c.get('description')} | {c.get('qty')} | {c.get('unit')} | {c.get('notes', '')} |")
+    else:
+        sections.append("**Not Included in This Solicitation** - This contract does not include option periods.")
+    sections.append("")
+
+    # 14. ATTACHMENTS PROVIDED
+    attachments = analysis.get('attachments', [])
+    sections.append(f"### 🔹 ATTACHMENTS PROVIDED")
+    if attachments:
+        for idx, att in enumerate(attachments, 1):
+            sections.append(f"{idx}. **{att.get('title')}**: {att.get('purpose', 'Technical details/specifications')}")
+    else:
+        sections.append("*Main solicitation document only.*")
+    sections.append("")
+
+    # 15. Summary for Bidders
+    bidder_summary = analysis.get('summary_for_bidders', [])
+    if not bidder_summary:
+        bidder_summary = [
+            "Review Statement of Work (SOW) / PWS for detailed tasks",
+            "Verify all required certifications (FAA, OEM, ISO) are current",
+            "Comply with all safety, security, and labor wage requirements",
+            "Submit technical and pricing volumes per instructions",
+            "Ensure delivery is within the required Period of Performance",
+            "Confirm acceptance points and inspection agency requirements",
+            f"Internal deadline for submission: {internal_due_formatted}",
+            "Quote must remain valid for at least 90 days"
+        ]
+    sections.append(f"### � SUMMARY FOR BIDDERS")
+    for i, s in enumerate(bidder_summary, 1):
+        sections.append(f"{i}. {s}")
+    
+    # 16. KEY TAKEAWAYS FOR BIDDER
+    key_takeaways = analysis.get('key_takeaways', bidder_summary)
+    sections.append(f"\n### 🟩 KEY TAKEAWAYS FOR BIDDER")
+    for s in key_takeaways:
+        sections.append(f"- [ ] {s}")
+
+    sections.append("\n----end of RFQ-----")
+
+    full_body = "\n".join(sections)
+    return {"subject": f"{title.upper()} - Notice ID {notice_id}", "body": full_body}
+
+
+def create_bid_request(analysis_summary, vendor_name="Valued Supplier", internal_deadline_offset=4):
     if not isinstance(analysis_summary, dict):
         return {"subject": "Error", "body": "Invalid analysis"}
     sol_type = analysis_summary.get('solicitation_type', 'PRODUCT').upper()
     if 'PRODUCT' in sol_type:
-        return _format_product_rfq(analysis_summary, vendor_name)
+        return _format_product_rfq(analysis_summary, vendor_name, internal_deadline_offset)
     else:
-        return _format_service_rfq(analysis_summary, vendor_name)
+        return _format_service_rfq(analysis_summary, vendor_name, internal_deadline_offset)

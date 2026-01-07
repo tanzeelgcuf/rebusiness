@@ -1,0 +1,33 @@
+Dropped 'vendors' table to refresh schema.
+Database tables created or already exist.
+Adding W912ES26BA007 to database...
+--- Analyzing Local Content ---
+Dropped 'vendors' table to refresh schema.
+Database tables created or already exist.
+  Collective analysis of 1 items...
+    - Part 0 (Text): 171 characters
+  [LLM] Calling Gemini 2.5 Pro...
+  [LLM] Received response (4067 characters)
+  Searching for missing insurance data for ...
+  Searching for Wage Determination for ...
+  [!] Solicitation flagged for manual review: Due Date
+--- Generating RFQ Output ---
+
+Output saved to W912ES26BA007_verify_output_v4.txt
+
+--- PREVIEW OF OUTPUT ---
+Notice ID: W912ES-24-Q-FMMRP
+
+# Establish, Monitor, and Maintain Native Forest Habitat for the Fargo-Moorhead Metropolitan Flood Risk Management Project
+
+Dear Valued Supplier:
+
+We are writing to request a formal quote for establish, monitor, and maintain native forest habitat for the fargo-moorhead metropolitan flood risk management project. Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
+
+Your response is needed on or before 4 business days before deadline in order for us to submit your bid.
+
+If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+
+Thank you for your time and consideration.
+
+[My sig...

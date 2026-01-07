@@ -1,0 +1,367 @@
+--- Starting Search for W912ES26BA007 ---
+Dropped 'vendors' table to refresh schema.
+Database tables created or already exist.
+--- Searching SAM.gov for URLs: W912ES26BA007 (Start: 1, Count: 1) ---
+Navigating to: https://sam.gov/search/?index=opp&page=1&sort=-modifiedDate&pageSize=25&sfm%5BsimpleSearch%5D%5BkeywordRadio%5D=ALL&sfm%5BsimpleSearch%5D%5BkeywordTags%5D%5B0%5D%5Bkey%5D=W912ES26BA007&sfm%5BsimpleSearch%5D%5BkeywordTags%5D%5B0%5D%5Bvalue%5D=W912ES26BA007&sfm%5BsimpleSearch%5D%5BkeywordEditorTextarea%5D=&sfm%5Bstatus%5D%5Bis_active%5D=true
+Search results loaded.
+Extracting links from page 1...
+  Found 1 links.
+Found solicitation link: https://sam.gov/workspace/contract/opp/4535c8377f4f42e99d658762148f66b0/view
+--- Scraping Detail Page ---
+  Visiting https://sam.gov/workspace/contract/opp/4535c8377f4f42e99d658762148f66b0/view...
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Fetch] Found 'Download All' button. Clicking...
+    [Deep Fetch] Downloaded Bundle: bundle_1767654547.zip
+    [Deep Fetch] Unzipped bundle.
+    [Deep Fetch] Downloaded: Solicitation+-+W912ES26BA007+Professional+Appearance.pdf
+    [Deep Fetch] Downloaded: W912ES26BA007+Attachments+1-6.pdf
+    [Deep Fetch] Downloaded: W912ES26BA007+Scope+of+Work.pdf
+    [Deep Fetch] Downloaded: FMM+Forrest+Mitigation+Planting+Pricing.pdf
+    [Deep Fetch] Downloaded: SCA+WD+2015-4969+rev+30+dtd+12-03-2025+-+ND.docx
+    [Deep Fetch] Downloaded: SCA+WD+2015-4967+rev+30+dtd+12-03-2025+-+MN.docx
+    [Deep Dive] Found 1 potential external links. analyzing...
+    [Deep Link] Visiting: https://www.usace.army.mil/Business-With-Us/Partnering
+    [Deep Link] Saved page content: external_link_www_usace_army_mil_Business_With_Us_Partnering.txt (8586 chars)
+    [Deep Crawl] depth=1 Visiting: https://www.usace.army.mil/Business-With-Us/Partnering
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Business_With_Us_Partnering.txt (8586 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Portals/2/docs/Contracting/Public_BetaSAM_Tips_USACE_FEB2021.pdf?ver=rZLOc4aLc1l-40UbHrUP0Q%3d%3d
+    [Deep Crawl] ✗ All strategies failed for https://www.usace.army.mil/Portals/2/docs/Contracting/Public_BetaSAM_Tips_USACE_FEB2021.pdf?ver=rZLOc4aLc1l-40UbHrUP0Q%3d%3d
+    [Deep Crawl] Saved failure info: FAILED_ACCESS_depth2_www_usace_army_mil_Portals_2_docs_Contracting_Publ.txt
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Portals/2/docs/Contracting/Public_BetaSAM_Tips_USACE_FEB2021.pdf
+    [Deep Crawl] ✗ All strategies failed for https://www.usace.army.mil/Portals/2/docs/Contracting/Public_BetaSAM_Tips_USACE_FEB2021.pdf
+    [Deep Crawl] Saved failure info: FAILED_ACCESS_depth2_www_usace_army_mil_Portals_2_docs_Contracting_Publ.txt
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Portals/2/docs/Contracting/USACE_Aquisition_Instruction_and_Desk_Guide_18JUNE2024.pdf
+    [Deep Crawl] ✗ All strategies failed for https://www.usace.army.mil/Portals/2/docs/Contracting/USACE_Aquisition_Instruction_and_Desk_Guide_18JUNE2024.pdf
+    [Deep Crawl] Saved failure info: FAILED_ACCESS_depth2_www_usace_army_mil_Portals_2_docs_Contracting_USAC.txt
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Portals/2/docs/Contracting/USACE_Aquisition_Instruction_and_Desk_Guide_26MAR2024.pdf?ver=nKNpvy8MztKk4_mCckQZLg%3d%3d
+    [Deep Crawl] ✗ All strategies failed for https://www.usace.army.mil/Portals/2/docs/Contracting/USACE_Aquisition_Instruction_and_Desk_Guide_26MAR2024.pdf?ver=nKNpvy8MztKk4_mCckQZLg%3d%3d
+    [Deep Crawl] Saved failure info: FAILED_ACCESS_depth2_www_usace_army_mil_Portals_2_docs_Contracting_USAC.txt
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Portals/2/docs/Contracting/USACE_Aquisition_Instruction_and_Desk_Guide_18JUNE2024.pdf?ver=c2Q3EDTPp9Q63odOjGPhVg%3d%3d
+    [Deep Crawl] ✗ All strategies failed for https://www.usace.army.mil/Portals/2/docs/Contracting/USACE_Aquisition_Instruction_and_Desk_Guide_18JUNE2024.pdf?ver=c2Q3EDTPp9Q63odOjGPhVg%3d%3d
+    [Deep Crawl] Saved failure info: FAILED_ACCESS_depth2_www_usace_army_mil_Portals_2_docs_Contracting_USAC.txt
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Portals/2/docs/Contracting/USACE_Contracting_Customer_Guide_rev09Nov2022.pdf?ver=_mnLCPF4V3BmJWprgIKKvA%3d%3d
+    [Deep Crawl] ✗ All strategies failed for https://www.usace.army.mil/Portals/2/docs/Contracting/USACE_Contracting_Customer_Guide_rev09Nov2022.pdf?ver=_mnLCPF4V3BmJWprgIKKvA%3d%3d
+    [Deep Crawl] Saved failure info: FAILED_ACCESS_depth2_www_usace_army_mil_Portals_2_docs_Contracting_USAC.txt
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Portals/2/docs/Contracting/UAI_UDG_30NOV2021_asof_June2022.pdf?ver=vlvGLrBBQqIaLzIkUMswPA%3d%3d
+    [Deep Crawl] ✗ All strategies failed for https://www.usace.army.mil/Portals/2/docs/Contracting/UAI_UDG_30NOV2021_asof_June2022.pdf?ver=vlvGLrBBQqIaLzIkUMswPA%3d%3d
+    [Deep Crawl] Saved failure info: FAILED_ACCESS_depth2_www_usace_army_mil_Portals_2_docs_Contracting_UAI_.txt
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Portals/2/docs/Contracting/UAI_UDG_30NOV2021.pdf?ver=n4Vv1YGUDe79Bq5M3HrFnw%3d%3d
+    [Deep Crawl] ✗ All strategies failed for https://www.usace.army.mil/Portals/2/docs/Contracting/UAI_UDG_30NOV2021.pdf?ver=n4Vv1YGUDe79Bq5M3HrFnw%3d%3d
+    [Deep Crawl] Saved failure info: FAILED_ACCESS_depth2_www_usace_army_mil_Portals_2_docs_Contracting_UAI_.txt
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Missions/Civil-Works/Navigation/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Missions_Civil_Works_Navigation.txt (6421 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: http://www.sam.usace.army.mil/
+    [Deep Crawl] Saved: linked_page_standard_www_sam_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_ua_www_sam_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_protocol_www_sam_usace_army_mil_.txt (3590 chars)
+    [Deep Crawl] ✓ Success with _try_alternative_protocol
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Missions/Environmental/Technical-Project-Planning/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Missions_Environmental_Technica.txt (6696 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.saa.usace.army.mil/
+    [Deep Crawl] Saved: linked_page_standard_www_saa_usace_army_mil_.txt (3168 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Strategic-Partnerships/Contracting/Contracting-in-Puerto-Rico/Indefinite-Delivery-contracts/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Strategic_Partnerships_Contract.txt (8334 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Strategic-Partnerships/Small-Business/Subcontracting-Resources/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Strategic_Partnerships_Small_Bu.txt (8973 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/About/History/Oral-History-in-USACE/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_About_History_Oral_History_in_U.txt (10402 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Missions/Real-Estate/HAP/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Missions_Real_Estate_HAP_.txt (7517 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Missions/Civil-Works/Project-Partnership-Agreements/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Missions_Civil_Works_Project_Pa.txt (12164 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/About/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_About_.txt (6381 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/About/History/Exhibits/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_About_History_Exhibits_.txt (5856 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: http://www.poa.usace.army.mil/
+    [Deep Crawl] Saved: linked_page_standard_www_poa_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_ua_www_poa_usace_army_mil_.txt (3855 chars)
+    [Deep Crawl] ✓ Success with _try_with_different_user_agent
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Fetch] Error checking 'Download All': Page.query_selector: Target page, context or browser has been closed
+    [Deep Fetch] Individual file scan error: Page.query_selector_all: Target page, context or browser has been closed
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/About/History/Command-Sergeants-Major/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_About_History_Command_Sergeants.txt (15961 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Strategic-Partnerships/Small-Business/Upcoming-Contract-Opportunities/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Strategic_Partnerships_Small_Bu.txt (9954 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Careers/Career-Fairs/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Careers_Career_Fairs_.txt (5515 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: http://www.saw.usace.army.mil/
+    [Deep Crawl] Saved: linked_page_standard_www_saw_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_ua_www_saw_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_protocol_www_saw_usace_army_mil_.txt (5117 chars)
+    [Deep Crawl] ✓ Success with _try_alternative_protocol
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Who-We-Are/UMSB/UMSB-Small-Business/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Who_We_Are_UMSB_UMSB_Small_Busi.txt (7875 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: http://www.nwp.usace.army.mil/
+    [Deep Crawl] Saved: linked_page_standard_www_nwp_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_ua_www_nwp_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_protocol_www_nwp_usace_army_mil_.txt (3906 chars)
+    [Deep Crawl] ✓ Success with _try_alternative_protocol
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: http://www.spn.usace.army.mil/
+    [Deep Crawl] Saved: linked_page_standard_www_spn_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_ua_www_spn_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_protocol_www_spn_usace_army_mil_.txt (3454 chars)
+    [Deep Crawl] ✓ Success with _try_alternative_protocol
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Careers/Civilian-Deployment/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Careers_Civilian_Deployment_.txt (6177 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Resources/Contact/Unit-Websites/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Resources_Contact_Unit_Websites.txt (12770 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: http://www.swf.usace.army.mil/
+    [Deep Crawl] Saved: linked_page_standard_www_swf_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_delayed_www_swf_usace_army_mil_.txt (9696 chars)
+    [Deep Crawl] ✓ Success with _try_with_delay
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Missions/Real-Estate/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Missions_Real_Estate_.txt (5801 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: http://www.nwo.usace.army.mil/
+    [Deep Crawl] Saved: linked_page_standard_www_nwo_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_ua_www_nwo_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_protocol_www_nwo_usace_army_mil_.txt (4396 chars)
+    [Deep Crawl] ✓ Success with _try_alternative_protocol
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Resources/FOIA/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Resources_FOIA_.txt (13190 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Who-We-Are/UMSB/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Who_We_Are_UMSB_.txt (6517 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Missions/Civil-Works/Levee-Safety-Program/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Missions_Civil_Works_Levee_Safe.txt (11108 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Missions/Environmental/Environmental-Interagency-Support/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Missions_Environmental_Environm.txt (6579 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: http://www.iwr.usace.army.mil/
+    [Deep Crawl] Saved: linked_page_standard_www_iwr_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_ua_www_iwr_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_protocol_www_iwr_usace_army_mil_.txt (2553 chars)
+    [Deep Crawl] ✓ Success with _try_alternative_protocol
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Missions/Safety-and-Occupational-Health/Safety-and-Health-Requirements-Manual/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Missions_Safety_and_Occupationa.txt (5179 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Who-We-Are/Engineer-Inspector-General/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Who_We_Are_Engineer_Inspector_G.txt (5524 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Missions/Civil-Works/Technical-Assistance/Planning-Assistance/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Missions_Civil_Works_Technical_.txt (11300 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Missions/Security-Assistance/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Missions_Security_Assistance_.txt (5857 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: http://www.mvd.usace.army.mil/
+    [Deep Crawl] Saved: linked_page_standard_www_mvd_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_ua_www_mvd_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] ✗ All strategies failed for http://www.mvd.usace.army.mil/
+    [Deep Crawl] Saved failure info: FAILED_ACCESS_depth2_www_mvd_usace_army_mil_.txt
+    [Deep Crawl] depth=2 Visiting: http://www.nan.usace.army.mil/
+    [Deep Crawl] Saved: linked_page_standard_www_nan_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_ua_www_nan_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_protocol_www_nan_usace_army_mil_.txt (3812 chars)
+    [Deep Crawl] ✓ Success with _try_alternative_protocol
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: http://www.tam.usace.army.mil/
+    [Deep Crawl] Saved: linked_page_standard_www_tam_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_ua_www_tam_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_protocol_www_tam_usace_army_mil_.txt (6482 chars)
+    [Deep Crawl] ✓ Success with _try_alternative_protocol
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Missions/Civil-Works/Regulatory-Program-and-Permits/Section-214/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Missions_Civil_Works_Regulatory.txt (7287 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Missions/Contingency-Support/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Missions_Contingency_Support_.txt (5602 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: http://www.nao.usace.army.mil/
+    [Deep Crawl] Saved: linked_page_standard_www_nao_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_ua_www_nao_usace_army_mil_.txt (5065 chars)
+    [Deep Crawl] ✓ Success with _try_with_different_user_agent
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Fetch] Error checking 'Download All': Page.query_selector: Target page, context or browser has been closed
+    [Deep Fetch] Individual file scan error: Page.query_selector_all: Target page, context or browser has been closed
+    [Deep Crawl] depth=2 Visiting: https://www.tad.usace.army.mil
+    [Deep Crawl] Saved: linked_page_standard_www_tad_usace_army_mil.txt (5520 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Who-We-Are/Contingency-Response-Unit/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Who_We_Are_Contingency_Response.txt (7168 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: http://www.spd.usace.army.mil/
+    [Deep Crawl] Saved: linked_page_standard_www_spd_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_ua_www_spd_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_protocol_www_spd_usace_army_mil_.txt (5375 chars)
+    [Deep Crawl] ✓ Success with _try_alternative_protocol
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Missions/Civil-Works/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Missions_Civil_Works_.txt (5586 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/About/History
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_About_History.txt (14759 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Missions/Field-Force-Engineering/
+    [Deep Crawl] ✗ All strategies failed for https://www.usace.army.mil/Missions/Field-Force-Engineering/
+    [Deep Crawl] Saved failure info: FAILED_ACCESS_depth2_www_usace_army_mil_Missions_Field_Force_Engineerin.txt
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Who-We-Are/Prime-Power-School/
+    [Deep Crawl] ✗ All strategies failed for https://www.usace.army.mil/Who-We-Are/Prime-Power-School/
+    [Deep Crawl] Saved failure info: FAILED_ACCESS_depth2_www_usace_army_mil_Who_We_Are_Prime_Power_School_.txt
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/About/People/
+    [Deep Crawl] ✗ All strategies failed for https://www.usace.army.mil/About/People/
+    [Deep Crawl] Saved failure info: FAILED_ACCESS_depth2_www_usace_army_mil_About_People_.txt
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Careers/How-to-Apply/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Careers_How_to_Apply_.txt (8024 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Missions/Safety-and-Occupational-Health/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Missions_Safety_and_Occupationa.txt (8515 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: http://www.sac.usace.army.mil/
+    [Deep Crawl] Saved: linked_page_standard_www_sac_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_ua_www_sac_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_protocol_www_sac_usace_army_mil_.txt (4185 chars)
+    [Deep Crawl] ✓ Success with _try_alternative_protocol
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Missions/Civil-Works/Section408/
+    [Deep Crawl] ✗ All strategies failed for https://www.usace.army.mil/Missions/Civil-Works/Section408/
+    [Deep Crawl] Saved failure info: FAILED_ACCESS_depth2_www_usace_army_mil_Missions_Civil_Works_Section408.txt
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Careers/Federal-Employee-Benefits/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Careers_Federal_Employee_Benefi.txt (11940 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: http://www.pof.usace.army.mil/
+    [Deep Crawl] Saved: linked_page_standard_www_pof_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_protocol_www_pof_usace_army_mil_.txt (4129 chars)
+    [Deep Crawl] ✓ Success with _try_alternative_protocol
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: http://www.saj.usace.army.mil/
+    [Deep Crawl] Saved: linked_page_standard_www_saj_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_ua_www_saj_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_delayed_www_saj_usace_army_mil_.txt (6523 chars)
+    [Deep Crawl] ✓ Success with _try_with_delay
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Missions/Safety-and-Occupational-Health/High-Hazard-Working-Groups/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Missions_Safety_and_Occupationa.txt (5767 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Who-We-Are/Chief-Counsel-Office/Legal-Services-Directory/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Who_We_Are_Chief_Counsel_Office.txt (13063 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Missions/Medical-Facilities/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Missions_Medical_Facilities_.txt (7696 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Who-We-Are/Chief-Counsel-Office/Honors-Program/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Who_We_Are_Chief_Counsel_Office.txt (7687 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Strategic-Partnerships/Small-Business/Find-Upcoming-Conferences-Outreach-Events-Training/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Strategic_Partnerships_Small_Bu.txt (6668 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Resources/Contact/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Resources_Contact_.txt (6825 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: http://www.nwd.usace.army.mil/
+    [Deep Crawl] Saved: linked_page_standard_www_nwd_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_ua_www_nwd_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_protocol_www_nwd_usace_army_mil_.txt (13885 chars)
+    [Deep Crawl] ✓ Success with _try_alternative_protocol
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: http://www.nau.usace.army.mil/
+    [Deep Crawl] Saved: linked_page_standard_www_nau_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_ua_www_nau_usace_army_mil_.txt (2379 chars)
+    [Deep Crawl] ✓ Success with _try_with_different_user_agent
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Fetch] Error checking 'Download All': Page.query_selector: Target page, context or browser has been closed
+    [Deep Fetch] Individual file scan error: Page.query_selector_all: Target page, context or browser has been closed
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Missions/Environmental/Environmental-Quality/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Missions_Environmental_Environm.txt (6450 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: http://www.nae.usace.army.mil/
+    [Deep Crawl] Saved: linked_page_standard_www_nae_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_ua_www_nae_usace_army_mil_.txt (4714 chars)
+    [Deep Crawl] ✓ Success with _try_with_different_user_agent
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Fetch] Error checking 'Download All': Page.query_selector: Target page, context or browser has been closed
+    [Deep Fetch] Individual file scan error: Page.query_selector_all: Target page, context or browser has been closed
+    [Deep Crawl] depth=2 Visiting: http://www.sad.usace.army.mil/
+    [Deep Crawl] Saved: linked_page_standard_www_sad_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_ua_www_sad_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_protocol_www_sad_usace_army_mil_.txt (4753 chars)
+    [Deep Crawl] ✓ Success with _try_alternative_protocol
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Missions/Installation-Readiness/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Missions_Installation_Readiness.txt (6998 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: http://www.spl.usace.army.mil/
+    [Deep Crawl] Saved: linked_page_standard_www_spl_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_ua_www_spl_usace_army_mil_.txt (3151 chars)
+    [Deep Crawl] ✓ Success with _try_with_different_user_agent
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Fetch] Error checking 'Download All': Page.query_selector: Target page, context or browser has been closed
+    [Deep Fetch] Individual file scan error: Page.query_selector_all: Target page, context or browser has been closed
+    [Deep Crawl] depth=2 Visiting: https://www.usace.army.mil/Missions/Civil-Works/Review-Policy/SAR_T2_IEPR/
+    [Deep Crawl] Saved: linked_page_standard_www_usace_army_mil_Missions_Civil_Works_Review_Pol.txt (5790 chars)
+    [Deep Crawl] ✓ Success with _try_standard_access
+    [Deep Fetch] Starting attachment download to data/solicitations/2615d6536b/attachments
+    [Deep Crawl] depth=2 Visiting: http://www.nww.usace.army.mil/
+    [Deep Crawl] Saved: linked_page_standard_www_nww_usace_army_mil_.txt (204 chars)
+    [Deep Crawl] Saved: linked_page_alt_ua_www_nww_usace_army_mil_.txt (204 chars)

@@ -58,8 +58,7 @@ class SamGovAgent:
 
     def ensure_solicitation_directory(self, contract_id):
         """Creates a directory for a specific solicitation."""
-        base_dir = "data/solicitations"
-        contract_dir = os.path.join(base_dir, contract_id)
+        contract_dir = os.path.join(config.SOLICITATION_DATA_DIR, contract_id)
         if not os.path.exists(contract_dir):
             os.makedirs(contract_dir)
         return contract_dir
@@ -762,17 +761,77 @@ class SamGovAgent:
 
         return list({v['url']:v for v in all_solicitations}.values())
 
+    def _find_and_download_hidden_links(self, page, target_dir):
+        """
+        Finds and downloads links that say 'Click here', 'Download', etc.
+        """
+        try:
+            # Find ALL clickable elements
+            links = page.query_selector_all('a, button, [role="button"]')
+            
+            for link in links:
+                text = (link.inner_text() or "").lower()
+                
+                # Target: "Click here", "Additional Documents", "Download", etc.
+                if any(x in text for x in ["click here", "additional", "download", "documents", "attachments"]):
+                    href = link.get_attribute('href')
+                    
+                    if href:
+                        print(f"    [Hidden Link] Found: {text} -> {href}")
+                        
+                        # Try to download
+                        try:
+                            with page.expect_download(timeout=15000) as download_info:
+                                link.click()
+                            
+                            download = download_info.value
+                            safe_name = f"hidden_link_{download.suggested_filename}"
+                            download.save_as(os.path.join(target_dir, safe_name))
+                            print(f"    [Downloaded] {safe_name}")
+                        except:
+                            # Not a download link, try navigation
+                            # Be careful not to navigate main page away if it's the same page
+                            # But here we assume it opens in new tab or we handle it safely?
+                            # The code snippet creates a NEW PAGE context which is safe.
+                            try:
+                                new_page = self.context.new_page()
+                                new_page.goto(href, timeout=30000)
+                                
+                                # Extract and save
+                                content = new_page.content()
+                                safe_name = f"external_link_{int(time.time())}.txt"
+                                with open(os.path.join(target_dir, safe_name), 'w') as f:
+                                    f.write(content)
+                                
+                                new_page.close()
+                                print(f"    [Saved] {safe_name}")
+                            except Exception as nav_e:
+                                print(f"    [Hidden Link] Navigation failed: {nav_e}")
+        
+        except Exception as e:
+            print(f"    [Error] Finding hidden links: {e}")
+
     def process_detail_page(self, url):
         """
         Opens a new page to scrape the detail, preventing disruption of the main search flow.
+        Includes a fallback to local data if the scrape fails but data exists.
         """
-        detail_page = self.context.new_page()
+        # Robust ID extraction from SAM.gov URL (pre-scrape)
+        match = re.search(r'/opp/([a-f0-9]+)/view', url)
+        if match:
+            contract_id = match.group(1)[:10]
+        else:
+            contract_id = hashlib.md5(url.encode()).hexdigest()[:10]
+            
+        contract_dir = os.path.join(config.SOLICITATION_DATA_DIR, contract_id)
+        
+        detail_page = None
         sol_data = None
+        
         try:
             print(f"  Visiting {url}...")
+            detail_page = self.context.new_page()
             detail_page.goto(url, timeout=45000)
-            
-            # detail_page.wait_for_load_state("domcontentloaded") # Faster than networkidle
             detail_page.wait_for_selector("h1", timeout=30000)
             
             # CRITICAL: Wait for description to load
@@ -817,6 +876,7 @@ class SamGovAgent:
             
             # Deep Fetch (Playwright)
             self._deep_download_attachments(detail_page, attachment_dir)
+            self._find_and_download_hidden_links(detail_page, attachment_dir)
             
             # Deep Link Following (Robust)
             # Use the new helper method to find and fetch external links
@@ -832,7 +892,7 @@ class SamGovAgent:
                     self._process_external_link(detail_page, link, attachment_dir) 
                     
                     # New Recursive Crawl for critical external portals
-                    if depth_enabled := True: 
+                    if depth_enabled := False: 
                          # self.visited_links is a set on the class, careful about resets
                          # Use at least depth 2 for portals to reach the actual files
                          self._recursive_crawl(link, depth=1, max_depth=2, target_dir=attachment_dir)
@@ -858,8 +918,30 @@ class SamGovAgent:
             
         except Exception as e:
             print(f"Error on detail page {url}: {e}")
+            # FALLBACK to local data (contract_id and contract_dir are already set above)
+            metadata_path = os.path.join(contract_dir, "metadata.json")
+            if os.path.exists(metadata_path):
+                print(f"  [Fallback] Loading local data for {contract_id} from {contract_dir}...")
+                with open(metadata_path, 'r') as f:
+                    meta = json.load(f)
+                
+                desc_path = os.path.join(contract_dir, "description.txt")
+                desc = ""
+                if os.path.exists(desc_path):
+                    with open(desc_path, 'r') as f:
+                        desc = f.read()
+                
+                sol_data = {
+                    'title': meta.get('title', 'Unknown Title'),
+                    'url': url,
+                    'description': desc[:3000],
+                    'contract_id': contract_id
+                }
+            else:
+                print(f"  [Fallback] No local data found for {contract_id} at {contract_dir}")
         finally:
-            detail_page.close() # CRITICAL: Close the tab!
+            if detail_page:
+                detail_page.close() # CRITICAL: Close the tab!
             
         return sol_data
 
