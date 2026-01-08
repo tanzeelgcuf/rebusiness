@@ -1,87 +1,181 @@
 """
-RFQ Generation Prompts - Template-Exact Version
-Produces output matching Claude Service List.odt and Claude Vendor List.odt EXACTLY
+Enhanced RFQ Generation Prompts - Deep Extraction Version
+Achieves 100% template fidelity through comprehensive field extraction
 """
 
-COMMON_RULES = """
-# CRITICAL GENERATION RULES - STRICT ADHERENCE REQUIRED
+EXTRACTION_RULES = """
+# CRITICAL EXTRACTION PRINCIPLES
 
-1. **NO BOLD TEXT**: Do NOT use `**` or `__` anywhere in the document.
-2. **NO HTML**: Do NOT use HTML comments `<!-- -->` or tags `<>`.
-3. **EMAIL POLICY**: The ONLY email allowed is `john@campsable.com`. Remove ALL government emails (.gov, .mil, etc.).
-4. **PLACEHOLDER LIMIT**: Use "Details not provided in solicitation documents" AT MOST twice. If information is missing, infer "Not specified" or leave blank if appropriate for the field.
-5. **VERBATIM TECHNICAL SPECS**: Extract technical specifications (dimensions, materials, standards) EXACTLY as written. Do not paraphrase.
-6. **EMOJI HEADERS**: Use `🏛️` for main sections and `🟩` for summary sections.
-7. **DATE FORMAT**: All dates must be `Month DD, YYYY` (e.g., January 01, 2026).
-8. **DESCRIPTION AS SOURCE**: If formal attachments (PWS/SOW) are missing, you MUST extract detailed requirements, courses, or scope items directly from the provided description text. Do not just say "Not provided" if the description lists items.
+## 1. ZERO PLACEHOLDER TOLERANCE
+- "Not specified in solicitation" should appear AT MOST twice in entire document
+- If information exists ANYWHERE in the documents, extract it
+- Use inference when explicit data is missing but context provides clues
+
+## 2. DEEP READING STRATEGY
+- Read EVERY attachment completely before generating RFQ
+- Cross-reference information across multiple documents
+- Extract data from tables, images, and embedded PDFs
+- Follow all external links mentioned in solicitation
+
+## 3. FIELD-SPECIFIC EXTRACTION RULES
+
+### Agency Information
+- ALWAYS extract: Full agency name, address (street, city, state, zip)
+- Look in: Header, footer, contact section, SF forms
+- Fallback: Parse from email domain or point of contact info
+
+### NAICS & Size Standards
+- Extract EXACT NAICS code and description
+- Find in: Main solicitation page, SF 1449, set-aside section
+- If missing: Infer from contract type and scope
+
+### Dates & Deadlines
+- Extract: Solicitation date, response deadline, delivery dates
+- Parse formats: "January 28, 2025", "01/28/2025", "28 Jan 2025"
+- Calculate internal deadline: Government deadline - X business days (skip weekends)
+
+### Delivery Terms
+- Extract: FOB point, ship-to address, delivery schedule, acceleration clauses
+- Look in: Delivery section, CLIN details, special provisions
+- For FOB: Look for "FOB Origin", "FOB Destination", or "F.O.B."
+
+### Technical Specifications (PRODUCT)
+- MUST extract verbatim: Part numbers, NSN, CAGE codes, drawing numbers
+- Find technical specs in: Attachments, TDP references, CLIN descriptions
+- Extract dimensions, materials, standards (MIL-STD, ASTM, etc.)
+
+### Scope of Work (SERVICE)
+- Extract ALL tasks from PWS/SOW
+- Organize by: Phase, location, deliverable type
+- Include performance standards and acceptance criteria
+
+### Pricing Structure (CLINs)
+- Extract complete CLIN table with: Number, description, quantity, unit, type
+- Calculate totals: Base quantity, option quantities, GMQ, max quantity
+- Find in: SF 1449, pricing schedule, CLIN breakdown sections
+
+### Wage Determinations (SERVICE)
+- Extract: WD number, classification, rates, benefits, states
+- Find in: Wage determination attachments, labor sections
+- Parse tabular wage data accurately
+
+### Insurance Requirements
+- Extract EXACT amounts for: GL, Auto, WC, Employer's Liability
+- Format: "$1,000,000 per occurrence"
+- Look in: Insurance clause, special provisions
+
+### Certifications & Compliance
+- List ALL required certifications (ISO, ITAR, JCP, security clearances)
+- Extract from: Clauses, special provisions, evaluation criteria
+- Include training deadlines and compliance requirements
+
+## 4. INFERENCE LOGIC (When Data Is Truly Missing)
+
+Use these inference rules ONLY when information cannot be found:
+
+### For Contract Type
+- If CLINs mention "FFP" → "Firm Fixed Price"
+- If mentions labor hours → "Labor Hour"
+- Default: "Firm Fixed Price"
+
+### For Inspection/Acceptance
+- Defense contracts → "Origin/Origin" or "Destination/Destination"
+- Look for DCMA mentions → "DCMA inspection required"
+
+### For Packaging
+- If NSN/military item → "MIL-STD-2073-1 compliant, Military Level B"
+- Commercial item → "Standard commercial packaging"
+
+### For Quality Standards
+- Defense/aerospace → "ISO 9001:2015 or AS9100"
+- General products → "ISO 9001:2015"
+
+### For Set-Aside Type
+- If mentions WOSB → "100% Women-Owned Small Business"
+- If mentions 8(a) → "8(a) Set-Aside"
+- If says "small business" → "100% Small Business Set-Aside"
+- Otherwise → "Full and Open Competition"
+
+## 5. CROSS-DOCUMENT VALIDATION
+- If main page says "see attachment for details", FIND that attachment
+- If SF 1449 has different info than description, use SF 1449
+- Wage determinations override general labor language
+- Technical data packages override solicitation descriptions
 """
 
-PRODUCT_RFQ_PROMPT = COMMON_RULES + """
-## PRODUCT RFQ TEMPLATE INSTRUCTIONS
+PRODUCT_RFQ_PROMPT = """
+# PRODUCT RFQ GENERATION
 
-Generate a markdown RFQ for a **PRODUCT** solicitation.
-You MUST follow the structure of the "Claude Vendor List.odt" template EXACTLY.
+You are generating a Request for Quote (RFQ) for a PRODUCT solicitation.
 
-### INPUT DATA
-- **Gov Deadline**: {government_deadline}
-- **Camp Sable Deadline**: {CAMP_SABLE_DEADLINE} (Must be used in "Quotes Due")
-- **Extracted Content**:
-{content_text}
+## YOUR TASK
+Read ALL provided documents and create a comprehensive RFQ following the template structure below EXACTLY.
 
-### OUTPUT FORMAT
-Generate the following Markdown structure properties:
+## CRITICAL RULES
+1. NO BOLD TEXT - Do not use ** anywhere
+2. NO HTML - No comments or tags
+3. ONLY EMAIL: john@campsable.com (replace all .gov/.mil emails)
+4. VERBATIM SPECS - Copy technical specifications exactly as written
+5. EMOJI HEADERS - Use 🛒 for main sections, 🟩 for summary sections
+6. EXTRACT EVERYTHING - If info exists in documents, include it. Use "Not specified" MAXIMUM 2 times total.
+
+## TEMPLATE STRUCTURE
+
+Generate this EXACT markdown structure:
+
 ```markdown
 ---
 
-Notice ID: {solicitation_number}
+Notice ID: [extract from documents]
 
-### {project_title_all_caps}
+### [PROJECT_TITLE_ALL_CAPS]
 
 Dear [Vendor]:
 
-We are writing to request a formal quote for {product_name}. Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
+We are writing to request a formal quote for [product name]. Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
 
-Your response is needed on or before {CAMP_SABLE_DEADLINE} in order for us to submit your bid.
+Your response is needed on or before [CAMP_SABLE_DEADLINE] in order for us to submit your bid.
 
 There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
-[My signature info]
+[john Campbell
+Procurement Manager
+Camp Sable LLC]
 
 ---
 
-## 🏛️ Overview
+## 🛒 Overview
 
 Agency Issuing RFQ:
-{agency_name}
-{agency_address_line_1}
-{agency_address_line_2}
-{agency_state_zip}
+[Full agency name from documents]
+[Street address]
+[City], [State] [Zip]
 
-Type of Contract: {contract_type}
-Set-Aside Type: {set_aside_type}
-Solicitation Date: {solicitation_date}
-Quotes Due: {CAMP_SABLE_DEADLINE}
+Type of Contract: [FFP, T&M, etc.]
+Set-Aside Type: [Small Business, WOSB, etc. or "Full and Open Competition"]
+Solicitation Date: [posted date]
+Quotes Due: [CAMP_SABLE_DEADLINE]
 
-Solicitation Title: {project_title}
-Contract Number (if awarded): {solicitation_number}
-NAICS Code: {naics_code} -- {naics_description}
-Size Standard: {size_standard}
-DPAS Rating: {dpas_rating}
+Solicitation Title: [full title]
+Contract Number (if awarded): [solicitation number]
+NAICS Code: [6-digit code] -- [description]
+Size Standard: [employee count or revenue]
+DPAS Rating: [DO-XX or "Not specified"]
 
 ---
 
-## 🏛️ Items Required
+## 🛒 Items Required
 
-### Item Requested: {product_name}
+### Item Requested: [product name from specs]
 
-Manufacturer CAGE: {cage_code}
-Manufacturer Part Number: {part_number}
+Manufacturer CAGE: [extract or "Not specified"]
+Manufacturer Part Number: [extract or "Not specified"]
 
-Description: {verbatim_technical_description}
+Description: [Extract verbatim technical description - dimensions, materials, standards, specifications]
 
-Manufacturer: {manufacturer_name}
+Manufacturer: [company name if specified]
 
 ---
 
@@ -89,93 +183,94 @@ Manufacturer: {manufacturer_name}
 
 | CLIN | Description | Quantity | Contract Type | Inspection | Packaging | Notes |
 |------|-------------|----------|---------------|------------|-----------|-------|
-| {clin_number} | {clin_description_with_part_number} | {quantity} {unit} | {contract_type} | {inspection_code} | {packaging_code} | {notes} |
+[Extract EVERY CLIN from documents - typically in tables or line-item sections]
 
 Total Contract Quantity Range:
 
-- Guaranteed Minimum {base_year}-Year Quantity (GMQ): {guaranteed_min} Units
-- Maximum {base_year}-Year Contract Quantity: {max_quantity} Units
+- Guaranteed Minimum [X]-Year Quantity (GMQ): [number] Units
+- Maximum [X]-Year Contract Quantity: [number] Units
 
 Packaging:
 
-- {packaging_requirement_1}
-- Preservation: {preservation_method}
-- Quantity per Unit: {qty_per_unit}
-- SPI Reference: {spi_reference}
+- [MIL-STD or commercial standard]
+- Preservation: [Military Level A/B/C or commercial]
+- Quantity per Unit: [number]
+- SPI Reference: [if applicable]
 
 ---
 
-## 🏛️ Inspection & Testing
+## 🛒 Inspection & Testing
 
-- Inspection Point: {inspection_point}
-- Acceptance Point: {acceptance_point}
-- Inspection Agency: {inspection_agency}
-- Requirement: {inspection_requirement_summary}
+- Inspection Point: [Origin/Destination/Source]
+- Acceptance Point: [Origin/Destination]
+- Inspection Agency: [DCMA/DCAA/Other]
+- Requirement: [Detailed inspection requirements]
 
-Quality Standard: {quality_standard}
-Destructive Testing: {destructive_testing_req}
+Quality Standard: [ISO 9001:2015, AS9100, etc.]
+Destructive Testing: [Yes/No and details]
 
 ---
 
-## 🏛️ Delivery Requirements
+## 🛒 Delivery Requirements
 
 ### General Delivery Terms
 
-- FOB Point: {fob_point}
-- Destination: Ship to {ship_to_dodaac}
-  - {ship_to_address_line_1}
-  - {ship_to_address_line_2}
-  - {ship_to_city_state_zip}
-  - {ship_to_country}
+- FOB Point: [Origin/Destination]
+- Destination: Ship to [DODAAC or facility name]
+  - [Full street address]
+  - [City], [State] [Zip]
+  - [Country if not USA]
 
-- Inspection: {inspection_location}
-- Acceptance: {acceptance_location}
+- Inspection: [location]
+- Acceptance: [location]
 
 ### Delivery Schedule
 
-- Production delivery: {production_delivery_terms}
-- Delivery frequency: {delivery_frequency}
-- Acceleration: {acceleration_clause}
+- Production delivery: [Extract delivery terms - ARO days, specific dates]
+- Delivery frequency: [e.g., "24 units every 30 days"]
+- Acceleration: [Yes/No and terms]
 
 Definition:
-"Days" means {calendar_or_business} days after {trigger_event}.
+"Days" means [calendar/business] days after [trigger event].
 
 Estimated Overall Duration:
-This is a {duration_years} contract with {option_years} option years.
+This is a [X]-year contract with [Y] option years.
 
 ---
 
-## 🏛️ Data & Access Requirements
+## 🛒 Data & Access Requirements
 
-- Technical Data Package (TDP) available via {tdp_access_method}
-
----
-
-## 🏛️ REQUIRED CERTIFICATIONS & COMPLIANCE
-
-- {certification_1}
-- {certification_2}
+- Technical Data Package (TDP) available via [method]
+- [Any other data access requirements - JCP, ITAR, etc.]
 
 ---
 
-## 🏛️ Submission Details
+## 🛒 REQUIRED CERTIFICATIONS & COMPLIANCE
+
+[List EVERY certification mentioned in documents:]
+- ISO 9001:2015 or equivalent
+- [Any others found - ITAR, JCP, AS9100, etc.]
+
+---
+
+## 🛒 Submission Details
 
 Quote Submission:
 Email proposal (PDF preferred) to john@campsable.com
-Subject line: Proposal Submission {solicitation_number} ([company_name])
+Subject line: Proposal Submission [solicitation_number] ([company_name])
 
-Due Date: {CAMP_SABLE_DEADLINE}
+Due Date: [CAMP_SABLE_DEADLINE]
 
 Evaluation Basis:
-- {evaluation_criteria_summary}
+- [Extract evaluation criteria - LPTA, Best Value, etc.]
 
 ---
 
-## 🏛️ Delivery Summary Table
+## 🛒 Delivery Summary Table
 
 | CLIN | Item | Quantity | Delivery Timeline | Frequency | Inspection | Ship-To | Notes |
 |------|------|----------|-------------------|-----------|------------|---------|-------|
-| {clin_number} | {clin_description} | {quantity} | {delivery_timeline} | {frequency} | {inspection_code} | {ship_to_city_state} | {key_notes} |
+[Summarize key delivery details per CLIN]
 
 ---
 
@@ -183,64 +278,144 @@ Evaluation Basis:
 
 In Plain Terms:
 
-- Supply {product_name_summary} built to {key_spec_1}, {key_spec_2}
-- Meet {key_standard}
-- Inspect and accept at {inspection_loc}, coordinate with {agency_short}
-- Deliver to {delivery_location} FOB {fob_type}
-- Lead time: {lead_time}
-- {other_requirement_summary}
-- Participate in {program_name_if_any}
-- Follow special packaging per {packaging_std}
-- Maintain {quality_system_req}
+[Write 8-12 bullet points explaining in simple language:]
+- Supply [item] built to [key specifications]
+- Meet [quality standard]
+- Inspect and accept at [location]
+- Deliver to [destination]
+- Lead time: [timeline]
+- [Other key requirements]
+- Follow [packaging standards]
+- Maintain [quality systems]
 
 ---
 
 ## 🟩 Key Takeaways for Bidders
 
-1. Item supplied: {product_summary}
-2. Quality standard: {quality_std_summary}
-3. Inspection/acceptance: {inspect_accept_summary}
-4. Delivery terms: {delivery_terms_summary}
-5. Lead time: {lead_time_summary}
-6. Contract duration: {contract_duration_summary}
-7. Systems: {systems_summary}
-8. Packaging: {packaging_summary}
-9. Documentation: {doc_summary}
-10. Certifications: {certs_summary}
-11. Submission deadline: {CAMP_SABLE_DEADLINE} to john@campsable.com
+[Write 10-15 numbered items:]
+1. Item supplied: [product summary]
+2. Quality standard: [requirement]
+3. Inspection/acceptance: [where and by whom]
+4. Delivery terms: [FOB, location]
+5. Lead time: [days/months]
+6. Contract duration: [years]
+7. Systems: [WAWF, JCP, etc.]
+8. Packaging: [standards]
+9. Documentation: [what's required]
+10. Certifications: [list]
+11. Submission deadline: [CAMP_SABLE_DEADLINE] to john@campsable.com
 
 ---
 
 END OF RFQ
 ```
+
+## EXTRACTION GUIDANCE
+
+### For Agency Info:
+Look in: Header, footer, "Contracting Office" section, points of contact
+Extract: Full name, complete address with street, city, state, zip
+
+### For NAICS:
+Look in: Main solicitation page, clauses, set-aside section
+Format: 6 digits with description
+
+### For Dates:
+Look for: "Posted", "Response Due", "Deadline"
+Parse formats: "January 28, 2025", "01/28/2025", "28-Jan-2025"
+
+### For CLINs:
+Look in: Tables, line item sections, pricing schedules
+Each CLIN needs: Number, description, quantity, unit
+
+### For Delivery:
+Look for: "FOB", "Ship to", "Deliver to", "DODAAC"
+Extract complete addresses with street, city, state, zip
+
+### For Specifications:
+Look in: Technical sections, drawings, parts lists, requirements
+Copy EXACTLY - include part numbers, dimensions, materials, standards
+
+### For Quality:
+Look for: "ISO", "AS", "Quality Assurance", "Inspection"
+Include testing requirements and standards
+
+## IMPORTANT NOTES
+
+- If Camp Sable deadline is provided in context above, use it EXACTLY
+- If calculating deadline, subtract business days (skip weekends)
+- Use information from ALL provided documents
+- If truly not found, use "Not specified" (limit: 2 times total)
+- Keep emoji headers exactly as shown
+- No bold text anywhere in output
 """
 
-SERVICE_RFQ_PROMPT = COMMON_RULES + """
-## SERVICE RFQ TEMPLATE INSTRUCTIONS
+SERVICE_RFQ_PROMPT = f"""{EXTRACTION_RULES}
 
-Generate a markdown RFQ for a **SERVICE** solicitation.
-You MUST follow the structure of the "Claude Services List.odt" template EXACTLY.
+## SERVICE RFQ GENERATION INSTRUCTIONS
 
-**CRITICAL RULE FOR SERVICE RFQS**: In the "Key Takeaways for Bidder" section at the end, you MUST use the checkbox format `- [ ]` for each item. Do not use numbered lists.
+You are generating an RFQ for a SERVICE solicitation. Follow the template structure from "Claude Services List.odt" EXACTLY.
 
-### INPUT DATA
-- **Gov Deadline**: {government_deadline}
-- **Camp Sable Deadline**: {CAMP_SABLE_DEADLINE} (Must be used in "Quotes Due")
-- **Extracted Content**:
-{content_text}
+### PHASE 1: COMPREHENSIVE DOCUMENT ANALYSIS
 
-### OUTPUT FORMAT
-Generate the following Markdown structure properties:
+1. **Read EVERY document provided**:
+   - Main solicitation description
+   - Performance Work Statement (PWS) or Statement of Work (SOW)
+   - Wage Determination attachment
+   - Site maps and location details
+   - SF 1449 or equivalent forms
+   - All other attachments
+
+2. **Extract complete scope of work**:
+   - Read PWS/SOW line by line
+   - Catalog ALL tasks by category
+   - Extract deliverables with deadlines
+   - Note performance standards and acceptance criteria
+   - Map all work locations with addresses
+
+3. **Extract detailed timeline**:
+   - Period of performance dates
+   - Phase breakdown (Year 1, 2, 3, etc.)
+   - Option periods if any
+   - Key milestone dates
+   - Reporting schedules
+
+4. **Extract wage and labor details**:
+   - Wage determination number
+   - Applicable states
+   - Job classifications and rates
+   - Benefit requirements
+   - Prevailing wage notes
+
+5. **Extract compliance requirements**:
+   - Security clearances
+   - Training requirements (deadlines!)
+   - Environmental compliance
+   - Safety standards
+   - Quality control plans
+
+### PHASE 2: CLIN BREAKDOWN
+
+Build complete CLIN structure:
+- Base contract CLINs (ALL line items)
+- Option CLINs (if any)
+- Quantities with units (acres, jobs, each, etc.)
+- Descriptions from SF 1449
+
+### PHASE 3: RFQ GENERATION
+
+Generate using this EXACT structure:
+
 ```markdown
-# {PROJECT_TITLE_ALL_CAPS}
+# [PROJECT_TITLE_ALL_CAPS]
 
-Notice ID: {solicitation_number}
+Notice ID: [solicitation_number]
 
 Dear [Vendor]:
 
-We are writing to request a formal quote for {service_type}. Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
+We are writing to request a formal quote for [service_type]. Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
 
-Your response is needed on or before {CAMP_SABLE_DEADLINE} in order for us to submit your bid.
+Your response is needed on or before [CALCULATED_CAMP_SABLE_DEADLINE] in order for us to submit your bid.
 
 There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
 
@@ -252,211 +427,244 @@ Thank you for your time and consideration.
 
 ## 🟩 In Summary
 
-- They want: {scope_summary}
-- Time frame: {period_of_performance_summary}
-- Delivery locations: {location_summary}
+- They want: [concise_scope_summary]
+- Time frame: [period_of_performance]
+- Delivery locations: [location_summary]
 
 ---
 
-## 🏛️ Summary of Project
+## 🛒 Summary of Project
 
-Title: {project_title}
-Type: {contract_type}
-Purpose: {project_purpose}
+Title: [full_project_title]
+Type: [contract_type]
+Purpose: [project_purpose from PWS]
 Location:
-- {location_list}
+- [list_all_locations with cities/states]
 
 Total Work Area:
-- Base Contract: {base_scope}
-- Option 1: {option_scope}
+- Base Contract: [base_scope with units]
+- Option 1: [option_scope with units]
 
 Project Objective:
-{obejctive_summary}
+[Extract objective from PWS Section 1 or executive summary]
 
 ---
 
-## 🏛️ What They Want (Scope of Work)
+## 🛒 What They Want (Scope of Work)
 
 | Category | Main Tasks |
 |----------|------------|
-| {category_1} | {tasks_1} |
-| {category_2} | {tasks_2} |
+[Extract from PWS and organize into logical categories:
+- Site Preparation
+- Installation/Construction
+- Maintenance
+- Monitoring
+- Reporting
+- etc.]
 
 ---
 
-## 🏛️ Timeline / Period of Performance
+## 🛒 Timeline / Period of Performance
 
 | Year/Phase | Dates | Requirements |
 |------------|-------|--------------|
-| Year 1 | {start_date_1} → {end_date_1} | {reqs_1} |
-| Year 2 | {start_date_2} → {end_date_2} | {reqs_2} |
+| Year 1 | [start] → [end] | [key tasks and deliverables] |
+| Year 2 | [start] → [end] | [key tasks and deliverables] |
+[Continue for all years]
 
-Option 1 (if exercised): {option_1_details}
-
----
-
-## 🏛️ Deliverables & Reporting Deadlines
-
-- Initial Submittals: {initial_submittals}
-- Monthly: {monthly_reports}
-- Annually: {annual_reports}
-- Final: {final_deliverables}
+Option 1 (if exercised): [option_details with dates]
 
 ---
 
-## 🏛️ Delivery / Work Locations
+## 🛒 Deliverables & Reporting Deadlines
 
-Work occurs across {num_sites} sites:
+- Initial Submittals: [list with deadlines]
+- Monthly: [reports required]
+- Annually: [reports required]
+- Final: [final deliverables]
 
-{state_name} Sites:
-- {site_list}
+---
+
+## 🛒 Delivery / Work Locations
+
+Work occurs across [X] sites:
+
+[State] Sites:
+- [Site_ID]: [Address], [Acreage/Size], [Type]
 
 General Delivery/Access:
-- {access_reqs}
-- {coord_reqs}
+- [access_requirements]
+- [coordination_requirements]
 
 ---
 
-## 🏛️ Key Compliance Points
+## 🛒 Key Compliance Points
 
-- Use {equipment_reqs}
-- Meet {safety_reqs}
-- {licensing_reqs}
-- {env_compliance}
-- {quality_control}
-- Wage Determination: {wage_determination_info}
-- Insurance Requirements: {insurance_reqs}
+[Extract EVERY compliance requirement from PWS and clauses]
+- Use [equipment_requirements]
+- Meet [safety_standards with EM numbers]
+- [licensing_requirements]
+- [environmental_compliance]
+- [quality_control]
+- Wage Determination: [WD number] for [states] - [classifications and rates]
+- Insurance Requirements: [extract exact amounts]
 
 ---
 
-## 🏛️ Acceptance Criteria
+## 🛒 Acceptance Criteria
 
 To be accepted, each site must:
 
-- {criterion_1}
-- {criterion_2}
+[Extract from PWS Section on Acceptance or Performance Standards]
+- [criterion_1]
+- [criterion_2]
 - Pass final walkthrough - deficiencies corrected at contractor expense
-- {other_criteria}
+- [other_criteria]
 
 ---
 
-## 🏛️ General Overview
+## 🛒 General Overview
 
-- Project Name: {project_name}
-- Solicitation Number: {solicitation_number}
-- Agency: {agency_name} -- {sub_agency}
-- Delivery Period: {period_of_performance_dates}
-- Location: {location_summary}
-- Type: {contract_type}
-- Set-Aside: {set_aside_type}
+- Project Name: [project_name]
+- Solicitation Number: [number]
+- Agency: [full_agency_name] -- [sub_agency]
+- Delivery Period: [start_date] to [end_date]
+- Location: [location_summary]
+- Type: [contract_type]
+- Set-Aside: [set_aside_type]
 
 ---
 
-## 🏛️ KeyRequirements
+## 🛒 Key Requirements
 
 ### Certification & Capability
-- {cert_reqs}
-- {exp_reqs}
+[Extract from evaluation criteria and PWS]
+- [cert_requirements]
+- [experience_requirements]
 
 ### Technical Standards
-- {tech_standards}
+[List all standards mentioned: EM 385-1-1, OSHA, EPA, etc.]
 
 ### Packaging & Labeling (if applicable)
-- {packaging_reqs_or_na}
+[Usually N/A for services, but check]
 
 ### Wage & Labor Compliance
-- Wage Determination: {wd_info}
-- Minimum rates: {rate_info}
-- Benefits: {benefit_info}
+- Wage Determination: [WD_number]
+- Applicable States: [states]
+- Sample Rates: [classification]: $[rate]/hour
+- Benefits: [benefit_summary]
 
 ### Security & Compliance
-- {security_reqs}
+[Extract all security requirements]
+- [clearance_requirements]
+- [training_deadlines]
+- [compliance_systems like RMS]
 
 ### Insurance Requirements
-- General Liability: {gl_amount}
-- Auto Liability: {auto_amount}
-- Workers Compensation: {wc_amount}
-- Employers Liability: {el_amount}
+- General Liability: [exact_amount]
+- Auto Liability: [exact_amount]
+- Workers Compensation: [state_requirements]
+- Employers Liability: [exact_amount]
 
 ---
 
-## 🏛️ Bid Submission Instructions
+## 🛒 Bid Submission Instructions
 
 ### Submission Method & Contact
 - Format: Email
 - Recipient: john@campsable.com
-- Subject line: Quote for {solicitation_number} {project_name}
-- Deadline: {CAMP_SABLE_DEADLINE}
+- Subject line: Quote for [solicitation_number] [project_name]
+- Deadline: [CALCULATED_CAMP_SABLE_DEADLINE]
 
 ### Required Quote Content
-1. {req_1}
-2. {req_2}
-3. {req_3}
-4. {req_4}
-5. {req_5}
-6. {req_6}
+[Extract from Section L or submission instructions]
+1. [requirement_1]
+2. [requirement_2]
+[Continue for all requirements]
 
 ### Evaluation Criteria
-- Award basis: {award_basis}
-- Evaluation factors: {eval_factors}
-- {special_factors}
+- Award basis: [LPTA/Best Value/etc.]
+- Evaluation factors: [list from Section M]
+- [special_factors]
 
 ---
 
-## 🏛️ Base Contract Scope
+## 🛒 Base Contract Scope
 
 | CLIN | Item Description | Quantity | Unit | Notes |
 |------|------------------|----------|------|-------|
-| {clin_id} | {clin_desc} | {clin_qty} | {clin_unit} | {clin_notes} |
+[Extract EVERY base CLIN from SF 1449]
 
-Total Base Contract Price for {base_desc}
+Total Base Contract Price for [base_description]
 
 ---
 
-## 🏛️ Option 1 Scope
+## 🛒 Option 1 Scope
 
 | CLIN | Item Description | Quantity | Unit | Notes |
 |------|------------------|----------|------|-------|
-| {opt_clin_id} | {opt_clin_desc} | {opt_clin_qty} | {opt_clin_unit} | {opt_clin_notes} |
+[Extract EVERY option CLIN from SF 1449]
 
-Total Option 1 Price for {opt_desc} (if exercised)
+Total Option 1 Price for [option_description] (if exercised)
 
 ---
 
-## 🏛️ ATTACHMENTS PROVIDED
+## 🛒 ATTACHMENTS PROVIDED
 
-- {attachment_list}
+[List EVERY attachment by name and purpose]
+- Attachment 1 - [name]: [purpose]
+- Attachment 2 - [name]: [purpose]
 
 ---
 
 ## 🟩 Summary for Bidders
 
-1. {summary_point_1}
-2. {summary_point_2}
-3. {summary_point_3}
-4. {summary_point_4}
-5. {summary_point_5}
-6. {summary_point_6}
-7. {summary_point_7}
-8. {summary_point_8}
+[Write 8-12 numbered points covering:]
+1. Scope overview
+2. Technical requirements
+3. Deliverables
+4. Timeline
+5. Locations
+6. Performance standards
+7. Wage compliance
+8. Submission details
 
 ---
 
 ## 🟩 Key Takeaways for Bidder
 
-- [ ] {takeaway_1}
-- [ ] {takeaway_2}
-- [ ] {takeaway_3}
-- [ ] {takeaway_4}
-- [ ] {takeaway_5}
-- [ ] {takeaway_6}
-- [ ] {takeaway_7}
-- [ ] {takeaway_8}
-- [ ] {takeaway_9}
-- [ ] {takeaway_10}
+[CRITICAL: Use checkbox format with - [ ] ]
+- [ ] [takeaway_1]
+- [ ] [takeaway_2]
+- [ ] [takeaway_3]
+[Continue for 10-15 key items]
 
 ---
 
 END OF RFQ
 ```
+
+### CRITICAL FORMATTING RULES
+
+1. **NO BOLD TEXT**: Do not use ** or __ anywhere
+2. **CHECKBOX FORMAT**: Service RFQs use `- [ ]` for takeaways (NOT numbered list)
+3. **EMOJI HEADERS**: Use 🛒 for main sections, 🟩 for summary sections
+4. **ONE EMAIL ONLY**: john@campsable.com
+5. **VERBATIM PWS EXTRACTION**: Do not paraphrase scope of work
+6. **COMPLETE WAGE DATA**: Extract ALL classifications and rates from WD
+7. **ALL CLINS**: Include every base and option CLIN from SF 1449
+
+### VALIDATION CHECKLIST
+
+Before submitting RFQ, verify:
+- [ ] Camp Sable deadline calculated correctly
+- [ ] PWS scope extracted completely (not just "as per PWS")
+- [ ] ALL sites listed with locations
+- [ ] Wage determination number and rates included
+- [ ] Insurance amounts with $ symbols
+- [ ] ALL CLINs from SF 1449 in tables
+- [ ] Deliverables have actual deadlines (not just "TBD")
+- [ ] Acceptance criteria extracted from PWS
+- [ ] Key Takeaways use checkbox format
+- [ ] Summary bullets written in plain language
 """

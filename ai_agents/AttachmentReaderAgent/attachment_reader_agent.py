@@ -165,7 +165,319 @@ class AttachmentReaderAgent:
         except Exception as e:
             logger.error(f"Error reading {file_path}: {e}")
             return None
-    
+    """
+Add these enhanced methods to your AttachmentReaderAgent class
+Place them after your existing _read_file_content method
+"""
+
+    def _extract_structured_data(self, content_parts: List) -> Dict:
+        """
+        Simplified structured data extraction focusing on critical fields only.
+        """
+        structured_data = {
+            'notice_id': None,
+            'title': None,
+            'naics': None,
+            'due_date': None,
+            'posted_date': None,
+            'agency': None,
+            'set_aside': None,
+            'clins_found': 0,
+            'has_wage_determination': False
+        }
+        
+        # Combine text content only (skip file references)
+        text_parts = [str(p) for p in content_parts if isinstance(p, str)]
+        full_text = " ".join(text_parts)
+        
+        # Truncate to reasonable size for regex (first 50K chars should have key info)
+        search_text = full_text[:50000]
+        
+        # 1. Notice ID / Solicitation Number
+        notice_patterns = [
+            r'Notice ID[:\s]+([A-Z0-9\-]+)',
+            r'Solicitation Number[:\s]+([A-Z0-9\-]+)',
+            r'Solicitation #[:\s]+([A-Z0-9\-]+)',
+        ]
+        for pattern in notice_patterns:
+            match = re.search(pattern, search_text, re.IGNORECASE)
+            if match:
+                structured_data['notice_id'] = match.group(1)
+                break
+        
+        # 2. NAICS Code
+        naics_patterns = [
+            r'NAICS[:\s]+(\d{6})',
+            r'NAICS Code[:\s]+(\d{6})',
+        ]
+        for pattern in naics_patterns:
+            match = re.search(pattern, search_text)
+            if match:
+                structured_data['naics'] = match.group(1)
+                break
+        
+        # 3. Due Date
+        due_date_patterns = [
+            r'(?:Response|Due|Deadline|Quotes Due)[:\s]+([A-Za-z]+\s+\d{1,2},?\s+\d{4})',
+            r'(?:must be received by)[:\s]+([A-Za-z]+\s+\d{1,2},?\s+\d{4})',
+        ]
+        for pattern in due_date_patterns:
+            match = re.search(pattern, search_text, re.IGNORECASE)
+            if match:
+                structured_data['due_date'] = match.group(1)
+                break
+        
+        # 4. Posted Date
+        posted_patterns = [
+            r'(?:Posted|Published|Issued)[:\s]+([A-Za-z]+\s+\d{1,2},?\s+\d{4})',
+        ]
+        for pattern in posted_patterns:
+            match = re.search(pattern, search_text, re.IGNORECASE)
+            if match:
+                structured_data['posted_date'] = match.group(1)
+                break
+        
+        # 5. Agency Name
+        agency_patterns = [
+            r'(?:Agency|Department)[:\s]+([^\n]{10,100})',
+            r'(?:Contracting Office)[:\s]+([^\n]{10,100})',
+        ]
+        for pattern in agency_patterns:
+            match = re.search(pattern, search_text, re.IGNORECASE)
+            if match:
+                structured_data['agency'] = match.group(1).strip()
+                break
+        
+        # 6. Set-Aside Type
+        set_aside_keywords = {
+            'small business': 'Small Business Set-Aside',
+            'wosb': 'Women-Owned Small Business',
+            '8(a)': '8(a) Set-Aside',
+            'sdvosb': 'Service-Disabled Veteran-Owned Small Business',
+            'hubzone': 'HUBZone Set-Aside'
+        }
+        for keyword, label in set_aside_keywords.items():
+            if keyword.lower() in search_text.lower():
+                structured_data['set_aside'] = label
+                break
+        
+        # 7. Count CLINs
+        clin_matches = re.findall(r'\bCLIN[:\s]+\d{4}', search_text, re.IGNORECASE)
+        structured_data['clins_found'] = len(set(clin_matches))  # Unique CLINs
+        
+        # 8. Check for Wage Determination
+        if re.search(r'wage determination|WD[\s\-]?\d+', search_text, re.IGNORECASE):
+            structured_data['has_wage_determination'] = True
+        
+        logger.info(f"    Structured Data:")
+        logger.info(f"      Notice ID: {structured_data['notice_id']}")
+        logger.info(f"      NAICS: {structured_data['naics']}")
+        logger.info(f"      Due Date: {structured_data['due_date']}")
+        logger.info(f"      CLINs: {structured_data['clins_found']}")
+        logger.info(f"      Agency: {structured_data['agency'][:50] if structured_data['agency'] else None}")
+        
+        return structured_data
+
+    def _enhance_content_with_context(self, content_parts: List, structured_data: Dict) -> List:
+        """
+        Simplified context injection - just add key facts at the start.
+        """
+        context = "\n=== CRITICAL INFORMATION FOR RFQ ===\n"
+        
+        if structured_data['notice_id']:
+            context += f"Notice ID: {structured_data['notice_id']}\n"
+        
+        if structured_data['naics']:
+            context += f"NAICS Code: {structured_data['naics']}\n"
+        
+        if structured_data['due_date']:
+            context += f"Government Due Date: {structured_data['due_date']}\n"
+        
+        if structured_data['posted_date']:
+            context += f"Posted Date: {structured_data['posted_date']}\n"
+        
+        if structured_data['agency']:
+            context += f"Agency: {structured_data['agency']}\n"
+        
+        if structured_data['set_aside']:
+            context += f"Set-Aside: {structured_data['set_aside']}\n"
+        
+        if structured_data['clins_found'] > 0:
+            context += f"CLINs Found: {structured_data['clins_found']}\n"
+        
+        context += "=== END CRITICAL INFORMATION ===\n\n"
+        
+        # Only inject if we found useful data
+        if structured_data['notice_id'] or structured_data['naics']:
+            return [context] + content_parts
+        else:
+            return content_parts
+
+    def _validate_rfq_completeness(self, rfq_content: str) -> Tuple[bool, List[str]]:
+        """
+        Simplified validation - focus on critical issues only.
+        """
+        issues = []
+        
+        # 1. Length check
+        if len(rfq_content) < 3000:
+            issues.append(f"Content too short ({len(rfq_content)} chars, need >3000)")
+        
+        # 2. Check for critical sections
+        required_sections = [
+            "Overview",
+            "Items Required",
+            "Submission Details",
+        ]
+        
+        for section in required_sections:
+            if section.lower() not in rfq_content.lower():
+                issues.append(f"Missing section: {section}")
+        
+        # 3. Check for vendor email
+        if "john@campsable.com" not in rfq_content:
+            issues.append("Missing vendor email")
+        
+        # 4. Check for government emails (should be removed)
+        gov_emails = re.findall(r'[\w\.-]+@[\w\.-]*\.(?:gov|mil)\b', rfq_content)
+        if gov_emails:
+            issues.append(f"Government emails found (should be replaced): {gov_emails[:3]}")
+        
+        # 5. Check for bold formatting
+        if "**" in rfq_content:
+            issues.append("Bold formatting (**) found")
+        
+        # 6. Check for emoji headers
+        if "🛒" not in rfq_content and "🟩" not in rfq_content:
+            issues.append("Missing emoji section headers")
+        
+        is_valid = len(issues) == 0
+        return is_valid, issues
+
+    def _generate_rfq_with_llm(
+        self,
+        content_parts: List,
+        rfq_type: str,
+        camp_deadline: Optional[str],
+        internal_deadline_offset: int
+    ) -> Dict:
+        """
+        Fixed version with better content management and generation settings.
+        """
+        logger.info(f"  [Enhanced Pipeline] Starting RFQ generation...")
+        
+        # STEP 1: Extract structured data (simplified)
+        logger.info(f"  [Step 1/4] Extracting structured data...")
+        structured_data = self._extract_structured_data(content_parts)
+        
+        # STEP 2: Enhance content with context (simplified)
+        logger.info(f"  [Step 2/4] Injecting structured context...")
+        enhanced_content = self._enhance_content_with_context(content_parts, structured_data)
+        
+        # STEP 3: Prepare prompt
+        logger.info(f"  [Step 3/4] Generating {rfq_type} RFQ with LLM...")
+        
+        if rfq_type == "PRODUCT":
+            from ai_agents.AttachmentReaderAgent.rfq_prompts import PRODUCT_RFQ_PROMPT
+            system_instruction = PRODUCT_RFQ_PROMPT
+        else:
+            from ai_agents.AttachmentReaderAgent.rfq_prompts import SERVICE_RFQ_PROMPT
+            system_instruction = SERVICE_RFQ_PROMPT
+        
+        # Inject deadline
+        if camp_deadline:
+            deadline_note = f"\n\n🔴 CRITICAL: Camp Sable internal deadline is **{camp_deadline}**. Use this EXACT date in:\n- Opening letter ('Your response is needed on or before...')\n- Overview section (Quotes Due:)\n- Submission Details (Due Date:)\n- Key Takeaways (Submission deadline:)\n"
+        else:
+            deadline_note = f"\n\n🔴 CRITICAL: Calculate internal deadline by subtracting {internal_deadline_offset} BUSINESS days (skip Sat/Sun) from government deadline.\n"
+        
+        system_instruction += deadline_note
+        
+        # STEP 4: Intelligent content truncation
+        # Gemini 2.0 Flash has ~1M token context, but keep it reasonable
+        MAX_CONTENT_CHARS = 500000  # ~125K tokens
+        
+        text_content = []
+        total_chars = 0
+        
+        for part in enhanced_content:
+            if isinstance(part, str):
+                if total_chars + len(part) > MAX_CONTENT_CHARS:
+                    # Truncate this part
+                    remaining = MAX_CONTENT_CHARS - total_chars
+                    text_content.append(part[:remaining] + "\n\n[Content truncated - file too large]")
+                    break
+                else:
+                    text_content.append(part)
+                    total_chars += len(part)
+            else:
+                # For file references (Gemini vision), just pass through
+                text_content.append(part)
+        
+        logger.info(f"    Content size: {total_chars:,} chars")
+        
+        try:
+            model = genai.GenerativeModel(
+                'gemini-2.0-flash-exp',
+                generation_config={
+                    'temperature': 0.1,  # Very low for consistency
+                    'top_p': 0.95,
+                    'top_k': 40,
+                    'max_output_tokens': 8192,  # Ensure complete output
+                    'stop_sequences': ['END OF RFQ'],  # Stop at natural endpoint
+                }
+            )
+            
+            # Build message
+            message_parts = [system_instruction] + text_content
+            
+            # Generate
+            logger.info(f"    Sending to Gemini 2.0 Flash...")
+            response = model.generate_content(message_parts)
+            
+            # Extract text
+            rfq_markdown = response.text
+            
+            # Validate minimum length
+            if not rfq_markdown or len(rfq_markdown) < 1000:
+                logger.error(f"    Response too short: {len(rfq_markdown)} chars")
+                
+                # Try to get more info about why
+                if hasattr(response, 'prompt_feedback'):
+                    logger.error(f"    Prompt feedback: {response.prompt_feedback}")
+                
+                return {
+                    "error": f"LLM response too short ({len(rfq_markdown)} chars). Model may have been blocked or truncated.",
+                    "response": rfq_markdown
+                }
+            
+            logger.info(f"    ✓ Generated {len(rfq_markdown):,} chars")
+            
+            # STEP 5: Validate completeness (simplified)
+            logger.info(f"  [Step 4/4] Validating RFQ completeness...")
+            is_valid, issues = self._validate_rfq_completeness(rfq_markdown)
+            
+            if not is_valid:
+                logger.warning(f"    Validation issues: {len(issues)}")
+                for issue in issues[:3]:
+                    logger.warning(f"      - {issue}")
+            else:
+                logger.info(f"    ✓ Validation passed!")
+            
+            logger.info(f"  [Complete] Generated {len(rfq_markdown)} chars")
+            
+            return {
+                "rfq_content": rfq_markdown,
+                "rfq_type": rfq_type,
+                "validation_passed": is_valid,
+                "validation_issues": issues,
+                "success": True
+            }
+            
+        except Exception as e:
+            logger.error(f"  [LLM Error] {type(e).__name__}: {str(e)}")
+            import traceback
+            logger.error(traceback.format_exc())
+            return {"error": str(e)}
     def _read_pdf_file(self, file_path: str):
         """Enhanced PDF reader with table extraction and vision fallback."""
         full_text = ""
@@ -209,7 +521,22 @@ class AttachmentReaderAgent:
     def _read_docx_file(self, file_path: str) -> str:
         from docx import Document
         doc = Document(file_path)
-        return "\n".join([para.text for para in doc.paragraphs])
+        full_text = []
+        
+        # Extract paragraphs
+        for para in doc.paragraphs:
+            if para.text.strip():
+                full_text.append(para.text)
+        
+        # Extract tables
+        for table in doc.tables:
+            full_text.append("\n--- Table ---")
+            for row in table.rows:
+                row_text = [cell.text.strip() for cell in row.cells]
+                full_text.append(" | ".join(row_text))
+            full_text.append("-------------\n")
+            
+        return "\n".join(full_text)
     
     def _read_doc_file(self, file_path: str) -> str:
         """Read legacy .doc files using mammoth."""
@@ -523,54 +850,7 @@ class AttachmentReaderAgent:
             "success": True
         }
     
-    def _generate_rfq_with_llm(
-        self,
-        content_parts: List,
-        rfq_type: str,
-        camp_deadline: Optional[str],
-        internal_deadline_offset: int
-    ) -> Dict:
-        """Generate RFQ using Gemini with template prompts."""
-        
-        # Select prompt
-        if rfq_type == "PRODUCT":
-            system_instruction = PRODUCT_RFQ_PROMPT
-        else:
-            system_instruction = SERVICE_RFQ_PROMPT
-        
-        # Inject deadline instruction
-        if camp_deadline:
-            system_instruction += f"\n\nCRITICAL: The internal deadline for Camp Sable is **{camp_deadline}**. USE THIS EXACT DATE where it says 'Your response is needed on or before...'."
-        else:
-            system_instruction += f"\n\nCRITICAL: Calculate deadline by subtracting {internal_deadline_offset} BUSINESS DAYS (skip weekends) from the government due date."
-        
-        logger.info(f"  [LLM] Generating {rfq_type} RFQ...")
-        
-        try:
-            model = genai.GenerativeModel('gemini-2.0-flash-exp')
-            
-            # Build message
-            message_parts = [system_instruction]
-            message_parts.extend(content_parts)
-            
-            # Generate
-            response = model.generate_content(message_parts)
-            rfq_markdown = response.text
-            
-            if not rfq_markdown or len(rfq_markdown) < 500:
-                return {"error": f"LLM response too short ({len(rfq_markdown)} chars)"}
-            
-            logger.info(f"  [LLM] ✓ Generated {len(rfq_markdown)} chars")
-            
-            return {
-                "rfq_content": rfq_markdown,
-                "rfq_type": rfq_type,
-                "success": True
-            }
-            
-        except Exception as e:
-            logger.error(f"  [LLM] ✗ Error: {e}")
-            return {"error": str(e)}
+
     
     def _post_process_rfq(self, rfq_content: str) -> str:
         """
