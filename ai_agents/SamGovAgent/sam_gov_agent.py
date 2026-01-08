@@ -12,6 +12,8 @@ import zipfile
 import re
 import logging
 import random
+import requests
+from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
 from database_manager import DatabaseManager
 
@@ -211,109 +213,147 @@ class SamGovAgent:
                     print(f"    [DB] Error registering {file}: {e}")
 
 
-    def _download_file(self, url, target_dir):
-        """Deprecated: Legacy urllib download. Keeping for fallback if needed."""
+    def _download_external_document(self, url: str, save_dir: str) -> str:
+        """
+        Download external document from URL.
+        Returns path to downloaded file.
+        """
         try:
-            local_filename = url.split('/')[-1].split('?')[0] or "downloaded_file"
-            if not local_filename or len(local_filename) > 100:
-                local_filename = f"attachment_{int(time.time())}.dat"
-            
-            target_path = os.path.join(target_dir, local_filename)
-            
-            # Get cookies from Playwright context
-            cookies = self.context.cookies()
-            cookie_header = "; ".join([f"{c['name']}={c['value']}" for c in cookies])
+            # User agent rotation for requests
             headers = {
-                "User-Agent": "Mozilla/5.0",
-                "Cookie": cookie_header
+                'User-Agent': random.choice(self.user_agents)
             }
-
-            req = urllib.request.Request(url, headers=headers)
-            try:
-                with urllib.request.urlopen(req, timeout=30) as response:
-                    if response.status == 200:
-                        with open(target_path, 'wb') as f:
-                            while True:
-                                chunk = response.read(8192)
-                                if not chunk:
-                                    break
-                                f.write(chunk)
-                        print(f"    Downloaded: {local_filename}")
-                        return local_filename
-                    else:
-                        print(f"    Failed to download {url}: Status {response.status}")
-                        return None
-            except urllib.error.URLError as e:
-                 print(f"    Failed to download {url}: {e}")
-                 return None
-
+            
+            response = requests.get(url, headers=headers, timeout=30, verify=False)
+            response.raise_for_status()
+            
+            # Determine filename
+            if 'Content-Disposition' in response.headers:
+                filename = response.headers['Content-Disposition'].split('filename=')[1].strip('"')
+            else:
+                filename = url.split('/')[-1] or 'external_document.pdf'
+            
+            # Ensure valid filename
+            filename = re.sub(r'[<>:"/\\|?*]', '_', filename)
+            
+            filepath = os.path.join(save_dir, filename)
+            
+            with open(filepath, 'wb') as f:
+                f.write(response.content)
+            
+            logging.info(f"    Downloaded: {filename}")
+            return filepath
+            
         except Exception as e:
-            print(f"    Error downloading {url}: {e}")
+            logging.error(f"    Failed to download {url}: {e}")
             return None
 
-    def _extract_external_links(self, text, base_url=None):
+    def _extract_wage_determination(self, soup, save_dir: str):
         """
-        Scan text for URLs that look like file hosts or external portals.
-        Resolves relative URLs if base_url is provided.
+        Specifically hunt for wage determination documents.
         """
-        if not text: return []
+        wd_data = {'found': False, 'file_path': None, 'wd_number': None}
         
-        # 1. Regex to find absolute http/https links
-        url_pattern = r'https?://[^\s<>"]+|www\.[^\s<>"]+'
-        found_urls = re.findall(url_pattern, text)
-        
-        # 2. Check for relative links in common portal attributes (href, onclick)
-        # This is a bit brute-force but effective for deep crawl
-        if base_url:
-            rel_patterns = [
-                r'href=["\'](/[^"\']+)["\']',
-                r'onclick=["\'].*?open_attach\(["\'](/[^"\']+)["\']\)',
-                r'location\.href\s*=\s*["\']([^"\']+)["\']'
-            ]
-            for pattern in rel_patterns:
-                rel_matches = re.findall(pattern, text)
-                for rel in rel_matches:
-                    abs_url = urljoin(base_url, rel)
-                    found_urls.append(abs_url)
-
-        target_domains = [
-            'drive.google.com', 'dropbox.com', 'box.com', 'onedrive.live.com', 
-            'sharepoint.com', 'wetransfer.com', 'army.mil', 'navy.mil', 'af.mil',
-            'dla.mil', 'va.gov', 'neco.navy.mil'
+        # Look for WD links
+        wd_patterns = [
+            r'wage\s*determination',
+            r'WD[\s\-]?\d+',
+            r'prevailing\s*wage'
         ]
         
-        relevant_links = []
-        for url in found_urls:
-            # Clean trailing punctuation
-            url = url.rstrip('.,;:)')
-            
-            # Filtering: Ignore common assets and non-relevant pages to save time
-            junk_patterns = ['.css', '.js', '.jpg', '.png', '.gif', 'login', 'register', 'feedback', 'faq', 'search']
-            if any(junk in url.lower() for junk in junk_patterns):
-                continue
+        for pattern in wd_patterns:
+            links = soup.find_all('a', string=re.compile(pattern, re.IGNORECASE))
+            for link in links:
+                url = link.get('href')
+                if url:
+                    if url.startswith('/'):
+                        url = 'https://sam.gov' + url
+                    
+                    filepath = self._download_external_document(url, save_dir)
+                    if filepath:
+                        wd_data['found'] = True
+                        wd_data['file_path'] = filepath
+                        
+                        # Try to extract WD number from text
+                        wd_num_match = re.search(r'WD[\s\-]?(\d+)', link.text)
+                        if wd_num_match:
+                            wd_data['wd_number'] = wd_num_match.group(1)
+                        
+                        return wd_data
+        
+        return wd_data
 
-            # Check if relevant domain OR directly ends in file extension
-            is_relevant_domain = any(d in url.lower() for d in target_domains)
-            is_file = any(url.lower().endswith(ext) for ext in ['.pdf', '.docx', '.xlsx', '.zip', '.csv'])
-            
-            if is_relevant_domain or is_file:
-                relevant_links.append(url)
+    def _extract_sf1449_data(self, soup):
+        """
+        Extract structured data from SF 1449 form if present.
+        """
+        sf1449_data = {
+            'found': False,
+            'clins': [],
+            'total_amount': None
+        }
         
-        # Deduplicate
-        unique_links = list(set(relevant_links))
-        
-        # Prioritization: Sort links so that those containing 'attach', 'doc', or 'soln' come first
-        priority_keywords = ['attach', 'doc', 'soln', 'rfq', 'pdf', 'zip']
-        def sort_key(u):
-            score = 0
-            for kw in priority_keywords:
-                if kw in u.lower():
-                    score -= 1 # Lower is better for sorting (higher priority)
-            return score
+        # Look for SF 1449 indicators
+        if soup.find(string=re.compile(r'SF\s*1449', re.IGNORECASE)):
+            sf1449_data['found'] = True
             
-        unique_links.sort(key=sort_key)
+            # Extract CLIN table
+            tables = soup.find_all('table')
+            for table in tables:
+                headers = [th.text.strip().upper() for th in table.find_all('th')]
                 
-        return unique_links
+                if 'CLIN' in headers or 'ITEM' in headers:
+                    rows = table.find_all('tr')[1:]  # Skip header
+                    for row in rows:
+                        cells = [td.text.strip() for td in row.find_all('td')]
+                        if len(cells) >= 4:
+                            sf1449_data['clins'].append({
+                                'clin': cells[0],
+                                'description': cells[1],
+                                'quantity': cells[2],
+                                'unit': cells[3] if len(cells) > 3 else 'EA'
+                            })
+            
+            logging.info(f"    Extracted {len(sf1449_data['clins'])} CLINs from SF 1449")
+        
+        return sf1449_data
+
+    def _extract_external_links(self, soup):
+        """
+        Find all external document links that need to be crawled.
+        """
+        external_links = []
+        
+        if not soup:
+            return external_links
+
+        # Look for common patterns
+        link_patterns = [
+            ('a', 'href', re.compile(r'.*\.pdf$', re.IGNORECASE)),
+            ('a', 'href', re.compile(r'.*view.*document.*', re.IGNORECASE)),
+            ('a', 'href', re.compile(r'.*attachment.*', re.IGNORECASE)),
+            ('a', 'href', re.compile(r'.*download.*', re.IGNORECASE))
+        ]
+        
+        for tag, attr, pattern in link_patterns:
+            links = soup.find_all(tag, {attr: pattern})
+            for link in links:
+                url = link.get(attr)
+                if url and url not in external_links:
+                    # Make absolute URL
+                    if url.startswith('/'):
+                        url = 'https://sam.gov' + url
+                    external_links.append(url)
+        
+        # Filter out junk
+        filtered_links = []
+        junk_patterns = ['.css', '.js', '.jpg', '.png', '.gif', 'login', 'register', 'feedback', 'faq', 'search']
+        for url in external_links:
+             if not any(junk in url.lower() for junk in junk_patterns):
+                 filtered_links.append(url)
+
+        logging.info(f"  Found {len(filtered_links)} external links to crawl")
+        return filtered_links
 
     def _recursive_crawl(self, url, depth=0, max_depth=2, target_dir=""):
         """
@@ -361,8 +401,8 @@ class SamGovAgent:
             
             # Find more links if not at max depth
             if depth < max_depth:
-                text = new_page.content()
-                links = self._extract_external_links(text, base_url=url)
+                soup = BeautifulSoup(new_page.content(), 'html.parser')
+                links = self._extract_external_links(soup)
                 for link in links:
                     if link not in self.visited_links:
                         self.visited_links.add(link)
@@ -458,151 +498,254 @@ class SamGovAgent:
             f.write("\nLLM: Please try to infer missing data from other sources or mark as unavailable.\n")
         
         print(f"    [Deep Crawl] Saved failure info: {text_filename}")
-    def _process_external_link(self, page, url, save_dir):
+    def _extract_description_comprehensive(self, soup) -> str:
         """
-        Enhanced external link processor with multiple fallback strategies.
-        Handles restricted portals like neco.navy.mil with retry logic.
+        Comprehensive description extraction from SAM.gov pages.
+        Tries multiple strategies to capture all relevant text.
         """
-        print(f"    [External Link] Processing: {url}")
+        description_parts = []
         
-        # Skip if already processed
-        if url in self.visited_links:
-            print(f"    [External Link] Already visited, skipping")
-            return
+        # Strategy 1: Look for main description container
+        desc_selectors = [
+            {'class': re.compile(r'description', re.IGNORECASE)},
+            {'id': re.compile(r'description', re.IGNORECASE)},
+            {'class': re.compile(r'details', re.IGNORECASE)},
+            {'class': re.compile(r'content', re.IGNORECASE)},
+        ]
         
-        self.visited_links.add(url)
+        for selector in desc_selectors:
+            desc_elem = soup.find('div', selector)
+            if desc_elem:
+                text = desc_elem.get_text(separator='\n', strip=True)
+                if len(text) > 100:
+                    description_parts.append(f"=== Main Description ===\n{text}\n")
+                    break
+        
+        # Strategy 2: Extract ALL section elements with substantial text
+        sections = soup.find_all(['section', 'article', 'div'], 
+                                class_=re.compile(r'section|detail|info', re.IGNORECASE))
+        
+        for section in sections:
+            # Get section header if exists
+            header = section.find(['h2', 'h3', 'h4', 'strong'])
+            header_text = header.get_text(strip=True) if header else "Section"
+            
+            # Get section content
+            section_text = section.get_text(separator='\n', strip=True)
+            
+            # Only add if substantial (>200 chars) and not already captured
+            if len(section_text) > 200:
+                # Check if not duplicate
+                if not any(section_text[:100] in part for part in description_parts):
+                    description_parts.append(f"\n=== {header_text} ===\n{section_text}\n")
+        
+        # Strategy 3: Look for key information fields
+        key_fields = [
+            'Notice ID',
+            'Solicitation Number',
+            'Posted Date',
+            'Response Date',
+            'Classification Code',
+            'NAICS',
+            'Set Aside',
+            'Place of Performance'
+        ]
+        
+        field_data = []
+        for field in key_fields:
+            # Look for labels
+            label = soup.find(string=re.compile(f'^{field}', re.IGNORECASE))
+            if label:
+                # Get parent and find value
+                parent = label.find_parent()
+                if parent:
+                    # Try sibling
+                    sibling = parent.find_next_sibling()
+                    if sibling:
+                        value = sibling.get_text(strip=True)
+                        field_data.append(f"{field}: {value}")
+                    else:
+                        # Try next element in parent
+                        value = parent.get_text(strip=True)
+                        value = value.replace(field, '').strip()
+                        if value:
+                            field_data.append(f"{field}: {value}")
+        
+        if field_data:
+            description_parts.insert(0, "=== Solicitation Information ===\n" + "\n".join(field_data) + "\n")
+        
+        # Strategy 4: Extract table data (often contains requirements)
+        tables = soup.find_all('table')
+        for idx, table in enumerate(tables):
+            try:
+                # Convert table to readable text
+                rows = table.find_all('tr')
+                if len(rows) > 1:  # Has actual data
+                    table_text = f"\n=== Table {idx+1} ===\n"
+                    for row in rows:
+                        cells = row.find_all(['th', 'td'])
+                        row_text = " | ".join([cell.get_text(strip=True) for cell in cells])
+                        if row_text:
+                            table_text += row_text + "\n"
+                    
+                    if len(table_text) > 100:
+                        description_parts.append(table_text)
+            except:
+                continue
+        
+        # Strategy 5: If still empty, grab all paragraph text
+        if len(description_parts) == 0:
+            all_paragraphs = soup.find_all('p')
+            para_texts = [p.get_text(strip=True) for p in all_paragraphs if len(p.get_text(strip=True)) > 50]
+            if para_texts:
+                description_parts.append("=== Content ===\n" + "\n\n".join(para_texts))
+        
+        # Combine all parts
+        full_description = "\n".join(description_parts)
+        
+        return full_description if full_description.strip() else None
+
+    def process_detail_page(self, url: str):
+        """
+        Enhanced version with comprehensive crawling using Playwright and BS4.
+        """
+        logging.info(f"\n{'='*80}")
+        logging.info(f"ENHANCED DETAIL PAGE PROCESSING: {url}")
+        logging.info(f"{'='*80}\n")
+        
+        detail_page = None
+        try:
+            # Use a new page (tab) to preserve search results on main page
+            detail_page = self.context.new_page()
+            detail_page.goto(url, timeout=60000, wait_until="domcontentloaded")
+            
+            # Wait a bit for dynamic content
+            try:
+                detail_page.wait_for_selector("main", timeout=10000)
+            except:
+                pass # Continue even if main not found
+            time.sleep(3) 
+            
+            # Get HTML content for BS4
+            html_content = detail_page.content()
+            soup = BeautifulSoup(html_content, 'html.parser')
+            
+        except Exception as e:
+            logging.error(f"Failed to load page: {e}")
+            if detail_page: detail_page.close()
+            return None
         
         try:
-            ex_page = self.context.new_page()
+            # Extract contract ID
+            contract_id = url.split('/')[-2] if '/opp/' in url else f"contract_{int(time.time())}"
             
-            try:
-                # Strategy 1: Direct download attempt
-                print(f"    [Strategy 1] Attempting direct download...")
+            # Create save directory
+            save_dir = os.path.join(config.SOLICITATION_DATA_DIR, contract_id)
+            if not os.path.exists(save_dir):
+                os.makedirs(save_dir)
+                
+            attachment_dir = os.path.join(save_dir, "attachments")
+            os.makedirs(attachment_dir, exist_ok=True)
+            
+            solicitation_data = {
+                'contract_id': contract_id,
+                'url': url,
+                'title': None,
+                'description': None,
+                'attachments': [],
+                'external_links': [],
+                'wage_determination': None,
+                'sf1449_data': None
+            }
+            
+            # 1. Extract title
+            title_elem = soup.find('h1')
+            if title_elem:
+                solicitation_data['title'] = title_elem.text.strip()
+                logging.info(f"  Title: {solicitation_data['title'][:80]}...")
+            
+            # 2. Extract description (ENHANCED)
+            logging.info(f"  [Enhanced] Extracting description...")
+            full_description = self._extract_description_comprehensive(soup)
+            
+            if full_description:
+                desc_path = os.path.join(save_dir, "description.txt")
+                with open(desc_path, "w", encoding="utf-8") as f:
+                    f.write(full_description)
+                solicitation_data['description'] = full_description[:500]  # Preview
+                logging.info(f"  ✓ Description saved ({len(full_description)} chars)")
+            else:
+                logging.warning(f"  ✗ Could not extract description")
+
+            # 3. Extract SF 1449 data
+            logging.info(f"  [Enhanced] Extracting SF 1449 data...")
+            sf1449_data = self._extract_sf1449_data(soup)
+            solicitation_data['sf1449_data'] = sf1449_data
+            
+            # 4. Download standard attachments (Using existing Playwright method)
+            logging.info(f"  [Standard] Downloading attachments...")
+            # Use existing Playwright-based download logic with the DETAIL PAGE
+            download_count = self._deep_download_attachments(detail_page, attachment_dir)
+            # Register them in DB/List
+            self._register_attachments_in_db(contract_id, attachment_dir)
+            logging.info(f"    Downloaded {download_count} standard attachments")
+            
+            # 5. Extract and download external links (New BS4 method)
+            logging.info(f"  [Enhanced] Crawling external links...")
+            external_links = self._extract_external_links(soup)
+            for link in external_links:
                 try:
-                    with ex_page.expect_download(timeout=15000) as download_info:
-                        ex_page.goto(url, timeout=30000, wait_until="domcontentloaded")
-                    
-                    download = download_info.value
-                    safe_name = f"ext_{int(time.time())}_{download.suggested_filename}"
-                    save_path = os.path.join(save_dir, safe_name)
-                    download.save_as(save_path)
-                    print(f"    [Success] Direct download: {safe_name}")
-                    return
-                except:
-                    # Not a direct download
-                    pass
-                
-                # Strategy 2: Page loaded - extract content
-                print(f"    [Strategy 2] Extracting page content...")
-                ex_page.wait_for_load_state("domcontentloaded", timeout=10000)
-                
-                # Save full HTML for complex pages
-                page_html = ex_page.content()
-                safe_name = re.sub(r'[^a-zA-Z0-9]', '_', url.split('//')[1][:50])
-                html_path = os.path.join(save_dir, f"external_{safe_name}.html")
-                
-                with open(html_path, 'w', encoding='utf-8') as f:
-                    f.write(f"<!-- Source: {url} -->\n")
-                    f.write(page_html)
-                print(f"    [Success] Saved HTML: external_{safe_name}.html")
-                
-                # Extract visible text
-                try:
-                    page_text = ex_page.locator("body").inner_text()
-                    if page_text and len(page_text) > 200:
-                        text_path = os.path.join(save_dir, f"external_{safe_name}.txt")
-                        with open(text_path, 'w', encoding='utf-8') as f:
-                            f.write(f"Source URL: {url}\n")
-                            f.write("="*80 + "\n\n")
-                            f.write(page_text)
-                        print(f"    [Success] Saved text: {len(page_text)} chars")
+                    filepath = self._download_external_document(link, attachment_dir)
+                    if filepath:
+                        solicitation_data['external_links'].append({
+                            'url': link,
+                            'file_path': filepath
+                        })
+                        # Add to DB
+                        self.db_manager.add_attachment(
+                            contract_id=contract_id,
+                            file_name=os.path.basename(filepath),
+                            file_path=filepath,
+                            url=link,
+                            download_date=datetime.now().strftime("%Y-%m-%d")
+                        )
                 except Exception as e:
-                    print(f"    [Warning] Could not extract text: {e}")
-                
-                # Strategy 3: Look for download buttons/links
-                print(f"    [Strategy 3] Searching for download elements...")
-                download_selectors = [
-                    "a:has-text('Download')",
-                    "button:has-text('Download')",
-                    "a:has-text('PDF')",
-                    "a[href$='.pdf']",
-                    "a[href$='.docx']",
-                    "a[href$='.xlsx']",
-                    "a:has-text('Additional Documents')",
-                    "a:has-text('Attachments')"
-                ]
-                
-                for selector in download_selectors:
-                    try:
-                        elements = ex_page.query_selector_all(selector)
-                        if elements:
-                            print(f"    [Found] {len(elements)} elements matching '{selector}'")
-                            for idx, elem in enumerate(elements[:5]):  # Limit to 5
-                                try:
-                                    href = elem.get_attribute('href')
-                                    if href:
-                                        # Handle relative URLs
-                                        if not href.startswith('http'):
-                                            from urllib.parse import urljoin
-                                            href = urljoin(url, href)
-                                        
-                                        print(f"      [Downloading] Link {idx+1}: {href[:60]}...")
-                                        
-                                        # Try download
-                                        with ex_page.expect_download(timeout=10000) as dl_info:
-                                            elem.click()
-                                        
-                                        dl = dl_info.value
-                                        dl_name = f"ext_link_{idx}_{dl.suggested_filename}"
-                                        dl.save_as(os.path.join(save_dir, dl_name))
-                                        print(f"      [Success] Downloaded: {dl_name}")
-                                except Exception as e:
-                                    # Not a download or failed
-                                    continue
-                    except:
-                        continue
-                
-                # Strategy 4: Screenshot for complex layouts
-                try:
-                    screenshot_path = os.path.join(save_dir, f"screenshot_{safe_name}.png")
-                    ex_page.screenshot(path=screenshot_path, full_page=True)
-                    print(f"    [Success] Saved screenshot")
-                except:
-                    pass
-                    
-            except Exception as e:
-                print(f"    [Error] Processing failed: {e}")
-                
-                # Strategy 5: Save error info for LLM
-                error_path = os.path.join(save_dir, f"FAILED_ACCESS_{safe_name}.txt")
-                with open(error_path, 'w', encoding='utf-8') as f:
-                    f.write(f"FAILED TO ACCESS: {url}\n")
-                    f.write(f"Error: {str(e)}\n")
-                    f.write("="*80 + "\n\n")
-                    f.write("This link was found but could not be accessed.\n")
-                    f.write("LLM: Please try to infer data from other sources or mark as unavailable.\n")
-                print(f"    [Saved] Failure info for LLM processing")
-                
-            finally:
-                ex_page.close()
-                
+                    logging.error(f"Failed to process external link {link}: {e}")
+
+            logging.info(f"    Downloaded {len(solicitation_data['external_links'])} external documents")
+            
+            # 6. Hunt for wage determination
+            logging.info(f"  [Enhanced] Searching for wage determination...")
+            wd_data = self._extract_wage_determination(soup, attachment_dir)
+            solicitation_data['wage_determination'] = wd_data
+            if wd_data['found']:
+                logging.info(f"    ✓ Found WD: {wd_data.get('wd_number', 'Unknown number')}")
+                # Add to DB
+                if wd_data.get('file_path'):
+                    self.db_manager.add_attachment(
+                        contract_id=contract_id,
+                        file_name=os.path.basename(wd_data['file_path']),
+                        file_path=wd_data['file_path'],
+                        url="Wage Determination Search",
+                        download_date=datetime.now().strftime("%Y-%m-%d")
+                    )
+            
+            logging.info(f"\n{'='*80}")
+            logging.info(f"EXTRACTION COMPLETE: {contract_id}")
+            logging.info(f"  - Standard Attachments: {download_count}")
+            logging.info(f"  - External Documents: {len(solicitation_data['external_links'])}")
+            logging.info(f"  - SF 1449 CLINs: {len(sf1449_data.get('clins', []))}")
+            logging.info(f"  - Wage Determination: {'Found' if wd_data['found'] else 'Not Found'}")
+            logging.info(f"{'='*80}\n")
+            
+            return solicitation_data
+
         except Exception as e:
-            print(f"    [Critical Error] {e}")
-
-    def search_for_new_solicitations(self, search_term):
-        print("--- Searching for new solicitations (Playwright) ---")
-        last_run_timestamp = self._load_checkpoint()
-        
-        start_date = None
-        if last_run_timestamp:
-            start_date = time.strftime('%m/%d/%Y', time.gmtime(last_run_timestamp))
-            print(f"Searching for solicitations updated since {start_date}")
-
-        solicitations = self.search_and_scrape(search_term, start_date)
-        
-        self._save_checkpoint()
-        print("--- New solicitation search complete ---")
-        return solicitations
+             logging.error(f"Error processing detail page {url}: {e}")
+             return None
+        finally:
+            if detail_page:
+                detail_page.close()
 
     def search_for_links(self, search_term, start_page=1, num_pages=1):
         """
@@ -822,178 +965,7 @@ class SamGovAgent:
 
         return list({v['url']:v for v in all_solicitations}.values())
 
-    def _find_and_download_hidden_links(self, page, target_dir):
-        """
-        Finds and downloads links that say 'Click here', 'Download', etc.
-        """
-        try:
-            # Find ALL clickable elements
-            links = page.query_selector_all('a, button, [role="button"]')
-            
-            for link in links:
-                text = (link.inner_text() or "").lower()
-                
-                # Target: "Click here", "Additional Documents", "Download", etc.
-                if any(x in text for x in ["click here", "additional", "download", "documents", "attachments"]):
-                    href = link.get_attribute('href')
-                    
-                    if href:
-                        print(f"    [Hidden Link] Found: {text} -> {href}")
-                        
-                        # Try to download
-                        try:
-                            with page.expect_download(timeout=15000) as download_info:
-                                link.click()
-                            
-                            download = download_info.value
-                            safe_name = f"hidden_link_{download.suggested_filename}"
-                            download.save_as(os.path.join(target_dir, safe_name))
-                            print(f"    [Downloaded] {safe_name}")
-                        except:
-                            # Not a download link, try navigation
-                            # Be careful not to navigate main page away if it's the same page
-                            # But here we assume it opens in new tab or we handle it safely?
-                            # The code snippet creates a NEW PAGE context which is safe.
-                            try:
-                                new_page = self.context.new_page()
-                                new_page.goto(href, timeout=30000)
-                                
-                                # Extract and save
-                                content = new_page.content()
-                                safe_name = f"external_link_{int(time.time())}.txt"
-                                with open(os.path.join(target_dir, safe_name), 'w') as f:
-                                    f.write(content)
-                                
-                                new_page.close()
-                                print(f"    [Saved] {safe_name}")
-                            except Exception as nav_e:
-                                print(f"    [Hidden Link] Navigation failed: {nav_e}")
-        
-        except Exception as e:
-            print(f"    [Error] Finding hidden links: {e}")
 
-    def process_detail_page(self, url):
-        """
-        Opens a new page to scrape the detail, preventing disruption of the main search flow.
-        Includes a fallback to local data if the scrape fails but data exists.
-        """
-        # Robust ID extraction from SAM.gov URL (pre-scrape)
-        match = re.search(r'/opp/([a-f0-9]+)/view', url)
-        if match:
-            contract_id = match.group(1)[:10]
-        else:
-            contract_id = hashlib.md5(url.encode()).hexdigest()[:10]
-            
-        contract_dir = os.path.join(config.SOLICITATION_DATA_DIR, contract_id)
-        
-        detail_page = None
-        sol_data = None
-        
-        try:
-            print(f"  Visiting {url}...")
-            detail_page = self.context.new_page()
-            detail_page.goto(url, timeout=45000)
-            detail_page.wait_for_selector("h1", timeout=30000)
-            
-            # CRITICAL: Wait for description to load
-            try:
-                detail_page.wait_for_selector("#desc", timeout=5000)
-            except:
-                print("  Warning: #desc selector not found, continuing with body text...")
-
-            title = detail_page.locator("h1").first.text_content().strip()
-            
-            # Prefer full body text but ensure #desc is captured
-            page_text = detail_page.locator("body").inner_text()
-            
-            # Explicitly append #desc text if it might be missing from body scan
-            try:
-                desc_text = detail_page.locator("#desc").inner_text()
-                if desc_text not in page_text:
-                    page_text += "\n\n--- FORCED DESCRIPTION EXTRACTION ---\n\n" + desc_text
-            except:
-                pass
-            
-            # ID Extraction
-            contract_id = hashlib.md5(url.encode()).hexdigest()[:10]
-            try:
-                # Assuming element ID 'grand-notice-id' exists
-                nid = detail_page.query_selector("#grand-notice-id")
-                if nid:
-                    contract_id = nid.inner_text().strip().replace(" ", "_")
-            except: pass
-            
-            # Files & Directory
-            contract_dir = self.ensure_solicitation_directory(contract_id)
-            
-            # Description
-            with open(os.path.join(contract_dir, "description.txt"), "w") as f:
-                f.write(page_text)
-                
-            # Attachments
-            # Extract hrefs
-            attachment_dir = os.path.join(contract_dir, "attachments")
-            if not os.path.exists(attachment_dir): os.makedirs(attachment_dir)
-            
-            # Deep Fetch (Playwright)
-            self._deep_download_attachments(detail_page, attachment_dir)
-            self._find_and_download_hidden_links(detail_page, attachment_dir)
-            
-            # Deep Link Following (Robust)
-            # Use the new helper method to find and fetch external links
-            external_links = self._extract_external_links(detail_page.content(), base_url=url)
-            if external_links:
-                print(f"    [Deep Crawl] Found {len(external_links)} external links")
-                for idx, link in enumerate(external_links[:15], 1):  # Increased limit
-                    print(f"    [Link {idx}/{len(external_links)}] Processing...")
-                    self._process_external_link(detail_page, link, attachment_dir)
-                    time.sleep(1)  # Rate limiting
-
-            # --- REGISTER ALL DOWNLOADS IN DB ---
-            self._register_attachments_in_db(contract_id, attachment_dir)
-            # Also register the main description and metadata as "docs" if helpful
-            # But primarily we want all files in attachment_dir
-
-
-            # Metadata
-            with open(os.path.join(contract_dir, "metadata.json"), "w") as f:
-                json.dump({"url": url, "title": title, "contract_id": contract_id}, f)
-
-            sol_data = {
-                'title': title,
-                'url': url,
-                'description': page_text[:3000],
-                'contract_id': contract_id
-            }
-            
-        except Exception as e:
-            print(f"Error on detail page {url}: {e}")
-            # FALLBACK to local data (contract_id and contract_dir are already set above)
-            metadata_path = os.path.join(contract_dir, "metadata.json")
-            if os.path.exists(metadata_path):
-                print(f"  [Fallback] Loading local data for {contract_id} from {contract_dir}...")
-                with open(metadata_path, 'r') as f:
-                    meta = json.load(f)
-                
-                desc_path = os.path.join(contract_dir, "description.txt")
-                desc = ""
-                if os.path.exists(desc_path):
-                    with open(desc_path, 'r') as f:
-                        desc = f.read()
-                
-                sol_data = {
-                    'title': meta.get('title', 'Unknown Title'),
-                    'url': url,
-                    'description': desc[:3000],
-                    'contract_id': contract_id
-                }
-            else:
-                print(f"  [Fallback] No local data found for {contract_id} at {contract_dir}")
-        finally:
-            if detail_page:
-                detail_page.close() # CRITICAL: Close the tab!
-            
-        return sol_data
 
     def close(self):
         if self.browser:
