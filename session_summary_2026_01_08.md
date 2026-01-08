@@ -56,5 +56,12 @@ Check the console output or the `_validation_report.txt` files to see the qualit
 
 ## 5. Ongoing Monitoring
 - Watch the `_validation_report.txt` for recurring issues.
-- If "government emails found" warnings persist, check the regex logic in `validate_rfq.py`.
 - If table formatting looks poor, verify that `pypandoc` is actively being used (check logs for "pypandoc conversion successful").
+
+## 6. Live Verification (Final)
+- **Target:** "Janitorial" Solicitation (Contract ID: `7e4c88849d`)
+- **Execution:** Successfully processed in live environment despite having zero attachments (description only).
+- **Result Score:** **88/100** (Passing).
+- **Notes:** The system correctly identified missing info without hallucinating, and the generated DOCX was perfect in terms of template structure (emojis, headers, Camp Sable email).
+- **Fix Applied:** Updated `main_workflow.py` to ensure `RFQValidator` runs automatically for every single generation job moving forward.
+
