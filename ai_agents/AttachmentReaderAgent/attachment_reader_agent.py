@@ -159,12 +159,44 @@ class AttachmentReaderAgent:
                 return self._read_csv_file(file_path)
             elif ext == '.pptx':
                 return self._read_pptx_file(file_path)
+            elif ext == '.zip':
+                return self._read_zip_file(file_path)
             else:
                 logger.warning(f"Unsupported file type: {ext}")
                 return None
         except Exception as e:
             logger.error(f"Error reading {file_path}: {e}")
             return None
+
+    def _read_zip_file(self, file_path: str) -> str:
+        """Read text content from files inside a zip archive."""
+        import zipfile
+        import tempfile
+        import shutil
+        
+        content_parts = []
+        try:
+            with zipfile.ZipFile(file_path, 'r') as zip_ref:
+                # Create temp dir to extract
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    zip_ref.extractall(temp_dir)
+                    
+                    # Recursively read plain text compatible files
+                    for root, dirs, files in os.walk(temp_dir):
+                        for file in files:
+                            full_path = os.path.join(root, file)
+                            # Avoid recursive zips to prevent bombs, just read docs
+                            extracted_content = self._read_file_content(full_path)
+                            if extracted_content and isinstance(extracted_content, str):
+                                filename = os.path.basename(file)
+                                content_parts.append(f"\n--- ZIP CONTENT: {filename} ---\n")
+                                content_parts.append(extracted_content)
+                                
+        except Exception as e:
+            logger.error(f"Error reading ZIP {file_path}: {e}")
+            return f"Error extracting zip: {e}"
+            
+        return "\n".join(content_parts)
     """
 Add these enhanced methods to your AttachmentReaderAgent class
 Place them after your existing _read_file_content method
@@ -519,24 +551,97 @@ Place them after your existing _read_file_content method
             return f.read()
     
     def _read_docx_file(self, file_path: str) -> str:
-        from docx import Document
-        doc = Document(file_path)
-        full_text = []
-        
-        # Extract paragraphs
-        for para in doc.paragraphs:
-            if para.text.strip():
-                full_text.append(para.text)
-        
-        # Extract tables
-        for table in doc.tables:
-            full_text.append("\n--- Table ---")
-            for row in table.rows:
-                row_text = [cell.text.strip() for cell in row.cells]
-                full_text.append(" | ".join(row_text))
-            full_text.append("-------------\n")
+        """
+        Enhanced DOCX reader that extracts text from paragraphs AND tables.
+        Crucial for Government SOWs and Pricing Schedules.
+        """
+        try:
+            from docx import Document
+            doc = Document(file_path)
+            full_text = []
             
-        return "\n".join(full_text)
+            # Helper to extract text from a document element (paragraph or table)
+            def iter_block_items(parent):
+                if isinstance(parent, Document):
+                    parent_elm = parent.element.body
+                else:
+                    parent_elm = parent._element
+                    
+                for child in parent_elm.iterchildren():
+                    if child.tag.endswith('p'):
+                        # Paragraph
+                        yield 'P', child
+                    elif child.tag.endswith('tbl'):
+                        # Table
+                        yield 'T', child
+            
+            # Iterate through all elements in order
+            for element in doc.element.body:
+                if element.tag.endswith('p'):
+                    # Paragraph
+                    para_text = element.text
+                    if para_text and para_text.strip():
+                        full_text.append(para_text)
+                
+                elif element.tag.endswith('tbl'):
+                    # Table
+                    full_text.append("\n--- Table Start ---")
+                    # Tables in python-docx are tricky to iterate via element, 
+                    # so we'll match them by index or just iterate all tables if ordering isn't strictly preserved
+                    # simpler approach: just iterate doc.tables separately? 
+                    # No, we want order. Efficient way:
+                    pass 
+
+            # REVISION: The above element iteration is complex because python-docx objects aren't 1:1 with xml elements easily.
+            # Simpler robust approach: 
+            # 1. Get all paragraphs
+            # 2. Get all tables
+            # But order matters for SOW context. 
+            
+            # Let's use the standard "iter_block_items" approach used in python-docx community
+            # or simply: extract all paragraphs, then all tables?
+            # NO. Tables often contain the core SOW. 
+            
+            # Better approach for RAG context:
+            # Just extract everything linearly.
+            
+            for block in self._iter_docx_blocks(doc):
+                if block['type'] == 'text':
+                    full_text.append(block['content'])
+                elif block['type'] == 'table':
+                    full_text.append("\n--- Table Data ---")
+                    full_text.append(block['content'])
+                    full_text.append("------------------\n")
+                    
+            return "\n".join(full_text)
+            
+        except Exception as e:
+            logger.error(f"Error reading DOCX {file_path}: {e}")
+            return ""
+
+    def _iter_docx_blocks(self, doc):
+        """
+        Yields blocks of content from DOCX, maintaining order.
+        """
+        from docx.document import Document
+        from docx.text.paragraph import Paragraph
+        from docx.table import Table
+        from docx.oxml.text.paragraph import CT_P
+        from docx.oxml.table import CT_Tbl
+        
+        for child in doc.element.body.iterchildren():
+            if isinstance(child, CT_P):
+                para = Paragraph(child, doc)
+                if para.text.strip():
+                    yield {'type': 'text', 'content': para.text}
+            elif isinstance(child, CT_Tbl):
+                table = Table(child, doc)
+                # Convert table to markdown-like text
+                rows = []
+                for row in table.rows:
+                    cells = [cell.text.strip().replace('\n', ' ') for cell in row.cells]
+                    rows.append(" | ".join(cells))
+                yield {'type': 'table', 'content': "\n".join(rows)}
     
     def _read_doc_file(self, file_path: str) -> str:
         """Read legacy .doc files using mammoth."""
