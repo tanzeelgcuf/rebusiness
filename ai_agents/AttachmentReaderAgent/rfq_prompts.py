@@ -795,13 +795,19 @@ To be accepted, each site must:
 - Deadline: [CAMP_SABLE_DEADLINE]
 
 ### Required Quote Content
-**EXTRACT FROM SECTION L OR SUBMISSION INSTRUCTIONS:**
-1. [Requirement_1 - e.g., "Completed SF 1449 (Blocks 17 & 30)"]
-2. [Requirement_2 - e.g., "Itemized pricing for base and option periods"]
-3. [Requirement_3 - e.g., "Company qualifications and relevant experience"]
-4. [Requirement_4 - e.g., "List of key personnel with licenses"]
-5. [Requirement_5 - e.g., "Equipment list and availability"]
-6. [Continue_all_requirements]
+**CRITICAL: ONLY INCLUDE WHAT THE BIDDER MUST SUBMIT - NOT CAMP SABLE INTERNAL REQUIREMENTS**
+**EXTRACT FROM SECTION L OR SUBMISSION INSTRUCTIONS, BUT FILTER OUT:**
+- SF 1449 form completion (Camp Sable handles this)
+- Government-specific forms that Camp Sable completes
+- Items marked "for prime contractor" when Camp Sable is the prime
+
+**BIDDER MUST PROVIDE:**
+1. [Requirement_1 - e.g., "Itemized pricing for base and option periods"]
+2. [Requirement_2 - e.g., "Company qualifications and relevant experience"]
+3. [Requirement_3 - e.g., "List of key personnel with licenses"]
+4. [Requirement_4 - e.g., "Equipment list and availability"]
+5. [Requirement_5 - e.g., "Technical proposal outlining approach and capabilities"]
+6. [Continue_all_bidder_requirements - exclude forms Camp Sable completes]
 
 ### Evaluation Criteria
 - Award basis: [Extract - e.g., "Lowest Price Technically Acceptable (LPTA)" or "Best Value"]
@@ -855,6 +861,7 @@ Not Included in This Solicitation - This is a [X]-year contract with no option p
 ## 🟩 Summary for Bidders
 
 **NUMBERED LIST (8-12 COMPLETE SENTENCES - NOT FRAGMENTS):**
+**CRITICAL: LAST ITEM MUST USE [CAMP_SABLE_DEADLINE] VARIABLE FOR CONSISTENCY**
 
 1. [Complete_summary_of_what_to_perform - e.g., "Prepare all required plans (schedule, safety, QC, herbicide, maintenance) and submit within specified deadlines"]
 2. [Standards_and_compliance - e.g., "Conduct all work in compliance with EM 385-1-1 safety standards, OSHA regulations, and environmental permits"]
@@ -870,6 +877,7 @@ Not Included in This Solicitation - This is a [X]-year contract with no option p
 ## 🟩 Key Takeaways for Bidder
 
 **CRITICAL: MUST USE CHECKBOX FORMAT [ ] - NOT NUMBERED LIST - NOT REGULAR BULLETS**
+**CRITICAL: LAST CHECKBOX MUST USE [CAMP_SABLE_DEADLINE] VARIABLE - NEVER HARDCODE A DIFFERENT DATE**
 
 - [ ] [Takeaway_1 - actionable item - e.g., "Submit all required plans (schedule, safety, QC, herbicide, maintenance) within 30 days of award"]
 - [ ] [Takeaway_2 - e.g., "Obtain and maintain licensed herbicide applicators in ND and MN; use only approved EPA chemicals"]
