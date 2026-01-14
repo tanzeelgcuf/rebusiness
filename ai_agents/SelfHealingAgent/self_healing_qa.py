@@ -283,159 +283,50 @@ class SelfHealingQAAgent:
         rfq_type: str
     ) -> str:
         """
-        Generate specific instructions for re-extraction.
+        Generate SIMPLIFIED, DIRECTIVE instructions for re-extraction.
+        CRITICAL: Keep instructions short to prevent instruction leakage.
         
         Returns:
-            Detailed instruction prompt for LLM to fix issues
+            Brief, directive prompt for LLM to fix issues
         """
-        instructions = f"""
-# CRITICAL RE-EXTRACTION INSTRUCTIONS
-
-You previously generated an RFQ that has MISSING or INCOMPLETE information.
-You MUST re-read the provided documents and extract the following missing fields.
-
-## Missing/Incomplete Fields:
-
-"""
+        # Build list of specific fixes needed
+        fixes_needed = []
         
-        for field_name, field_spec in missing_fields.items():
-            instructions += f"\n### {field_name.upper()}\n"
-            
+        for field_name in missing_fields.keys():
             if field_name == 'agency_address':
-                instructions += """
-**WHERE TO LOOK:**
-- Main solicitation page header
-- "Contracting Office" section
-- Point of contact section
-- SF 1449 header
-
-**WHAT TO EXTRACT:**
-Line 1: Full legal agency name (e.g., "Defense Logistics Agency")
-Line 2: Complete street address (e.g., "6501 East Eleven Mile Road")
-Line 3: City, State ZIP (e.g., "Warren, MI 48397-5000")
-
-**EXAMPLE CORRECT FORMAT:**
-Agency Issuing RFQ:
-Defense Logistics Agency
-6501 East Eleven Mile Road
-Warren, MI 48397-5000
-
-**DO NOT OUTPUT:**
-- Partial addresses like "Oklahoma City, Oklahoma"
-- City/state without street address
-"""
-            
+                fixes_needed.append("Extract complete agency address (3 lines: name, street, city/state/zip)")
+            elif field_name == 'notice_id':
+                fixes_needed.append("Extract notice ID without brackets or placeholders")
             elif field_name == 'delivery_address':
-                instructions += """
-**WHERE TO LOOK:**
-- SF 1449 "Ship To" address block
-- Delivery section in solicitation
-- Performance location section
-- CLIN delivery instructions
-
-**WHAT TO EXTRACT:**
-Complete physical address including:
-- Facility/Installation name
-- Building/Unit number
-- Street address
-- City, State ZIP
-- Country (if APO/FPO)
-
-**EXAMPLE CORRECT FORMAT:**
-Destination: Ship to DLA Distribution San Joaquin
-  Defense Distribution Depot San Joaquin, California
-  Building 504, Sharpe Facility
-  Tracy, CA 95304-5000
-
-**DO NOT OUTPUT:**
-- [Facility_Name_if_applicable]
-- [Complete_Street_Address]
-- Placeholders in brackets
-"""
-            
+                fixes_needed.append("Extract complete delivery address with street, city, state, zip")
             elif field_name == 'contract_duration':
-                instructions += """
-**WHERE TO LOOK:**
-- Period of Performance section
-- Contract type description
-- CLIN structure (base year + option years)
-- "Duration" or "Term" sections
-
-**WHAT TO EXTRACT:**
-- Base period duration (e.g., "1-year", "3-year")
-- Contract type (Firm Fixed Price, IDIQ, Requirements, etc.)
-- Number of option years/periods
-
-**EXAMPLE CORRECT FORMAT:**
-"This is a 5-year indefinite quantity contract with 4 option years."
-"This is a 1-year Firm Fixed Price contract with no option periods."
-
-**DO NOT OUTPUT:**
-- "[X]-year [indefinite quantity or requirements] contract"
-- Placeholders with brackets
-"""
-            
+                fixes_needed.append("Extract specific contract duration (e.g., '5-year') - no [X] placeholders")
             elif field_name == 'systems_required':
-                instructions += """
-**WHERE TO LOOK:**
-- Payment instructions section
-- Invoice submission requirements
-- Contract clauses mentioning electronic systems
-- "WAWF", "PIEE", "WIMS" keywords
-
-**COMMON SYSTEMS:**
-- WAWF (Wide Area WorkFlow) - for invoicing
-- PIEE (Procurement Integrated Enterprise Environment)
-- WIMS (WAWF Invoice Management System)
-- SAM.gov registration
-- JCP (Joint Certification Program) for technical data
-
-**EXAMPLE CORRECT FORMAT:**
-"Systems required: WAWF for invoice submission, SAM.gov registration (active), JCP certification for TDP access"
-
-**DO NOT OUTPUT:**
-- "[List_all - WAWF, PIEE, WIMS, etc.]"
-- Generic placeholder text
-"""
-            
+                fixes_needed.append("List actual systems required (e.g., WAWF, SAM.gov) - no generic placeholders")
             elif field_name == 'lead_time':
-                instructions += """
-**WHERE TO LOOK:**
-- Delivery schedule section
-- "Days After Receipt of Order" (ARO/ADO)
-- CLIN delivery requirements
-- Production timeline
-
-**WHAT TO EXTRACT:**
-Specific number of days/weeks/months for delivery
-
-**EXAMPLE CORRECT FORMAT:**
-"Lead time: 120 days after receipt of order"
-"Lead time: 45 days ARO for first delivery, then 30 days for subsequent"
-
-**DO NOT OUTPUT:**
-- "To be determined per Schedule of Supplies/Services"
-- Vague references without actual timeline
-"""
+                fixes_needed.append("Extract specific lead time (e.g., '120 days ARO') - no vague references")
+            elif field_name == 'work_locations':
+                fixes_needed.append("Extract specific work site names and addresses - no 'Not specified'")
+            elif field_name == 'wage_determination':
+                fixes_needed.append("Extract wage determination number (e.g., WD 2015-1234) - no 'Not specified'")
+            else:
+                fixes_needed.append(f"Extract complete {field_name.replace('_', ' ')}")
         
-        instructions += """
+        # Create short, directive instruction
+        instructions = f"""CRITICAL CORRECTIONS NEEDED:
 
-## CRITICAL RULES FOR RE-EXTRACTION:
+The following fields are missing or incomplete. Re-generate the RFQ with these fixes:
 
-1. **READ EVERY ATTACHMENT COMPLETELY** - Information may be in any document
-2. **CROSS-REFERENCE** - Verify data across multiple sources
-3. **BE SPECIFIC** - Extract actual values, not placeholders
-4. **NO BRACKETS** - Never output text in [brackets] except "[My signature info]"
-5. **NO INSTRUCTION TEXT** - Output only client-facing content
+{chr(10).join(f"{i+1}. {fix}" for i, fix in enumerate(fixes_needed))}
 
-## IF TRULY NOT FOUND:
+RULES:
+- Extract ACTUAL values from the solicitation documents
+- NO placeholders in [brackets] except [My signature info]
+- NO instruction text like "EXTRACTION LOGIC" or "Must Extract:"
+- NO "Not specified" unless truly unavailable after checking all documents
+- Output ONLY the final RFQ content
 
-Only after checking ALL documents, if information is genuinely missing:
-- Use professional defaults or infer from context
-- DO NOT write placeholders like "[Extract from...]"
-
-Now re-generate ONLY the sections with missing information.
-"""
+Re-generate the complete RFQ with these corrections applied."""
         
         return instructions
 
