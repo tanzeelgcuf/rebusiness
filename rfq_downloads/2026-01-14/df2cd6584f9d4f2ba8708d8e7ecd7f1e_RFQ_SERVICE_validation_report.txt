@@ -1,0 +1,38 @@
+
+============================================================
+RFQ QUALITY VALIDATION REPORT
+============================================================
+Type: SERVICE
+Date: 2026-01-14T00:54:16.852586
+============================================================
+
+SCORE: 47/100
+Status: ❌ FAIL
+
+============================================================
+DETAILS:
+============================================================
+  content_length................ ✗ 1914 chars
+  sections...................... 1/13 present
+  placeholders.................. ✓ 0 found
+  camp_sable_email.............. ✗ Missing
+  gov_emails.................... ✓ None found
+  bold_formatting............... ✓ None
+  emoji_headers................. ✓ Present
+  tables........................ ✗ Missing
+  file_size..................... ✓ 37,714 bytes
+  html_artifacts................ ✓ None
+  date_formatting............... ✗ None
+  service_structure............. ✗ Missing
+
+============================================================
+ISSUES FOUND (6):
+============================================================
+  1. Content too short (1914 chars, need >3000)
+  2. Missing sections: In Summary, Summary of Project, What They Want
+  3. Missing Camp Sable email
+  4. No properly formatted tables
+  5. No properly formatted dates
+  6. Service timeline/scope structure missing
+
+============================================================

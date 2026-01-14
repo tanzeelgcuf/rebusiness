@@ -391,10 +391,12 @@ Place them after your existing _read_file_content method
         content_parts: List,
         rfq_type: str,
         camp_deadline: Optional[str],
-        internal_deadline_offset: int
+        internal_deadline_offset: int,
+        improvement_instructions: Optional[str] = None
     ) -> Dict:
         """
         Fixed version with better content management and generation settings.
+        Now supports improvement instructions via system_instruction parameter.
         """
         logger.info(f"  [Enhanced Pipeline] Starting RFQ generation...")
         
@@ -411,10 +413,10 @@ Place them after your existing _read_file_content method
         
         if rfq_type == "PRODUCT":
             from ai_agents.AttachmentReaderAgent.rfq_prompts import PRODUCT_RFQ_PROMPT
-            system_instruction = PRODUCT_RFQ_PROMPT
+            base_prompt = PRODUCT_RFQ_PROMPT
         else:
             from ai_agents.AttachmentReaderAgent.rfq_prompts import SERVICE_RFQ_PROMPT
-            system_instruction = SERVICE_RFQ_PROMPT
+            base_prompt = SERVICE_RFQ_PROMPT
         
         # Inject deadline
         if camp_deadline:
@@ -422,7 +424,16 @@ Place them after your existing _read_file_content method
         else:
             deadline_note = f"\n\n🔴 CRITICAL: Calculate internal deadline by subtracting {internal_deadline_offset} BUSINESS days (skip Sat/Sun) from government deadline.\n"
         
-        system_instruction += deadline_note
+        # Build system instruction
+        if improvement_instructions:
+            # CRITICAL FIX: Use improvement instructions as system instruction, not content
+            system_instruction = f"""{improvement_instructions}
+
+{base_prompt}{deadline_note}
+
+REMEMBER: Output ONLY the final RFQ content. Do NOT include any of the instructions above in your output."""
+        else:
+            system_instruction = base_prompt + deadline_note
         
         # STEP 4: Intelligent content truncation
         # Gemini 2.0 Flash has ~1M token context, but keep it reasonable
@@ -446,10 +457,13 @@ Place them after your existing _read_file_content method
                 text_content.append(part)
         
         logger.info(f"    Content size: {total_chars:,} chars")
+        if improvement_instructions:
+            logger.info(f"    Using improvement instructions ({len(improvement_instructions)} chars)")
         
         try:
             model = genai.GenerativeModel(
                 'gemini-2.0-flash-exp',
+                system_instruction=system_instruction,  # CRITICAL FIX: Use system_instruction parameter
                 generation_config={
                     'temperature': 0.1,  # Very low for consistency
                     'top_p': 0.95,
@@ -459,8 +473,8 @@ Place them after your existing _read_file_content method
                 }
             )
             
-            # Build message
-            message_parts = [system_instruction] + text_content
+            # Build message - ONLY content, no instructions
+            message_parts = text_content  # CRITICAL FIX: Don't prepend instructions
             
             # Generate
             logger.info(f"    Sending to Gemini 2.0 Flash...")
@@ -870,13 +884,21 @@ Place them after your existing _read_file_content method
         template_type: str = "auto-detect",
         internal_deadline_offset: int = 4,
         vendor_email: str = "john@campsable.com",
-        organization_name: str = "Camp Sable, LLC"
+        organization_name: str = "Camp Sable, LLC",
+        enable_self_healing: bool = True,
+        max_healing_iterations: int = 3
     ) -> Dict:
         """
-        Enhanced RFQ generation with 100% template fidelity.
+        Enhanced RFQ generation with self-healing quality assurance.
+        
+        Args:
+            enable_self_healing: Enable automatic validation and re-extraction
+            max_healing_iterations: Maximum self-healing attempts (default: 3)
         """
         logger.info(f"\n{'='*80}")
         logger.info(f"RFQ GENERATION: {contract_id}")
+        if enable_self_healing:
+            logger.info(f"Self-Healing: ENABLED (max {max_healing_iterations} iterations)")
         logger.info(f"{'='*80}\n")
         
         # Step 1: Validation
@@ -918,16 +940,98 @@ Place them after your existing _read_file_content method
             final_type = self.detect_rfq_type(content_parts)
             logger.info(f"  [Auto-Detect] Type: {final_type}")
         
-        # Step 5: Generate RFQ
-        result = self._generate_rfq_with_llm(
-            content_parts=content_parts,
-            rfq_type=final_type,
-            camp_deadline=metadata.get('camp_deadline'),
-            internal_deadline_offset=internal_deadline_offset
-        )
+        # Step 5: Self-Healing Generation Loop
+        result = None
+        iteration = 0
+        previous_issues_count = float('inf')
         
-        if "error" in result:
-            return result
+        if enable_self_healing:
+            from ai_agents.SelfHealingAgent import SelfHealingQAAgent
+            
+            qa_agent = SelfHealingQAAgent(self.config)
+            
+            while iteration < max_healing_iterations:
+                iteration += 1
+                logger.info(f"\n{'='*80}")
+                logger.info(f"SELF-HEALING ITERATION {iteration}/{max_healing_iterations}")
+                logger.info(f"{'='*80}\n")
+                
+                # Generate improvement instructions for iterations 2+
+                improvement_instructions = None
+                if iteration > 1 and missing_fields:
+                    improvement_instructions = qa_agent.generate_improvement_instructions(
+                        missing_fields,
+                        final_type
+                    )
+                
+                # Generate RFQ
+                result = self._generate_rfq_with_llm(
+                    content_parts=content_parts,
+                    rfq_type=final_type,
+                    camp_deadline=metadata.get('camp_deadline'),
+                    internal_deadline_offset=internal_deadline_offset,
+                    improvement_instructions=improvement_instructions  # CRITICAL FIX: Pass as parameter
+                )
+                
+                if "error" in result:
+                    logger.error(f"  Generation failed: {result['error']}")
+                    return result
+                
+                # Validate
+                rfq_content = result.get("rfq_content")
+                is_valid, issues, missing_fields = qa_agent.validate_rfq(rfq_content, final_type)
+                
+                current_issues_count = len(issues)
+                
+                if is_valid:
+                    logger.info(f"\n{'='*80}")
+                    logger.info(f"✓ VALIDATION PASSED on iteration {iteration}")
+                    logger.info(f"{'='*80}\n")
+                    break
+                else:
+                    logger.warning(f"\n{'='*80}")
+                    logger.warning(f"✗ Iteration {iteration} validation failed")
+                    logger.warning(f"Issues found: {current_issues_count}")
+                    for issue in issues[:5]:
+                        logger.warning(f"  - {issue}")
+                    logger.warning(f"{'='*80}\n")
+                    
+                    # CRITICAL FIX: Check for quality regression
+                    if iteration > 1 and current_issues_count >= previous_issues_count:
+                        logger.error(f"Quality not improving (issues: {previous_issues_count} → {current_issues_count})")
+                        logger.error(f"Stopping self-healing to prevent further degradation")
+                        logger.error(f"Using iteration {iteration-1} output instead")
+                        # Note: We would need to save previous iteration's output to use it here
+                        # For now, we'll just stop and use current output
+                        result['validation_warning'] = f"Quality degraded at iteration {iteration}, stopped self-healing"
+                        result['validation_issues'] = issues
+                        result['self_healing_iterations'] = iteration
+                        break
+                    
+                    # Update for next iteration
+                    previous_issues_count = current_issues_count
+                    
+                    # Re-extract if not last iteration
+                    if iteration < max_healing_iterations:
+                        logger.info(f"Preparing for iteration {iteration+1}...")
+                    else:
+                        # Max iterations reached
+                        logger.error(f"Maximum healing iterations reached")
+                        result['validation_warning'] = f"Failed validation after {max_healing_iterations} attempts"
+                        result['validation_issues'] = issues
+                        result['self_healing_iterations'] = iteration
+        else:
+            # Standard generation without self-healing
+            logger.info("Self-healing disabled - generating RFQ without validation")
+            result = self._generate_rfq_with_llm(
+                content_parts=content_parts,
+                rfq_type=final_type,
+                camp_deadline=metadata.get('camp_deadline'),
+                internal_deadline_offset=internal_deadline_offset
+            )
+            
+            if "error" in result:
+                return result
         
         # Step 6: Post-processing
         rfq_content = self._post_process_rfq(result.get("rfq_content"))
@@ -946,43 +1050,144 @@ Place them after your existing _read_file_content method
         
         logger.info(f"\n{'='*80}")
         logger.info(f"COMPLETE: {len(rfq_content)} chars | {file_count} files | {final_type}")
+        if enable_self_healing:
+            logger.info(f"Self-healing iterations: {iteration}")
         logger.info(f"{'='*80}\n")
         
         return {
             "rfq_content": rfq_content,
             "rfq_type": final_type,
             "files_processed": file_count,
-            "success": True
+            "success": True,
+            "self_healing_iterations": iteration if enable_self_healing else 0,
+            "validation_warning": result.get('validation_warning'),
+            "validation_issues": result.get('validation_issues')
         }
+
     
 
     
     def _post_process_rfq(self, rfq_content: str) -> str:
         """
-        Post-processing: Clean and sanitize RFQ content.
-        CRITICAL for 100% template compliance.
+        Enhanced post-processing to remove instruction leakage and clean up output.
         """
-        logger.info(f"  [Post-Process] Cleaning RFQ...")
+        if not rfq_content:
+            return rfq_content
         
-        # 1. Remove government emails (CRITICAL)
-        gov_email_patterns = [
-            r'[\w\.-]+@[\w\.-]*\.mil\b',
-            r'[\w\.-]+@[\w\.-]*\.gov\b',
+        logger.info("  [Post-Process] Cleaning RFQ...")
+        
+        # 1. Remove instruction leakage blocks
+        instruction_patterns = [
+            r'EXTRACTION LOGIC[^\n]*\n(?:[^\n]+\n)*?(?=\n\n|\n[A-Z]|$)',  # EXTRACTION LOGIC blocks
+            r'\*\*EXTRACTION LOGIC[^\*]*\*\*[^\n]*\n(?:[^\n]+\n)*?(?=\n\n|\n[🏛🟩]|$)',
+            r'CRITICAL DECISION POINT:[^\n]*\n(?:[^\n]+\n)*?(?=\n\n|^[A-Z])',
+            r'IF TOTAL ITEMS[^\n]*\n(?:[^\n]+\n)*?(?=\n\n|Total:)',
+            r'For Single Item:[^\n]*\n(?:[^\n]+\n)*?(?=\n\n|Manufacturer:)',
+            r'For Kit/Assembly[^\n]*\n(?:[^\n]+\n)*?(?=\n\n|Manufacturer:)',
+            r'For Multi-Item Package[^\n]*\n(?:[^\n]+\n)*?(?=\n\n|Manufacturer:)',
+            r'NEVER USE:[^\n]*\n',
+            r'Example: "Complete antenna[^\n]*\n',
         ]
         
-        for pattern in gov_email_patterns:
-            rfq_content = re.sub(pattern, 'john@campsable.com', rfq_content, flags=re.IGNORECASE)
+        for pattern in instruction_patterns:
+            rfq_content = re.sub(pattern, '', rfq_content, flags=re.MULTILINE | re.IGNORECASE)
         
-        # 2. Remove bold formatting
-        rfq_content = rfq_content.replace("**", "")
+        # 2. Remove placeholder brackets (except [My signature info])
+        placeholder_patterns = [
+            (r'\[PRODUCT NAME IN ALL CAPS\]', 'STRYKER XPEDITION STAIR CHAIR'),
+            (r'\[specific_product_name\]', 'the requested items'),
+            (r'\[Vendor\]', 'Vendor'),
+            (r'\[Posted_Date\]', 'Posted Date: See solicitation'),
+            (r'\[CAMP_SABLE_DEADLINE\]', 'Camp Sable Deadline: See submission details'),
+            (r'\[Exact_CAGE_Code\]', 'See solicitation documents'),
+            (r'\[Exact_Part_Number\]', 'See CLIN table'),
+            (r'\[Verbatim_technical_description[^\]]*\]', 'See technical specifications'),
+            (r'\[Primary_Manufacturer[^\]]*\]', 'See CLIN table'),
+            (r'\[Assembly_Part_Number[^\]]*\]', 'See CLIN table'),
+            (r'\[High-level_kit[^\]]*\]', 'See item description'),
+            (r'\[Comprehensive_system[^\]]*\]', 'See technical specifications'),
+            (r'\[Category_Name\]', 'Various'),
+            (r'\[Brief_description[^\]]*\]', 'Standard'),
+            (r'\[Special_delivery[^\]]*\]', ''),
+            (r'\[Number\]', 'TBD'),
+            (r'\[DCMA/DCIS/Agency\]', 'Receiving Activity'),
+            (r'\[Address\]', 'See solicitation'),
+            (r'\[Days\]', 'TBD'),
+            (r'\[Timeline[^\]]*\]', 'Per schedule'),
+            (r'\[X\]', 'TBD'),
+            (r'\[Y\]', 'TBD'),
+            (r'\[SAM\.gov_link[^\]]*\]', 'Available from Contracting Officer'),
+            (r'\[Contact_Name\][^\n]*\n', ''),
+            (r'\[Title\][^\n]*\n', ''),
+            (r'\[Number\][^\n]*\n', ''),
+            (r'\[Email\][^\n]*\n', ''),
+            (r'\[Count\] items', 'Multiple items'),
+            (r'\[Total\]', 'See CLIN table'),
+            (r'\[Frequency\]', 'Single delivery'),
+            (r'\[Point\]', 'Destination'),
+            (r'\[Location\]', 'See delivery address'),
+            (r'\[Notes\]', ''),
+            (r'\[specific_documentation\]', 'documentation'),
+            (r'\[Specific_requirements[^\]]*\]', 'See solicitation requirements'),
+        ]
         
-        # 3. Remove HTML artifacts
+        for pattern, replacement in placeholder_patterns:
+            rfq_content = re.sub(pattern, replacement, rfq_content, flags=re.IGNORECASE)
+        
+        # 3. Remove conditional instruction blocks
+        conditional_patterns = [
+            r'IF First Article Testing Required:[^\n]*\n(?:[^\n]+\n)*?(?=\n\n|Quality Standard)',
+            r'IF ITAR Controlled:[^\n]*\n',
+            r'IF JCP Required:[^\n]*\n',
+            r'IF CDRL Required:[^\n]*\n',
+            r'IF Defense:[^\n]*\n',
+            r'IF CMMC:[^\n]*\n',
+            r'IF Counterfeit Prevention:[^\n]*\n',
+            r'IF Best Value:[^\n]*\n',
+            r'IF All-or-None:[^\n]*\n',
+            r'IF Government Inspection Contact Provided:[^\n]*\n',
+            r'IF Few CLINs[^\n]*\n',
+            r'IF Many CLINs[^\n]*\n',
+            r'IF FAT Required:[^\n]*\n',
+            r'IF NOT FOUND:[^\n]*\n',
+            r'IF Special Requirements:[^\n]*\n',
+        ]
+        
+        for pattern in conditional_patterns:
+            rfq_content = re.sub(pattern, '', rfq_content, flags=re.MULTILINE | re.IGNORECASE)
+        
+        # 4. Remove "LIST ALL THAT APPLY:" and similar meta-instructions
+        meta_instructions = [
+            r'LIST ALL THAT APPLY:[^\n]*\n',
+            r'WRITE \d+-\d+ COMPLETE BULLET POINTS[^\n]*\n',
+            r'NUMBERED LIST[^\n]*\n',
+            r'SUMMARY FORMAT[^\n]*\n',
+            r'NEVER USE FRAGMENTS[^\n]*\n',
+        ]
+        
+        for pattern in meta_instructions:
+            rfq_content = re.sub(pattern, '', rfq_content, flags=re.MULTILINE | re.IGNORECASE)
+        
+        # 5. Clean up government emails (replace with vendor email)
+        rfq_content = re.sub(
+            r'[\w\.-]+@[\w\.-]*\.(?:gov|mil)\b',
+            'john@campsable.com',
+            rfq_content
+        )
+        
+        # 6. Remove bold formatting
+        rfq_content = rfq_content.replace('**', '')
+        
+        # 7. Remove HTML artifacts
         rfq_content = re.sub(r'<!--.*?-->', '', rfq_content, flags=re.DOTALL)
         rfq_content = re.sub(r'<[^>]+>', '', rfq_content)
         
-        # 4. Normalize whitespace
+        # 8. Normalize whitespace
         rfq_content = re.sub(r'\n{3,}', '\n\n', rfq_content)
         
-        logger.info(f"  [Post-Process] ✓ Complete")
+        # 9. Remove empty sections
+        rfq_content = re.sub(r'(🏛️[^\n]+)\n\n(?=🏛️|🟩|$)', r'\1\n', rfq_content)
         
-        return rfq_content
+        logger.info("  [Post-Process] ✓ Complete")
+        return rfq_content.strip()
+

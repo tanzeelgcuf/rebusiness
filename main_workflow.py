@@ -62,7 +62,13 @@ def process_single_url(url, db_manager, scraper):
         reader = AttachmentReaderAgent()
         logger.info(f"  Running AI Analysis & RFQ Generation...")
         
-        result = reader.create_summary_report(contract_id, skip_json=True, strict_fidelity=True)
+        result = reader.create_summary_report(
+            contract_id, 
+            skip_json=True, 
+            strict_fidelity=True,
+            enable_self_healing=True,
+            max_healing_iterations=3
+        )
         
         if "error" in result:
             logger.error(f"  [!] Extraction/Analysis failed for {contract_id}: {result['error']}")
@@ -238,7 +244,9 @@ def process_extract_and_generate_rfq(url, args):
             template_type=args.template_type,
             internal_deadline_offset=args.internal_deadline_offset,
             vendor_email=args.vendor_email,
-            organization_name=args.organization_name
+            organization_name=args.organization_name,
+            enable_self_healing=not args.no_self_healing,
+            max_healing_iterations=args.max_healing_iterations
         )
         
         if "error" in result:
@@ -320,6 +328,10 @@ if __name__ == "__main__":
     parser.add_argument("--internal-deadline-offset", type=int, default=4, help="Business days before official")
     parser.add_argument("--vendor-email", type=str, default="john@campsable.com", help="Vendor contact email")
     parser.add_argument("--organization-name", type=str, default="Camp Sable, LLC", help="Organization name")
+    
+    # Self-healing QA flags
+    parser.add_argument("--no-self-healing", action="store_true", help="Disable self-healing QA (faster but may have quality issues)")
+    parser.add_argument("--max-healing-iterations", type=int, default=3, help="Maximum self-healing attempts (default: 3)")
     
     args = parser.parse_args()
 
