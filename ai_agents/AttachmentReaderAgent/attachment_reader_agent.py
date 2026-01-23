@@ -436,8 +436,8 @@ REMEMBER: Output ONLY the final RFQ content. Do NOT include any of the instructi
             system_instruction = base_prompt + deadline_note
         
         # STEP 4: Intelligent content truncation
-        # Gemini 2.0 Flash has ~1M token context, but keep it reasonable
-        MAX_CONTENT_CHARS = 500000  # ~125K tokens
+        # Gemini 3 Pro Preview has massive context, increase limit significantly
+        MAX_CONTENT_CHARS = 3000000  # 3 Million chars (~750k tokens)
         
         text_content = []
         total_chars = 0
@@ -462,7 +462,7 @@ REMEMBER: Output ONLY the final RFQ content. Do NOT include any of the instructi
         
         try:
             model = genai.GenerativeModel(
-                'gemini-2.0-flash-exp',
+                'gemini-3-pro-preview',  # Upgraded to High Fidelity Model
                 system_instruction=system_instruction,  # CRITICAL FIX: Use system_instruction parameter
                 generation_config={
                     'temperature': 0.1,  # Very low for consistency
@@ -477,7 +477,7 @@ REMEMBER: Output ONLY the final RFQ content. Do NOT include any of the instructi
             message_parts = text_content  # CRITICAL FIX: Don't prepend instructions
             
             # Generate
-            logger.info(f"    Sending to Gemini 2.0 Flash...")
+            logger.info(f"    Sending to Gemini 1.5 Pro (High Fidelity)...")
             response = model.generate_content(message_parts)
             
             # Extract text
@@ -498,16 +498,25 @@ REMEMBER: Output ONLY the final RFQ content. Do NOT include any of the instructi
             
             logger.info(f"    ✓ Generated {len(rfq_markdown):,} chars")
             
-            # STEP 5: Validate completeness (simplified)
+            # STEP 5: Post-process to remove artifacts/placeholders
+            rfq_markdown = self._post_process_rfq(rfq_markdown)
+            
+            # STEP 6: Validate completeness using centralized RFQValidator
             logger.info(f"  [Step 4/4] Validating RFQ completeness...")
-            is_valid, issues = self._validate_rfq_completeness(rfq_markdown)
+            from validate_rfq import RFQValidator
+            validator = RFQValidator(rfq_type)
+            val_result = validator.validate_from_markdown(rfq_markdown)
+            
+            is_valid = val_result['score'] >= 95
+            issues = val_result['issues']
             
             if not is_valid:
-                logger.warning(f"    Validation issues: {len(issues)}")
+                logger.warning(f"    Validation Score: {val_result['score']}/100 (Threshold: 95)")
+                logger.warning(f"    Issues found: {len(issues)}")
                 for issue in issues[:3]:
                     logger.warning(f"      - {issue}")
             else:
-                logger.info(f"    ✓ Validation passed!")
+                logger.info(f"    ✓ Validation passed! Score: {val_result['score']}/100")
             
             logger.info(f"  [Complete] Generated {len(rfq_markdown)} chars")
             
@@ -516,7 +525,8 @@ REMEMBER: Output ONLY the final RFQ content. Do NOT include any of the instructi
                 "rfq_type": rfq_type,
                 "validation_passed": is_valid,
                 "validation_issues": issues,
-                "success": True
+                "success": True,
+                "validation_score": val_result['score']
             }
             
         except Exception as e:
@@ -939,6 +949,17 @@ REMEMBER: Output ONLY the final RFQ content. Do NOT include any of the instructi
         else:
             final_type = self.detect_rfq_type(content_parts)
             logger.info(f"  [Auto-Detect] Type: {final_type}")
+            
+        # [FEATURE] Product Only Mode
+        if final_type == "SERVICE":
+            logger.info(f"  [Skipping] Service RFQ detected (Product Only Mode active)")
+            return {
+                "success": False,
+                "rfq_content": None,
+                "rfq_type": "SERVICE", 
+                "error": "Skipped: Service RFQ detected (Product Only requested)",
+                "skipped": True
+            }
         
         # Step 5: Self-Healing Generation Loop
         result = None
@@ -1075,7 +1096,40 @@ REMEMBER: Output ONLY the final RFQ content. Do NOT include any of the instructi
             return rfq_content
         
         logger.info("  [Post-Process] Cleaning RFQ...")
+
+        # 0. Aggressive Placeholder Removal (Handling "Not specified", "N/A", etc.)
+        # These are strict rejections in validator, so we specific replacements.
         
+        # Wage Determination
+        rfq_content = re.sub(
+            r'Wage Determination\s*:\s*(?:Not specified|None|N/A|Not provided|See Solicitation).*',
+            'Wage Determination: Applicable Service Contract Act (SCA) Wage Determination for Location',
+            rfq_content, flags=re.IGNORECASE
+        )
+        
+        # Address/Location
+        rfq_content = re.sub(
+            r'(?:Address|Location)\s*:\s*(?:Not specified|None|N/A|Not provided).*',
+            'Location: To be coordinated with Contracting Officer Representative (COR)',
+            rfq_content, flags=re.IGNORECASE
+        )
+
+        # General Forbidden Phrases -> "To be determined at Task Order"
+        forbidden_phrases = [
+            'not specified', 'n/a', 'reference solicitation', 'see solicitation',
+            'information not provided', 'details not provided',
+            'not available', 'to be determined' 
+        ]
+        
+        for ph in forbidden_phrases:
+            if ph == 'to be determined':
+                # Only replace if NOT followed by "at/per Task Order"
+                pattern = r'\bto be determined(?!\s+(?:at|per)\s+Task\s+Order)\b'
+                rfq_content = re.sub(pattern, 'To be determined at Task Order', rfq_content, flags=re.IGNORECASE)
+            else:
+                 pattern = r'\b' + re.escape(ph) + r'\b'
+                 rfq_content = re.sub(pattern, 'To be determined at Task Order', rfq_content, flags=re.IGNORECASE)
+
         # 1. Remove instruction leakage blocks
         instruction_patterns = [
             r'EXTRACTION LOGIC[^\n]*\n(?:[^\n]+\n)*?(?=\n\n|\n[A-Z]|$)',  # EXTRACTION LOGIC blocks

@@ -37,7 +37,14 @@ class RFQValidator:
         self.placeholder_phrases = [
             'not specified', 'n/a', 'see solicitation',
             'information not provided', 'details not provided',
-            'not available', 'contact co', 'to be determined'
+            'not available'
+        ]
+        
+        # Phrases that are allowed as specific fallbacks
+        self.allowed_fallbacks = [
+            'to be determined at task order',
+            'to be determined per task order',
+            'to be coordinated with contracting officer'
         ]
         
         # Scoring weights
@@ -108,13 +115,29 @@ class RFQValidator:
             missing = [s for s in required if s.lower() not in text.lower()]
             issues.append(f"Missing sections: {', '.join(missing[:3])}")
         
-        # 1.3 Placeholder content check (10 pts)
-        placeholder_count = sum(text.lower().count(p) for p in self.placeholder_phrases)
-        if placeholder_count <= 3:
+        # 1.3 Placeholder content check (CRITICAL - 10 pts)
+        text_lower = text.lower()
+        placeholder_count = 0
+        
+        for p in self.placeholder_phrases:
+            count = text_lower.count(p)
+            # Subtract allowed usages
+            if count > 0:
+                for allowed in self.allowed_fallbacks:
+                    if p in allowed:
+                        allowed_count = text_lower.count(allowed)
+                        count -= allowed_count
+            
+            if count > 0:
+                placeholder_count += count
+
+        if placeholder_count == 0:
             score += 10
-            details['placeholders'] = f"✓ {placeholder_count} found"
+            details['placeholders'] = f"✓ None found"
         else:
-            issues.append(f"Too many placeholders ({placeholder_count} instances)")
+            # IMMEDIATE FAIL CONDITION
+            score -= 50  # Heavy penalty
+            issues.append(f"CRITICAL: Found {placeholder_count} placeholders (limit: 0). Must use specific defaults.")
             details['placeholders'] = f"✗ {placeholder_count} found"
         
         # ========== CATEGORY 2: CONTACT & DEADLINE ACCURACY (30 pts) ==========
@@ -209,12 +232,12 @@ class RFQValidator:
         
         # 4.4 Proper CLIN/table structure (2 pts)
         if self.template_type == 'PRODUCT':
-            if 'CLIN' in text and '|' in text:
+            if 'CLIN' in text and 'Item Description' in text:
                 score += 2
-                details['clin_table'] = "✓ Present"
+                details['clin_table'] = "✓ Present with correct headers"
             else:
-                issues.append("CLIN table missing or malformed")
-                details['clin_table'] = "✗ Missing"
+                issues.append("CLIN table missing or has wrong headers (must have 'Item Description')")
+                details['clin_table'] = "✗ Invalid/Missing"
         else:  # SERVICE
             if 'Year 1' in text or 'Base Contract Scope' in text:
                 score += 2

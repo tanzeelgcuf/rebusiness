@@ -113,9 +113,16 @@ Saint Paul, MN 55101
 - 2025-01-28
 - 28 Jan 25
 
+**CRITICAL: Convert ALL dates to this format in output:** Month DD, YYYY (e.g., "January 13, 2026")
+
 **Calculate Camp Sable Deadline:**
 Government deadline - 4 BUSINESS days (skip Saturday and Sunday)
 Example: Gov deadline Tuesday Jan 28 → Camp Sable Friday Jan 24
+
+**ABSOLUTE REQUIREMENT - Date Consistency:** 
+- ALL date references throughout the entire RFQ must use identical "Month DD, YYYY" format
+- Response deadline, submission deadline, quotes due, and all other dates MUST match exactly
+- Use the CAMP_SABLE_DEADLINE variable consistently - never hardcode different dates
 
 ### Delivery Addresses
 **Priority Order:**
@@ -225,9 +232,10 @@ For services: Phase 1 tasks, Phase 2 tasks, Deliverables, Reports, Training
 
 ### Maximum Placeholder Usage
 - "Not specified": 0 instances allowed. You MUST infer or use a professional default.
-- If a delivery schedule is missing: "Per Schedule of Supplies/Services"
+- If a delivery schedule is missing: "To be determined at Task Order"
 - If a specific standard is missing: "Applicable industry and safety standards"
 - If a specific location is missing: "To be coordinated with Contracting Officer Representative (COR)"
+- If a date is missing: "To be determined at Task Order"
 
 ### Professional Writing Standards
 - Complete sentences (no fragments)
@@ -236,6 +244,26 @@ For services: Phase 1 tasks, Phase 2 tasks, Deliverables, Reports, Training
 - No promotional language
 - Technical accuracy paramount
 - Vendor-friendly language
+
+### Parts List & Document Completeness
+**CRITICAL REQUIREMENT:** The RFQ must be 100% complete and self-contained.
+- Extract ALL CLIN items and include complete details in RFQ body
+- **NEVER** use "available upon request", "contact for details", or "see attachments" - ALL information must be in the RFQ body
+- If >15 parts, include full table with all items listed
+- The RFQ IS the complete package - no external references permitted
+- **DO NOT** include any "Note:" lines suggesting information is "available upon request"
+
+**STRICTLY PROHIBITED PHRASES:**
+- "available in attached solicitation documents or upon request"
+- "available upon request"
+- "upon request"
+- "other documents available"
+- "I can send you"
+- "send if interested"
+- "contact for more information"
+- "additional documents available"
+- "refer to solicitation"
+- "see attachments"
 
 ### Formatting Standards
 - No ** bold anywhere
@@ -265,7 +293,7 @@ We are writing to request a formal quote for [specific_product_name]. Camp Sable
 
 Your response is needed on or before [CAMP_SABLE_DEADLINE] in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+All requirements, specifications, and compliance criteria are detailed below. Please review the complete RFQ carefully. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -323,31 +351,31 @@ Manufacturer: [Extract or "Various"]
 
 ## CLIN Table
 
-**CRITICAL DECISION POINT:**
+## CLIN Table
 
-**COUNT THE TOTAL NUMBER OF LINE ITEMS IN THE SOLICITATION:**
+[INSTRUCTION: Select ONE of the following table formats based on the total line item count. Output ONLY the table, no instruction text.]
 
-**IF TOTAL ITEMS = 1-19:** Use detailed format (list every item)
+[INSTRUCTION: If 1-19 items, use this detailed format:]
+| CLIN | Item Description | Quantity | Unit | Notes |
+|------|------------------|----------|------|-------|
+| [CLIN] | [Full_Description] | [Qty] | [Unit] | [Notes_or_"None"] |
 
-| CLIN | Description | Quantity | Contract Type | Inspection | Packaging | Notes |
-|------|-------------|----------|---------------|------------|-----------|-------|
-| [CLIN] | [Full_Description] | [Qty] [Unit] | [Type] | [Point] | [Standard] | [Notes_or_"None"] |
-
-**IF TOTAL ITEMS = 20+:** Use summary format (group by category)
-
+[INSTRUCTION: If 20+ items, use this summary format:]
 | CLIN Range | Category | Item Count | Contract Type | Inspection | Packaging | Notes |
 |------------|----------|------------|---------------|------------|-----------|-------|
 | 1-10 | [Category_Name] | 10 items | FFP | Destination | Commercial | [Brief_description_or_"Standard"] |
-| 11-25 | [Category_Name] | 15 items | FFP | Destination | Commercial | [Brief_description_or_"Standard"] |
-| 26-50 | [Category_Name] | 25 items | FFP | Destination | Commercial | [Brief_description_or_"Standard"] |
-| 51-100 | [Category_Name] | 50 items | FFP | Destination | Commercial | [Brief_description_or_"Standard"] |
-| 101-180 | [Category_Name] | 80 items | FFP | Destination | Commercial | [Brief_description_or_"Standard"] |
+| [Range] | [Category] | [Count] | FFP | Destination | Commercial | [Description] |
 
-**Total: [X] items across [Y] categories**
+[INSTRUCTION: If Option Periods exist, include this table below the main table:]
 
-**Note:** Complete detailed parts list with specific part numbers, manufacturers, and quantities available in attached solicitation documents or upon request.
+🏛️ Option 1 Scope
+| CLIN | Item Description | Quantity | Unit | Notes |
+|------|------------------|----------|------|-------|
+| [CLIN] | [Full_Description] | [Qty] | [Unit] | [Option_Period_Details] |
 
-**NEVER create tables with 30+ individual rows. Professional RFQs summarize large item lists.**
+Total Option 1 Price for Supplies and Services (if exercised)
+
+[INSTRUCTION: End tables.]
 
 Total Contract Quantity Range:
 
@@ -450,16 +478,30 @@ This is a [X]-year [indefinite quantity or requirements] contract with [Y] optio
 - Look for special provisions
 - Note FAR/DFARS clauses
 - Identify mandatory certifications
+- Separate government requirements from Camp Sable requirements
 
-**LIST ALL THAT APPLY:**
-- ISO 9001:2015 or equivalent quality management system
-- **IF Defense:** AS9100 aerospace quality (if applicable)
-- **IF ITAR:** ITAR registration and compliance
-- **IF JCP:** Joint Certification Program (DD2345)
-- **IF CMMC:** Cybersecurity Maturity Model Certification Level [X]
-- SAM.gov registration (active and current)
-- FAR 52.212-3 Representations and Certifications (complete)
-- **IF Counterfeit Prevention:** Anti-counterfeit parts program per DFARS 252.246-7007
+**OUTPUT FORMAT:**
+
+**Government Requirements (from solicitation):**
+[List ONLY certifications explicitly required by the government solicitation - extract verbatim]
+[Examples: ISO 9001:2015, AS9100, ITAR registration, JCP (DD2345), CMMC Level X, Anti-counterfeit parts program per DFARS 252.246-7007]
+[If specific requirements found, list each on separate line without conditional markers]
+[If no specific certifications in solicitation, write: "See solicitation documents for specific requirements"]
+
+## 🟩 Camp Sable Qualifications
+
+Camp Sable meets the following government requirements:
+- SAM.gov registration (active and current) - Camp Sable provides; government requires
+- FAR 52.212-3 Representations and Certifications (complete) - Camp Sable provides; government requires
+
+**Bidder/Vendor Requirements:**
+The bidder/vendor must possess:
+- ISO 9001:2015 or equivalent quality management system certification
+
+**CRITICAL:** 
+- Do NOT include conditional markers like "**IF Defense:**" or "**IF ITAR:**" in the output
+- Do NOT add "(This is a Camp Sable requirement.)" labels - they cause confusion
+- Only list requirements that actually apply based on the solicitation content
 
 ---
 
@@ -584,6 +626,8 @@ SERVICE_RFQ_PROMPT = f"""{EXTRACTION_RULES}
 
 Generate following this EXACT structure. Match "Claude Service List.odt" precisely.
 
+[INSTRUCTION: Output only the markdown content below. Do not output these instructions.]
+
 ```markdown
 # [PROJECT TITLE IN ALL CAPS]
 
@@ -595,7 +639,7 @@ We are writing to request a formal quote for [specific_service_type]. Camp Sable
 
 Your response is needed on or before [CAMP_SABLE_DEADLINE] in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+All requirements, specifications, and compliance criteria are detailed below. Please review the complete RFQ carefully. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -634,26 +678,19 @@ Project Objective:
 
 ## 🏛️ What They Want (Scope of Work)
 
-**EXTRACT FROM PWS/SOW - ORGANIZE INTO LOGICAL CATEGORIES:**
+[INSTRUCTION: Extract specific tasks from PWS/SOW. Do not use generic summaries.]
 
 | Category | Main Tasks |
 |----------|------------|
 | [Category_1] | [Detailed_tasks_with_specifics - DO NOT just say "See PWS" - LIST the actual tasks] |
 | [Category_2] | [Detailed_tasks_with_specifics] |
 | [Category_3] | [Detailed_tasks_with_specifics] |
-| [Category_4] | [Detailed_tasks_with_specifics] |
-
-**EXAMPLE OF GOOD ENTRY:**
-| Forest Establishment | Develop planting plans; plant 68.8 acres with native trees and prairie species; install tree shelters; control invasive woody and herbaceous species; maintain all plantings through Year 3 |
-
-**EXAMPLE OF BAD ENTRY:**
-| Forest Establishment | Plant trees and maintain sites |
 
 ---
 
 ## 🏛️ Timeline / Period of Performance
 
-**EXTRACT SPECIFIC DATES AND ACTIVITIES FROM PWS:**
+[INSTRUCTION: Extract specific dates and activities. If dates are missing, use "TBD at Task Order".]
 
 | Year/Phase | Dates | Requirements |
 |------------|-------|--------------|
@@ -668,13 +705,10 @@ Option 1 (if exercised): [Complete_option_details with dates and scope]
 
 ## 🏛️ Deliverables & Reporting Deadlines
 
-**EXTRACT SPECIFIC DEADLINES FROM PWS/SOW:**
-
 - Initial Submittals: [List specific items or "Safety Plan and Project Schedule within 15 days of award"]
 - Monthly: [Specific requirements or "Status Report accompanying invoice"]
 - Annually: [Specific requirements or "Annual Performance Summary"]
 - Final: [Final deliverables or "Final Report and site turnover inspection"]
-- **IF NOT EXPLICIT:** Infer standard deliverables from SOW tasks (e.g., "Service completion report", "Signed work order")
 
 ---
 
@@ -688,26 +722,25 @@ Work occurs across [X] sites:
 - [Site_ID or Name]: [Complete_address or location description], [Size - acreage/sq ft], [Type - forest/prairie/facility]
 - [Site_ID or Name]: [Complete_address or location description], [Size], [Type]
 
-[State_2] Sites:
-- [Site_ID or Name]: [Complete_address or location description], [Size], [Type]
-
 General Delivery/Access:
 - [Access_details - roads, gates, coordination requirements]
 - [Coordination_requirements - notify before entry, traffic control, etc.]
+
+[INSTRUCTION: If specific address missing, write "To be coordinated with Contracting Officer Representative (COR)"]
 
 ---
 
 ## 🏛️ Key Compliance Points
 
-**EXTRACT EVERY COMPLIANCE REQUIREMENT - BE SPECIFIC:**
+- Use: [Specific_systems - e.g., "Resident Management System (RMS) for all submissions" or "Standard industry equipment"]
+- Meet: [Safety_standards - e.g., "EM 385-1-1 Safety Requirements" or "Applicable Federal/State regulations"]
+- Licensing requirements: [Specific_licenses - e.g., "Licensed herbicide applicators" or "Applicable professional licenses"]
+- Environmental compliance: [Specifics - e.g., "Obtain NPDES permits" or "Comply with local environmental mandates"]
+- Quality control: [Specifics - e.g., "Industry standard Quality Control Plan"]
+- Wage Determination: [WD_Number] for [States] - [Sample_classification]: $[Rate]/hour + $[Benefits] fringe
+- Insurance Requirements: [All_requirements with specific amounts or "Per FAR 52.228-5 and state statutory minimums"]
 
-- Use: [Specific_systems - e.g., "Resident Management System (RMS) for all submissions" or "Standard industry equipment and approved materials"]
-- Meet: [Safety_standards - e.g., "EM 385-1-1 Safety Requirements and OSHA standards" or "All applicable Federal, State, and Local regulations"]
-- Licensing requirements: [Specific_licenses - e.g., "Licensed herbicide applicators in ND and MN with EPA-approved products" or "Applicable professional licenses for [State]"]
-- Environmental compliance: [Specifics - e.g., "Obtain NPDES/NDPDES permits as needed; 10-day notice for ground disturbance (archeological monitoring)" or "Comply with all local environmental protection mandates"]
-- Quality control: [Specifics - e.g., "Implement QCP with monthly inspections; submit activity reports" or "Industry standard Quality Control Plan"]
-- Wage Determination: [WD_Number] for [States] - [Sample_classification]: $[Rate]/hour + $[Benefits] fringe or "Applicable Service Contract Act (SCA) Wage Determination for [Location]"]
-- Insurance Requirements: [All_requirements with specific amounts if provided or "Per FAR 52.228-5 and state statutory minimums"]
+[INSTRUCTION: Never use 'Not specified'. If data is missing, use a professional default from EXTRACTION_RULES.]
 
 ---
 
@@ -715,14 +748,10 @@ General Delivery/Access:
 
 To be accepted, each site must:
 
-**EXTRACT SPECIFIC MEASURABLE CRITERIA FROM PWS:**
-
 - [Specific_criterion_1 - e.g., "Achieve minimum 450 live seedlings ≥30 inches tall per acre"]
 - [Specific_criterion_2 - e.g., "Maintain >50% native vegetation cover"]
 - [Specific_criterion_3 - e.g., "Reduce invasive species to <15% total cover"]
-- [Specific_criterion_4 - e.g., "Zero noxious weed presence"]
 - Pass final walkthrough - deficiencies corrected at contractor expense
-- [Additional_specific_criteria]
 
 ---
 
@@ -741,42 +770,29 @@ To be accepted, each site must:
 ## 🏛️ Key Requirements
 
 ### Certification & Capability
-**EXTRACT FROM EVALUATION CRITERIA AND PWS:**
 - [Specific_certifications - e.g., "Forestry contractor license in MN and ND"]
-- [Experience_requirements - e.g., "Minimum 3 years experience in native species restoration"]
+- [Experience_requirements - e.g., "Minimum 3 years experience"]
 - [Personnel_requirements - e.g., "Licensed arborist on staff"]
 
 ### Technical Standards
-**LIST ALL STANDARDS MENTIONED:**
 - [Standard_1 - e.g., "EM 385-1-1 USACE Safety Manual"]
 - [Standard_2 - e.g., "OSHA 1926 Construction Standards"]
-- [Standard_3 - e.g., "EPA herbicide application guidelines"]
-
-### Packaging & Labeling (if applicable)
-[Usually N/A for services, but include if materials delivery involved]
 
 ### Wage & Labor Compliance
-**EXTRACT COMPLETE WAGE DETERMINATION INFO:**
 - Wage Determination: [WD_Number - e.g., "WD 2015-4191 (Revision 23)"]
 - Applicable States: [States]
 - Sample Classifications and Rates:
   - [Classification_1]: $[Rate]/hour (base) + $[Amount] H&W + [Other_fringes]
-  - [Classification_2]: $[Rate]/hour (base) + $[Amount] H&W + [Other_fringes]
-- Benefits: [Summary of fringe benefits, vacation, holiday pay]
 
 ### Security & Compliance
-**EXTRACT ALL SECURITY REQUIREMENTS:**
 - Clearance requirements: [Specifics or "Standard background checks for facility access"]
 - Training requirements: [Specifics or "Standard contractor safety and compliance training"]
 - Compliance systems: [Specifics or "WAWF/PIEE for invoicing"]
-- Background checks: [Specifics or "Per agency standard security protocols"]
 
 ### Insurance Requirements
-**EXTRACT SPECIFIC AMOUNTS:**
-- General Liability: $[Amount] per occurrence / $[Amount] aggregate [or "Required per FAR 52.228-5"]
-- Auto Liability: $[Amount] combined single limit [or specific amounts per person/occurrence]
+- General Liability: $[Amount] per occurrence [or "Required per FAR 52.228-5"]
+- Auto Liability: $[Amount] combined single limit
 - Workers Compensation: Statutory requirements for [specific_states]
-- Employers Liability: $[Amount] per accident
 
 **IF NOT SPECIFIED IN DOCUMENTS:**
 - General Liability: Required (amounts to be determined per contract requirements)
