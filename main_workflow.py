@@ -102,13 +102,17 @@ def process_single_url(url, db_manager, scraper):
                 # 6. Validate RFQ
                 if RFQValidator:
                     logger.info(f"  [>] Validating RFQ Quality...")
-                    validator = RFQValidator()
-                    val_score, val_report = validator.validate_rfq(output_path, rfq_type)
-                    logger.info(f"  [VALIDATION] Score: {val_score}/100. Report: {val_report}")
+                    validator = RFQValidator(rfq_type)
+                    val_result = validator.validate_from_docx(output_path)
+                    val_score = val_result['score']
+                    val_report = validator.generate_report(val_result, output_path.replace('.docx', '_validation_report.txt'))
+                    logger.info(f"  [VALIDATION] Score: {val_score}/100. Status: {val_result['status']}")
                     
                     # Log warning if score is low
                     if val_score < 95:
                         logger.warning(f"  [!] QA Alert: RFQ score {val_score}/100 is below 95 threshold.")
+                    if val_result['issues']:
+                        logger.warning(f"  [!] Issues: {val_result['issues']}")
 
             else:
                 logger.error(f"  [!] No RFQ content returned for {contract_id}")
@@ -250,7 +254,10 @@ def process_extract_and_generate_rfq(url, args):
         )
         
         if "error" in result:
-            logger.error(f"  [!] Generation failed: {result['error']}")
+            if result.get("skipped"):
+                logger.info(f"[SKIP] {contract_id} skipped: {result['error']}")
+                return # Stop processing this URL
+            logger.error(f"  [!] Generation failed for {contract_id}: {result['error']}")
         else:
             # Result is dict {"rfq_content": ..., "rfq_type": ...}
             rfq_content = result.get("rfq_content")
@@ -274,27 +281,20 @@ def process_extract_and_generate_rfq(url, args):
                      logger.info(f"  [SUCCESS] RFQ ({rfq_type}) saved to {output_path} and DB.")
                      
                      # 3. Post-Generation Validation (if enabled)
-                     if RFQValidator:
-                         logger.info("  [Validation] Running quality check...")
-                         try:
-                             validator = RFQValidator(rfq_type)
-                             validation_result = validator.validate_from_docx(output_path)
-                             
-                             score = validation_result['score']
-                             status = validation_result['status']
-                             logger.info(f"  Quality Score: {score}/100 ({status})")
-                             
-                             if validation_result['issues']:
-                                 logger.warning(f"  Issues found: {len(validation_result['issues'])}")
-                                 for issue in validation_result['issues'][:3]:
-                                     logger.warning(f"    - {issue}")
-                                     
-                             # Save validation report
-                             report_path = output_path.replace(".docx", "_validation_report.txt")
-                             validator.generate_report(validation_result, report_path)
-                             
-                         except Exception as val_e:
-                             logger.error(f"  [Validation Error] {val_e}")
+                     logger.info(f"  [>] Validating RFQ Quality...")
+                     from validate_rfq import RFQValidator
+                     validator = RFQValidator(rfq_type)
+                     val_result = validator.validate_from_docx(output_path)
+                     
+                     report_path = output_path.replace('.docx', '_validation_report.txt')
+                     validator.generate_report(val_result, report_path)
+                     
+                     logger.info(f"  [VALIDATION] Score: {val_result['score']}/100. Report saved to {report_path}")
+
+                     if val_result['issues']:
+                         logger.warning(f"  Issues found: {len(val_result['issues'])}")
+                         for issue in val_result['issues'][:3]:
+                             logger.warning(f"    - {issue}")
                      
                 else:
                      # Fallback

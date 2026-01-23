@@ -48,9 +48,18 @@
         - [x] Create `enrich_and_send_campaign.py` to auto-enrich missing data before sending.
         - [x] Update Agent Prompts for "Aggressive Quantity Inference".
         - [x] Running Smart Campaign on pending queue. <!-- id: 24 -->
-    - [/] **Content Quality Overhaul** (Response to User Feedback):
-        - [x] Stop campaign to fix vague emails.
-        - [x] Update Email Template to include full `Description` and `Delivery Timeline`.
+    - [/] **Content Quality Overhaul**- [x] Debug persistent "not specified" in Service RFQs
+    - [x] Refine `SERVICE_RFQ_PROMPT` to prevent instruction leakage
+    - [x] Update `validate_rfq.py` to allow "per Task Order" fallbacks
+    - [/] Implement post-processing to auto-replace placeholders (Testing now)
+- [x] Verify 100% Fidelity and Zero Placeholders
+    - [x] Run `main_workflow.py` for Service RFQs (Completed)
+    - [x] Inspect output for table formatting and leakage (Passed 100/100)
+- [x] Configure High Fidelity & Product Only Mode
+    - [x] Upgrade model to `gemini-1.5-pro-002` (High Fidelity)
+    - [x] Increase char limit to 3,000,000
+    - [x] Implement "Product Only" filter (Skip Service RFQs)
+    - [x] Verify configuration (Service Skipped, Product Generated)y Timeline`.
         - [x] Update Template to match User's EXACT request (Quote Reqs + Response Deadline).
         - [x] Update `enrich_and_send_campaign.py` to trigger on "Weak Specs" (< 20 chars).
         - [x] Update `AttachmentReaderAgent` to extract verbose descriptions.
@@ -63,6 +72,10 @@
   - [x] Create/Update `main_workflow.py` to support ad-hoc arg scraping <!-- id: 7 -->
 - [x] Execute "Product" scrape using: `python3 main_workflow.py --keyword "product" --pages 10` <!-- id: 8 -->
   - [x] Run `scrape_all_keyword.py product` to fetch all data <!-- id: 4 -->
+- [x] **Generate 5 Sample RFQs**
+  - [x] Identify 5 distinct solicitations (Product/Service mix)
+  - [x] Run RFQ generation for each
+  - [x] Verify output content and formatting
 - [ ] **Improve Product Information Extraction**
   - [x] Verify extraction quality <!-- id: 7 -->
 - [x] **Upgrade Supplier Email Extraction** <!-- id: 8 -->

@@ -1,7 +1,7 @@
 import os
 
 # Gemini API Key
-GEMINI_API_KEY = "AIzaSyBj_3MTLIsmog13YCZ1EVIe4TCfYnFcHQY"
+GEMINI_API_KEY = "AIzaSyD7AVYzO7DVD-Ci8BJnMcqjoEGhdxE9N2c"
 
 # Google Maps API Key - Paste your Google Maps API key here
 GOOGLE_MAPS_API_KEY = "AIzaSyAYaSGXxq0TxntpEOINapwXuZ67F4Nayck"
