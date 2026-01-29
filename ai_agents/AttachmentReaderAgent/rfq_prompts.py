@@ -140,12 +140,12 @@ Example: Gov deadline Tuesday Jan 28 → Camp Sable Friday Jan 24
 ### CLIN Tables (CRITICAL)
 
 **For 1-19 Items:** List each item individually
-| CLIN | Description | Quantity | Contract Type | Inspection | Packaging | Notes |
+| **CLIN** | **Description** | **Quantity** | **Contract Type** | **Inspection** | **Packaging** | **Notes** |
 |------|-------------|----------|---------------|------------|-----------|-------|
 | 0001 | Widget Assembly | 10 | FFP | Origin | Commercial | Base year |
 
 **For 20+ Items:** Create SUMMARY by category (6-10 rows max)
-| CLIN Range | Category | Item Count | Contract Type | Inspection | Packaging | Notes |
+| **CLIN Range** | **Category** | **Item Count** | **Contract Type** | **Inspection** | **Packaging** | **Notes** |
 |------------|----------|------------|---------------|------------|-----------|-------|
 | 1-15 | Enclosure Components | 15 items | FFP | Destination | Commercial | Housing and panels |
 | 16-50 | Electronic Components | 35 items | FFP | Destination | Commercial | PCBs, modules, displays |
@@ -266,9 +266,9 @@ For services: Phase 1 tasks, Phase 2 tasks, Deliverables, Reports, Training
 - "see attachments"
 
 ### Formatting Standards
-- No ** bold anywhere
+- No ** bold in body text (EXCEPTION: Table headers MUST be bold for visibility)
 - Proper emoji: 🏛️ for sections, 🟩 for summaries
-- Tables: Markdown pipe format with proper alignment
+- Tables: Markdown pipe format with proper alignment AND **bold headers**
 - Horizontal rules (---) between major sections
 - Consistent capitalization
 - No HTML artifacts
@@ -355,21 +355,21 @@ Manufacturer: [Extract or "Various"]
 
 [INSTRUCTION: Select ONE of the following table formats based on the total line item count. Output ONLY the table, no instruction text.]
 
-[INSTRUCTION: If 1-19 items, use this detailed format:]
-| CLIN | Item Description | Quantity | Unit | Notes |
+[INSTRUCTION: If 1-19 items, use this detailed format with BOLD headers:]
+| **CLIN** | **Item Description** | **Quantity** | **Unit** | **Notes** |
 |------|------------------|----------|------|-------|
 | [CLIN] | [Full_Description] | [Qty] | [Unit] | [Notes_or_"None"] |
 
-[INSTRUCTION: If 20+ items, use this summary format:]
-| CLIN Range | Category | Item Count | Contract Type | Inspection | Packaging | Notes |
+[INSTRUCTION: If 20+ items, use this summary format with BOLD headers:]
+| **CLIN Range** | **Category** | **Item Count** | **Contract Type** | **Inspection** | **Packaging** | **Notes** |
 |------------|----------|------------|---------------|------------|-----------|-------|
 | 1-10 | [Category_Name] | 10 items | FFP | Destination | Commercial | [Brief_description_or_"Standard"] |
 | [Range] | [Category] | [Count] | FFP | Destination | Commercial | [Description] |
 
-[INSTRUCTION: If Option Periods exist, include this table below the main table:]
+[INSTRUCTION: If Option Periods exist, include this table below the main table with BOLD headers:]
 
 🏛️ Option 1 Scope
-| CLIN | Item Description | Quantity | Unit | Notes |
+| **CLIN** | **Item Description** | **Quantity** | **Unit** | **Notes** |
 |------|------------------|----------|------|-------|
 | [CLIN] | [Full_Description] | [Qty] | [Unit] | [Option_Period_Details] |
 
@@ -532,13 +532,13 @@ Email: [Email]
 
 **IF Few CLINs (1-10):** List each with delivery details
 
-| CLIN | Item | Quantity | Delivery Timeline | Frequency | Inspection | Ship-To | Notes |
+| **CLIN** | **Item** | **Quantity** | **Delivery Timeline** | **Frequency** | **Inspection** | **Ship-To** | **Notes** |
 |------|------|----------|-------------------|-----------|------------|---------|-------|
 | [CLIN] | [Item] | [Qty] [Unit] | [Timeline] | [Frequency] | [Point] | [Location] | [Notes] |
 
 **IF Many CLINs (20+):** Summarize delivery by category
 
-| Category | Items | Total Qty | Delivery Start | Frequency | Inspection | Ship-To | Notes |
+| **Category** | **Items** | **Total Qty** | **Delivery Start** | **Frequency** | **Inspection** | **Ship-To** | **Notes** |
 |----------|-------|-----------|----------------|-----------|------------|---------|-------|
 | [Category] | [Count] items | [Total] | [Timeline] | [Frequency] | [Point] | [Location] | [Notes] |
 
@@ -598,7 +598,7 @@ END OF RFQ
 - Placeholder text like "[Extract from...]" or "[Extract exact...]"
 - Incomplete sentences or fragments
 - HTML comments or tags
-- Bold formatting (**)
+- Bold formatting (**) in body text (EXCEPTION: table headers MUST be bold)
 - Government emails (.mil, .gov)
 - Generic vague statements
 
@@ -608,6 +608,7 @@ END OF RFQ
 - Proper emoji (🏛️ for sections, 🟩 for summaries)
 - Only john@campsable.com as contact
 - Camp Sable deadline (government deadline - 4 business days)
+- **Bold headers in ALL tables** for visibility
 
 ### Quality Checks Before Finalizing:
 1. All sections present and complete
@@ -615,7 +616,7 @@ END OF RFQ
 3. CLIN table appropriate to item count (summary if 20+)
 4. Delivery address complete (not missing)
 5. Professional tone throughout
-6. Tables properly formatted
+6. Tables properly formatted **with bold headers**
 7. Emoji correct (🏛️ not 🛒)
 8. Signature is "[My signature info]"
 """
@@ -680,7 +681,7 @@ Project Objective:
 
 [INSTRUCTION: Extract specific tasks from PWS/SOW. Do not use generic summaries.]
 
-| Category | Main Tasks |
+| **Category** | **Main Tasks** |
 |----------|------------|
 | [Category_1] | [Detailed_tasks_with_specifics - DO NOT just say "See PWS" - LIST the actual tasks] |
 | [Category_2] | [Detailed_tasks_with_specifics] |
@@ -692,7 +693,7 @@ Project Objective:
 
 [INSTRUCTION: Extract specific dates and activities. If dates are missing, use "TBD at Task Order".]
 
-| Year/Phase | Dates | Requirements |
+| **Year/Phase** | **Dates** | **Requirements** |
 |------------|-------|--------------|
 | Year 1 | [Start_Date] → [End_Date] | [All_major_activities_and_deliverables - be specific] |
 | Year 2 | [Start_Date] → [End_Date] | [All_major_activities_and_deliverables] |
@@ -836,7 +837,7 @@ To be accepted, each site must:
 
 **EXTRACT EVERY BASE CLIN FROM SF 1449:**
 
-| CLIN | Item Description | Quantity | Unit | Notes |
+| **CLIN** | **Item Description** | **Quantity** | **Unit** | **Notes** |
 |------|------------------|----------|------|-------|
 | [CLIN] | [Complete_Description] | [Qty] | [Unit] | [Notes] |
 | [CLIN] | [Complete_Description] | [Qty] | [Unit] | [Notes] |
@@ -849,7 +850,7 @@ Total Base Contract Price for [Description_of_base_scope]
 
 **IF OPTIONS EXIST - EXTRACT EVERY OPTION CLIN:**
 
-| CLIN | Item Description | Quantity | Unit | Notes |
+| **CLIN** | **Item Description** | **Quantity** | **Unit** | **Notes** |
 |------|------------------|----------|------|-------|
 | [CLIN] | [Complete_Description] | [Qty] | [Unit] | [Notes] |
 

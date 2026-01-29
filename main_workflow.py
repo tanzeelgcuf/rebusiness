@@ -18,6 +18,8 @@ try:
 except ImportError:
     RFQValidator = None
 
+# ThomasNet Import (Lazy import inside functions to avoid strict dependency on playwright if unused)
+# from ai_agents.ThomasNetAgent.cli import submit_rfq_programmatic # Hypothetical function, will implement inline
 
 # Setup Logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -26,7 +28,64 @@ from datetime import datetime
 
 KEYWORD_CHECKPOINT_FILE = "keyword_checkpoint.json"
 
-def process_single_url(url, db_manager, scraper):
+def run_thomasnet_submission(rfq_path, args):
+    """
+    Helper to run ThomasNet submission if enabled.
+    """
+    if not args.submit_to_thomasnet:
+        return
+
+    logger.info(f"🔄 [ThomasNet] Starting submission for: {rfq_path}")
+    try:
+        # Import here to avoid early dependency failure
+        from ai_agents.ThomasNetAgent.cli import submit as thomasnet_submit_cmd
+        from click.testing import CliRunner
+        
+        # We invoke the click command programmatically.
+        # Ideally we would refactor cli.py to expose a clean python function,
+        # but reusing the CLI command ensures consistent behavior.
+        runner = CliRunner()
+        
+        # Prepare args
+        cmd_args = ['--rfq', rfq_path, '--max-vendors', str(args.thomasnet_max_vendors)]
+        
+        if not args.thomasnet_headless:
+            cmd_args.append('--no-headless')
+            
+        if args.thomasnet_dry_run:
+            cmd_args.append('--dry-run')
+            
+        logger.info(f"  [ThomasNet] Invoking agent with args: {cmd_args}")
+        
+        # NOTE: Using standalone_mode=False to prevent system exit
+        # We need to import the actual context_settings if needed, but invoke is easier
+        # Direct function call if decorated with click is tricky.
+        # Better approach: Refactor CLI to call a service function. 
+        # For now, we'll try running it via subprocess or direct call if possible.
+        # Direct call to the function wrapped by click requires Context.
+        
+        # Let's use subprocess for maximum isolation and stability
+        import subprocess
+        
+        cli_path = os.path.join(os.path.dirname(__file__), 'ai_agents', 'ThomasNetAgent', 'cli.py')
+        python_exe = sys.executable
+        
+        cmd = [python_exe, cli_path, 'submit'] + cmd_args
+        
+        process = subprocess.run(cmd, capture_output=True, text=True)
+        
+        if process.returncode == 0:
+            logger.info(f"  [ThomasNet] Submission process completed successfully.")
+            logger.debug(f"  Output: {process.stdout}")
+        else:
+            logger.error(f"  [ThomasNet] Submission process failed with code {process.returncode}")
+            logger.error(f"  Stderr: {process.stderr}")
+
+    except Exception as e:
+        logger.error(f"  [ThomasNet] Error triggering submission: {e}")
+
+
+def process_single_url(url, db_manager, scraper, args=None):
     """
     Runs the modern extraction pipeline on a single URL.
     Scrape -> Deep Crawl -> Download -> Vision Extract -> DB Save -> RFQ Gen -> DOCX Save
@@ -90,7 +149,9 @@ def process_single_url(url, db_manager, scraper):
                 logger.info(f"  [>] Converting to DOCX...")
                 from utils.doc_converter import convert_md_to_docx
                 
-                if convert_md_to_docx(rfq_content, output_path):
+                saved_docx = convert_md_to_docx(rfq_content, output_path)
+                
+                if saved_docx:
                     logger.info(f"  [SUCCESS] Saved DOCX: {output_path}")
                 else:
                     # Fallback to Markdown
@@ -100,11 +161,13 @@ def process_single_url(url, db_manager, scraper):
                     logger.warning(f"  [FALLBACK] DOCX conversion failed. Saved as MD: {md_path}")
                 
                 # 6. Validate RFQ
+                final_validation_score = 0
                 if RFQValidator:
                     logger.info(f"  [>] Validating RFQ Quality...")
                     validator = RFQValidator(rfq_type)
                     val_result = validator.validate_from_docx(output_path)
                     val_score = val_result['score']
+                    final_validation_score = val_score
                     val_report = validator.generate_report(val_result, output_path.replace('.docx', '_validation_report.txt'))
                     logger.info(f"  [VALIDATION] Score: {val_score}/100. Status: {val_result['status']}")
                     
@@ -113,6 +176,13 @@ def process_single_url(url, db_manager, scraper):
                         logger.warning(f"  [!] QA Alert: RFQ score {val_score}/100 is below 95 threshold.")
                     if val_result['issues']:
                         logger.warning(f"  [!] Issues: {val_result['issues']}")
+
+                # 7. ThomasNet Submission (Integrated Step)
+                if args and args.submit_to_thomasnet and saved_docx:
+                    if final_validation_score >= 80: # Safety quality gate
+                        run_thomasnet_submission(output_path, args)
+                    else:
+                        logger.warning(f"  [ThomasNet] Skipping submission due to low validation score ({final_validation_score})")
 
             else:
                 logger.error(f"  [!] No RFQ content returned for {contract_id}")
@@ -123,13 +193,14 @@ def process_single_url(url, db_manager, scraper):
 
 import argparse
 
-def main_job(target_keyword=None, force_start_page=None, force_num_pages=None):
+def main_job(target_keyword=None, force_start_page=None, force_num_pages=None, args=None):
     """
     Main Loop: Rotate Keywords -> Search -> Extract
     Args:
         target_keyword: If set, only scrape this keyword.
         force_start_page: If set, start at this page.
         force_num_pages: If set, scrape this many pages (overrides batch default).
+        args: Parsed CLI arguments
     """
     logger.info("\n=== STARTING JOB ===")
     
@@ -178,7 +249,7 @@ def main_job(target_keyword=None, force_start_page=None, force_num_pages=None):
         # 3. Process URLs
         for url in found_urls:
             if "/opp/" not in url: continue
-            process_single_url(url, db_manager, sam_agent)
+            process_single_url(url, db_manager, sam_agent, args=args)
 
         # 4. State Update (Only for scheduled batches)
         if not target_keyword:
@@ -277,7 +348,9 @@ def process_extract_and_generate_rfq(url, args):
                 logger.info(f"  [>] Converting to DOCX...")
                 from utils.doc_converter import convert_md_to_docx
                 
-                if convert_md_to_docx(rfq_content, output_path):
+                saved_docx = convert_md_to_docx(rfq_content, output_path)
+                
+                if saved_docx:
                      logger.info(f"  [SUCCESS] RFQ ({rfq_type}) saved to {output_path} and DB.")
                      
                      # 3. Post-Generation Validation (if enabled)
@@ -296,6 +369,13 @@ def process_extract_and_generate_rfq(url, args):
                          for issue in val_result['issues'][:3]:
                              logger.warning(f"    - {issue}")
                      
+                     # 4. ThomasNet Submission
+                     if args.submit_to_thomasnet:
+                         if val_result['score'] >= 80:
+                             run_thomasnet_submission(output_path, args)
+                         else:
+                             logger.warning(f"  [ThomasNet] Skipping submission due to low validation score ({val_result['score']})")
+
                 else:
                      # Fallback
                      md_path = output_path.replace(".docx", ".md")
@@ -333,6 +413,12 @@ if __name__ == "__main__":
     parser.add_argument("--no-self-healing", action="store_true", help="Disable self-healing QA (faster but may have quality issues)")
     parser.add_argument("--max-healing-iterations", type=int, default=3, help="Maximum self-healing attempts (default: 3)")
     
+    # ThomasNet Automation Flags
+    parser.add_argument("--submit-to-thomasnet", action="store_true", help="Auto-submit generated RFQs to ThomasNet vendors")
+    parser.add_argument("--thomasnet-dry-run", action="store_true", help="Run ThomasNet in dry-run mode (no actual submission)")
+    parser.add_argument("--thomasnet-max-vendors", type=int, default=5, help="Max vendors per product (default: 5)")
+    parser.add_argument("--thomasnet-headless", action="store_true", default=True, help="Run ThomasNet browser in headless mode")
+    
     args = parser.parse_args()
 
     if args.mode == "extract-and-generate-rfq":
@@ -342,17 +428,17 @@ if __name__ == "__main__":
         process_extract_and_generate_rfq(args.url, args)
     elif args.keyword:
         # Manual Run
-        main_job(target_keyword=args.keyword, force_start_page=args.page, force_num_pages=args.pages)
+        main_job(target_keyword=args.keyword, force_start_page=args.page, force_num_pages=args.pages, args=args)
     elif args.loop:
         # Scheduled Service Mode
         logger.info("Service Started. Running initial job...")
-        main_job() # Initial run
+        main_job(args=args) # Initial run
         
-        schedule.every(3).hours.do(main_job)
+        schedule.every(3).hours.do(lambda: main_job(args=args))
         logger.info("Scheduler Active (Every 3 Hours). Press Ctrl+C to exit.")
         while True:
             schedule.run_pending()
             time.sleep(1)
     else:
         # Default behavior: Just run one batch Job
-        main_job()
+        main_job(args=args)
