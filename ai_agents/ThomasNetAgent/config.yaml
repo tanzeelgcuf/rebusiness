@@ -1,0 +1,21 @@
+thomasnet:
+  base_url: "https://www.thomasnet.com"
+  login_url: "https://www.thomasnet.com/thomas-auth/login"
+  delay_between_searches: 3  # seconds
+  delay_between_submissions: 10  # seconds
+  max_daily_submissions: 25
+  browser_timeout: 300000  # ms (5 mins for manual captcha)
+  headless: true
+  browser_type: "firefox" # Options: chromium, firefox, webkit
+  user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+vendor_selection:
+  max_vendors_per_product: 5
+  min_rating: 3.0
+  require_verification: false
+  
+company:
+  name: "Camp Sable, LLC"
+  contact_name: "John Doe"
+  email: "john@campsable.com"
+  phone: "+1-555-123-4567"
