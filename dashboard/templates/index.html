@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Home{% endblock %}
+
+{% block content %}
+<div x-data="dashboardApp()">
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Total Solicitations</p>
+                    <p class="text-3xl font-bold" x-text="stats.total_solicitations">-</p>
+                </div>
+                <div class="text-4xl">📋</div>
+            </div>
+            <p class="text-sm text-green-600 mt-2">
+                +<span x-text="stats.solicitations_last_week">0</span> this week
+            </p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Generated RFQs</p>
+                    <p class="text-3xl font-bold" x-text="stats.total_rfqs">-</p>
+                </div>
+                <div class="text-4xl">📄</div>
+            </div>
+            <p class="text-sm text-green-600 mt-2">
+                +<span x-text="stats.rfqs_last_week">0</span> this week
+            </p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Vendor Submissions</p>
+                    <p class="text-3xl font-bold" x-text="stats.successful_submissions">-</p>
+                </div>
+                <div class="text-4xl">✉️</div>
+            </div>
+            <p class="text-sm text-green-600 mt-2">
+                +<span x-text="stats.submissions_last_week">0</span> this week
+            </p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Unique Vendors</p>
+                    <p class="text-3xl font-bold" x-text="stats.unique_vendors">-</p>
+                </div>
+                <div class="text-4xl">🏢</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+        <h2 class="text-xl font-bold mb-4">Quick Actions</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <a href="/solicitations"
+                class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg text-center transition">
+                View All Solicitations
+            </a>
+            <a href="/rfqs"
+                class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg text-center transition">
+                Manage RFQs
+            </a>
+            <a href="/automation"
+                class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg text-center transition">
+                Control Automation
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Recent Solicitations -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="p-6 border-b">
+                <h3 class="font-bold text-lg">Recent Solicitations</h3>
+            </div>
+            <div class="p-6">
+                <template x-if="recentSolicitations.length === 0">
+                    <p class="text-gray-500">No solicitations yet</p>
+                </template>
+                <template x-if="recentSolicitations.length > 0">
+                    <div class="space-y-3">
+                        <template x-for="sol in recentSolicitations" :key="sol.contract_id">
+                            <div class="border-l-4 border-blue-500 pl-4 py-2">
+                                <p class="font-semibold" x-text="sol.title"></p>
+                                <p class="text-sm text-gray-500" x-text="sol.contract_id"></p>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- Recent Vendor Submissions -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="p-6 border-b">
+                <h3 class="font-bold text-lg">Recent Vendor Submissions</h3>
+            </div>
+            <div class="p-6">
+                <template x-if="recentVendors.length === 0">
+                    <p class="text-gray-500">No submissions yet</p>
+                </template>
+                <template x-if="recentVendors.length > 0">
+                    <div class="space-y-3">
+                        <template x-for="vendor in recentVendors" :key="vendor.id">
+                            <div class="border-l-4 border-green-500 pl-4 py-2">
+                                <p class="font-semibold" x-text="vendor.vendor_company"></p>
+                                <p class="text-sm text-gray-500" x-text="vendor.product_searched"></p>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function dashboardApp() {
+        return {
+            stats: {},
+            recentSolicitations: [],
+            recentVendors: [],
+
+            init() {
+                this.loadStats();
+                this.loadRecentActivity();
+            },
+
+            async loadStats() {
+                try {
+                    const response = await fetch('/api/dashboard/stats');
+                    const data = await response.json();
+                    if (data.success) {
+                        this.stats = data.data;
+                    } else {
+                        console.error('Stats API error:', data.error);
+                    }
+                } catch (error) {
+                    console.error('Error loading stats:', error);
+                }
+            },
+
+            async loadRecentActivity() {
+                try {
+                    // Load recent solicitations
+                    const solResponse = await fetch('/api/solicitations?limit=5');
+                    const solData = await solResponse.json();
+                    if (solData.success) {
+                        this.recentSolicitations = solData.data;
+                    }
+
+                    // Load recent vendors
+                    const vendorResponse = await fetch('/api/vendors?limit=5');
+                    const vendorData = await vendorResponse.json();
+                    if (vendorData.success) {
+                        this.recentVendors = vendorData.data;
+                    }
+                } catch (error) {
+                    console.error('Error loading recent activity:', error);
+                }
+            }
+        }
+    }
+</script>
+{% endblock %}
