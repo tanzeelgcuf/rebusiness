@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  dashboard:
+    build: .
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./rfq_downloads:/app/rfq_downloads
+      - ./dashboard/logs:/app/dashboard/logs
+      - ./dashboard/rebusiness_automation.db:/app/dashboard/rebusiness_automation.db
+      - ./auth_state.json:/app/auth_state.json
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped

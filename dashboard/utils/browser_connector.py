@@ -3,76 +3,159 @@
 Browser Connector Utility
 Connects to an existing Chrome browser via Chrome DevTools Protocol (CDP)
 to reuse logged-in sessions and avoid IP blocking.
+
+For cloud/server deployment:
+  - Run save_thomasnet_session.py on your Mac to generate auth_state.json
+  - Upload auth_state.json to dashboard/ on the cloud server
+  - The connector will automatically use it for headless submissions
 """
 
+import os
+import time
 import logging
+from pathlib import Path
 from playwright.sync_api import sync_playwright, Browser, Page
 from typing import Optional
 
 logger = logging.getLogger(__name__)
 
+# Default auth_state.json path — always relative to the dashboard/ folder
+_DASHBOARD_DIR = Path(__file__).parent.parent  # dashboard/utils/../ = dashboard/
+DEFAULT_AUTH_STATE = str(_DASHBOARD_DIR / "auth_state.json")
+
 class BrowserConnector:
     """Connects to an existing Chrome instance via CDP"""
     
-    def __init__(self, cdp_url: str = "http://127.0.0.1:9222"):
+    def __init__(self, cdp_url: str = "http://127.0.0.1:9222", session_path: str = None):
         """
         Initialize browser connector
         
         Args:
             cdp_url: Chrome DevTools Protocol URL (default: http://127.0.0.1:9222)
+            session_path: Path to auth_state.json file for server deployment.
+                          Defaults to dashboard/auth_state.json (auto-resolved).
         """
         self.cdp_url = cdp_url
+        self.session_path = session_path or DEFAULT_AUTH_STATE
         self.playwright = None
         self.browser = None
+        self.context = None
         
-    def connect(self) -> tuple[Browser, Page]:
+    def connect(self, headless: bool = True) -> tuple[Browser, Page]:
         """
-        Connect to existing Chrome browser
+        Connect to browser. Attempts CDP first (local), then falls back to session file (server).
         
         Returns:
             Tuple of (browser, page) objects
-            
-        Raises:
-            ConnectionError: If cannot connect to browser
         """
+        import os
+        from pathlib import Path
+        from dotenv import load_dotenv
+        
+        load_dotenv()
+        
+        self.playwright = sync_playwright().start()
+        
+        # 1. Try CDP Connection (Local Debugging)
         try:
-            logger.info(f"Connecting to Chrome at {self.cdp_url}")
+            logger.info(f"Attempting CDP connection to {self.cdp_url}...")
+            self.browser = self.playwright.chromium.connect_over_cdp(self.cdp_url, timeout=5000)
+            logger.info("✓ Connected via CDP successfully")
             
-            self.playwright = sync_playwright().start()
-            self.browser = self.playwright.chromium.connect_over_cdp(self.cdp_url)
-            
-            logger.info("Connected to browser successfully")
-            
-            # Try to get existing page or create new one
             contexts = self.browser.contexts
-            
-            if contexts and len(contexts) > 0:
-                context = contexts[0]
-                pages = context.pages
-                
-                if pages and len(pages) > 0:
-                    page = pages[0]
-                    logger.info(f"Using existing page: {page.url}")
-                else:
-                    page = context.new_page()
-                    logger.info("Created new page in existing context")
+            if contexts:
+                self.context = contexts[0]
+                page = self.context.pages[0] if self.context.pages else self.context.new_page()
             else:
-                # No contexts, create a new one
-                logger.info("No existing contexts, creating new context")
-                context = self.browser.new_context(
-                    viewport={'width': 1440, 'height': 900},
-                    user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
-                )
-                page = context.new_page()
-            
+                self.context = self.browser.new_context()
+                page = self.context.new_page()
             return self.browser, page
-            
         except Exception as e:
-            logger.error(f"Failed to connect to browser: {e}")
-            raise ConnectionError(
-                f"Cannot connect to Chrome at {self.cdp_url}. "
-                "Make sure Chrome is running with --remote-debugging-port=9222"
-            ) from e
+             logger.info(f"CDP connection failed (expected on server): {e}")
+
+        # 2. Try Session File (Server/Cloud Deployment)
+        try:
+            auth_file = Path(self.session_path)
+            if auth_file.exists():
+                logger.info(f"🤖 Headless mode: Using saved session from {auth_file}")
+                
+                # Use Mac User-Agent to match the local capture environment
+                user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
+                
+                # Proxy Configuration
+                proxy_config = None
+                proxy_server = os.getenv("THOMASNET_PROXY_SERVER")
+                
+                # 1. Check Local Gateway (Reverse Tunnel to Mac) - Priority 2
+                if not proxy_server:
+                    try:
+                        import socket
+                        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                        sock.settimeout(0.5)
+                        result = sock.connect_ex(('127.0.0.1', 9999))
+                        if result == 0:
+                            proxy_server = "socks5://127.0.0.1:9999"
+                            logger.info("✅ Found Local Gateway Tunnel (Port 9999). Using it.")
+                        sock.close()
+                    except:
+                        pass
+
+                # 2. Fallback to Custom Proxy Manager - Priority 3
+                if not proxy_server:
+                    try:
+                        from dashboard.utils.proxy_manager import proxy_manager
+                        logger.info("🔄 No static proxy or gateway found. Requesting custom proxy from manager...")
+                        fetched = proxy_manager.get_working_proxy()
+                        if fetched:
+                            proxy_server = fetched
+                            logger.info(f"✅ Using Scraped Proxy: {proxy_server}")
+                    except Exception as e:
+                        logger.error(f"❌ Failed to get custom proxy: {e}")
+                
+                if proxy_server:
+                    logger.info(f"🌐 Using Proxy: {proxy_server}")
+                    proxy_config = {"server": proxy_server}
+                    
+                    # Only add auth if present (scraped proxies usually have none)
+                    username = os.getenv("THOMASNET_PROXY_USERNAME")
+                    password = os.getenv("THOMASNET_PROXY_PASSWORD")
+                    if username and password:
+                         proxy_config["username"] = username
+                         proxy_config["password"] = password
+                
+                self.browser = self.playwright.chromium.launch(
+                    headless=headless,
+                    args=['--no-sandbox', '--disable-dev-shm-usage', '--disable-blink-features=AutomationControlled'],
+                    proxy=proxy_config
+                )
+                self.context = self.browser.new_context(
+                    storage_state=str(auth_file),
+                    viewport={'width': 1920, 'height': 1080},
+                    user_agent=user_agent
+                )
+                page = self.context.new_page()
+                
+                # Check if we need to solve a Captcha on start
+                try:
+                    page.goto(CONFIG.get("thomasnet", {}).get("base_url", "https://www.thomasnet.com"), wait_until="domcontentloaded", timeout=15000)
+                    if page.frame_locator('iframe[title*="DataDome"]').first.is_visible():
+                        logger.warning("⚠️ DataDome Captcha detected on launch!")
+                except:
+                    pass
+                    
+                return self.browser, page
+            else:
+                logger.error(f"No auth_state.json found at {auth_file} and CDP failed.")
+                logger.error(f"Run: python3 save_thomasnet_session.py  (on your Mac) to generate it.")
+                print(f"ERROR: auth_state.json not found at {auth_file}")
+        except Exception as e:
+            logger.error(f"Failed to launch browser with session: {e}")
+
+        raise ConnectionError(
+            "Could not establish browser connection. Ensure either:\n"
+            "1. Chrome is running locally with --remote-debugging-port=9222\n"
+            "2. Or 'auth_state.json' exists for server-side headless mode."
+        )
     
     def validate_thomasnet_login(self, page: Page) -> bool:
         """
@@ -88,8 +171,8 @@ class BrowserConnector:
             # Navigate to ThomasNet if not already there
             if "thomasnet.com" not in page.url:
                 logger.info("Navigating to ThomasNet...")
-                page.goto("https://www.thomasnet.com", timeout=30000)
-                page.wait_for_load_state("networkidle")
+                page.goto("https://www.thomasnet.com", wait_until="domcontentloaded", timeout=30000)
+                time.sleep(2) # Give a moment for scripts to run
             
             # Check for login indicators
             # Common indicators: user menu, account link, logout button
@@ -148,13 +231,15 @@ class BrowserConnector:
 
 
 def connect_to_browser(cdp_url: str = "http://127.0.0.1:9222", 
-                       validate_login: bool = True) -> tuple[Browser, Page, BrowserConnector]:
+                       validate_login: bool = True,
+                       headless: bool = True) -> tuple[Browser, Page, BrowserConnector]:
     """
     Convenience function to connect to browser and optionally validate ThomasNet login
     
     Args:
         cdp_url: Chrome DevTools Protocol URL
         validate_login: Whether to validate ThomasNet login
+        headless: Whether to run in headless mode (ignored for CDP)
         
     Returns:
         Tuple of (browser, page, connector)
@@ -163,7 +248,7 @@ def connect_to_browser(cdp_url: str = "http://127.0.0.1:9222",
         ConnectionError: If cannot connect or not logged in to ThomasNet
     """
     connector = BrowserConnector(cdp_url)
-    browser, page = connector.connect()
+    browser, page = connector.connect(headless=headless)
     
     if validate_login:
         if not connector.validate_thomasnet_login(page):

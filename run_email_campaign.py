@@ -388,15 +388,33 @@ def format_email_body(sol_id, sol_title, product_name, quantity, specs, delivery
     Backward compatible wrapper that detects category and returns subject, plain_body, and html_body.
     Note: Now returns 3 values (subject, body, html).
     """
-    category = "Service"
+    category = "Service" # Default fallback
+    
+    # Combined text for keyword search
+    text_content = (sol_title + " " + (description or "")).lower()
+    
+    # 1. Initial Category from Analysis or NAICS
     if analysis_json:
         try:
              a_data = json.loads(analysis_json)
+             
+             # Start with AI classification if available
              if a_data.get('solicitation_category') == "Product":
                  category = "Product"
-             elif any(x in (sol_title + " " + (description or "")).lower() for x in ['nsn', 'part number', 'supply', 'hardware']):
+             
+             # NAICS Check (31, 32, 33 = Manufacturing/Product)
+             naics = a_data.get('naics_code', '')
+             if naics and str(naics).startswith(('31', '32', '33')):
                  category = "Product"
         except: pass
+        
+    # 2. Strong Keywords (Service) - Overrides NAICS if ambiguous (e.g., "Repair of Equipment")
+    if any(x in text_content for x in ['maintenance', 'service', 'installation', 'repair', 'labor', 'rental', 'janitorial', 'cleaning', 'personnel', 'staffing']):
+        category = "Service"
+        
+    # 3. Product Keywords (only if not already matched as Service in step 2)
+    elif any(x in text_content for x in ['supply', 'deliver', 'hardware', 'equipment', 'parts', 'software', 'license', 'nsn', 'part number', 'procurement of']):
+        category = "Product"
     
     if category == "Product":
         return format_product_email_body(sol_id, sol_title, product_name, quantity, specs, delivery_loc_json, timeline, description, due_date_str, sol_url, analysis_json)

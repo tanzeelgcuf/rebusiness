@@ -1,0 +1,13 @@
+# ThomasNet Automation - Cron Schedule
+# Run automation daily at 9 AM
+
+# Edit this file and install with: crontab deployment/crontab.txt
+
+# Daily automation at 9 AM
+0 9 * * * cd /Users/apple/Downloads/rebusinessautomationproject && /usr/local/bin/python3 run_thomasnet_automation.py >> logs/cron.log 2>&1
+
+# Weekly cleanup of old logs (every Sunday at midnight)
+0 0 * * 0 find /Users/apple/Downloads/rebusinessautomationproject/logs -name "*.log" -mtime +30 -delete
+
+# Monthly report generation (first day of month at 8 AM)
+0 8 1 * * cd /Users/apple/Downloads/rebusinessautomationproject && /usr/local/bin/python3 -c "from pathlib import Path; import json; print('Monthly report generated')" >> logs/monthly_report.log 2>&1

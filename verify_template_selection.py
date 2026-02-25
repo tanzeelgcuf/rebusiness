@@ -65,13 +65,12 @@ def test_category_selection():
         if naics and str(naics).startswith(('31', '32', '33')):
             category = "Product"
             
-        # 2. Strong Keywords (Service)
-        if any(x in title.lower() for x in ['maintenance', 'service', 'installation', 'repair', 'labor']):
+        # 2. Strong Keywords (Service) - Overrides NAICS if ambiguous
+        if any(x in title.lower() for x in ['maintenance', 'service', 'installation', 'repair', 'labor', 'rental']):
             category = "Service"
-        # 3. Product Keywords (only if not already Service)
-        elif any(x in title.lower() for x in ['supply', 'deliver', 'hardware', 'equipment', 'parts']):
-            if category != "Service":
-                category = "Product"
+        # 3. Product Keywords (only if not already Service from step 2)
+        elif any(x in title.lower() for x in ['supply', 'deliver', 'hardware', 'equipment', 'parts', 'software', 'license']):
+            category = "Product"
         
         result = "PASSED" if category == expected else "FAILED"
         print(f"[{result}] Title: '{title}' (NAICS: {naics}) -> Detected: {category} (Expected: {expected})")

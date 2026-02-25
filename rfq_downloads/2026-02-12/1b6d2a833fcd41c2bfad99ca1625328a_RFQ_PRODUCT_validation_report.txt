@@ -1,0 +1,34 @@
+
+============================================================
+RFQ QUALITY VALIDATION REPORT
+============================================================
+Type: PRODUCT
+Date: 2026-02-12T22:56:02.637623
+============================================================
+
+SCORE: 38/100
+Status: ❌ FAIL
+
+============================================================
+DETAILS:
+============================================================
+  content_length................ ✓ 6202 chars
+  sections...................... 9/9 present
+  placeholders.................. ✗ 1 found
+  camp_sable_email.............. ✓ Present
+  gov_emails.................... ✓ None found
+  bold_formatting............... ✓ None
+  emoji_headers................. ✓ Present
+  tables........................ ✓ 2 tables
+  file_size..................... ✓ 40,469 bytes
+  html_artifacts................ ✓ None
+  date_formatting............... ✓ 5 dates
+  clin_table.................... ✗ Invalid/Missing
+
+============================================================
+ISSUES FOUND (2):
+============================================================
+  1. CRITICAL: Found 1 placeholders (limit: 0). Must use specific defaults.
+  2. CLIN table missing or has wrong headers (must have 'Item Description')
+
+============================================================
