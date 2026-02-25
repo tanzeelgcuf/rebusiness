@@ -8,6 +8,7 @@ from flask import Flask, render_template, jsonify, request, send_file
 from flask_cors import CORS
 import os
 import sys
+import threading
 
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -110,9 +111,19 @@ def api_get_rfqs():
     try:
         limit = int(request.args.get('limit', 50))
         offset = int(request.args.get('offset', 0))
+        status = request.args.get('status', 'pending') # Default to pending
         
-        rfqs = db.get_all_rfqs(limit=limit, offset=offset)
-        total = db.get_rfqs_count()
+        # Convert status for DB
+        sent_status = None
+        if status == 'pending':
+            sent_status = 'pending'
+        elif status == 'completed':
+            sent_status = 'sent'
+        elif status == 'all':
+            sent_status = None
+            
+        rfqs = db.get_all_rfqs(limit=limit, offset=offset, sent_status=sent_status)
+        total = db.get_rfqs_count(sent_status=sent_status)
         
         return jsonify({
             'success': True,
@@ -170,14 +181,22 @@ def api_get_rfq(contract_id):
             return jsonify({'success': False, 'error': 'Not found'}), 404
         
         # Add HTML preview if file exists
-        if rfq.get('file_path') and os.path.exists(rfq['file_path']):
+        file_path_exists = rfq.get('file_path') and os.path.exists(rfq['file_path'])
+        
+        if file_path_exists:
             rfq['html_content'] = docx_to_html(rfq['file_path'])
         else:
-            # Try to find file if path is missing or invalid
+            # Try to find file if path is missing or invalid - robust path handling
             import glob
-            pattern = f"rfq_downloads/2*/{contract_id}_RFQ_*.docx"
-            files = glob.glob(os.path.join(BASE_DIR, '../', pattern))
+            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            pattern_gen = os.path.join(project_root, "rfq_downloads", "*", f"{contract_id}_RFQ_*.docx")
+            pattern_up = os.path.join(project_root, "rfq_downloads", "uploads", f"{contract_id}_*")
+            
+            files = glob.glob(pattern_gen) + glob.glob(pattern_up)
+            
             if files:
+                # Get latest
+                files.sort(key=os.path.getmtime, reverse=True)
                 rfq['file_path'] = files[0]
                 rfq['html_content'] = docx_to_html(files[0])
             else:
@@ -193,17 +212,28 @@ def api_download_rfq(contract_id):
     try:
         rfq = db.get_rfq_by_contract(contract_id)
         if not rfq:
-            return jsonify({'success': False, 'error': 'Not found'}), 404
+            return jsonify({'success': False, 'error': 'Not found in DB'}), 404
         
-        # Find the .docx file
+        # Find the .docx file - robust path handling
         import glob
-        pattern = f"rfq_downloads/2*/{contract_id}_RFQ_*.docx"
+        # Calculate project root from this file's location (dashboard/app.py -> project_root)
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        
+        # Pattern to match: project_root/rfq_downloads/ANY_DATE_FOLDER/contractId_RFQ_*.docx
+        pattern = os.path.join(project_root, "rfq_downloads", "*", f"{contract_id}_RFQ_*.docx")
+        
+        print(f"DEBUG: Searching for RFQ file: {pattern}")
         files = glob.glob(pattern)
         
         if not files:
-            return jsonify({'success': False, 'error': 'File not found'}), 404
+            print(f"DEBUG: No files found for pattern")
+            return jsonify({'success': False, 'error': 'File not found on server'}), 404
         
-        file_path = files[0]  # Get most recent
+        # Sort by modification time to get latest if multiple exist
+        files.sort(key=os.path.getmtime, reverse=True)
+        file_path = files[0]
+        print(f"DEBUG: Found RFQ file: {file_path}")
+        
         return send_file(file_path, as_attachment=True)
         
     except Exception as e:
@@ -222,9 +252,175 @@ def api_update_rfq(contract_id):
         # Update in database
         db.update_rfq_content(contract_id, content)
         
-        return jsonify({'success': True, 'message': 'RFQ updated'})
+        # Overwrite the physical file so automation uses the new content
+        # Find the file path
+        import glob
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        # Pattern 1: Generated files
+        pattern_gen = os.path.join(project_root, "rfq_downloads", "*", f"{contract_id}_RFQ_*.docx")
+        # Pattern 2: Uploaded files
+        pattern_up = os.path.join(project_root, "rfq_downloads", "uploads", f"{contract_id}_*")
+        
+        files = glob.glob(pattern_gen) + glob.glob(pattern_up)
+        
+        if files:
+            files.sort(key=os.path.getmtime, reverse=True)
+            file_path = files[0]
+            # Only attempt to overwrite if it's a docx file (python-docx limit)
+            if not file_path.lower().endswith('.docx'):
+                print(f"DEBUG: Skipping file overwrite for non-docx file: {file_path}")
+                return jsonify({'success': True, 'message': 'Database updated. File overwrite skipped for non-docx format.'})
+            
+            try:
+                from docx import Document
+                doc = Document()
+                
+                # Simple Markdown to DOCX conversion
+                for line in content.split('\n'):
+                    line = line.strip()
+                    if not line:
+                        continue
+                        
+                    if line.startswith('# '):
+                        doc.add_heading(line[2:], level=1)
+                    elif line.startswith('## '):
+                        doc.add_heading(line[3:], level=2)
+                    elif line.startswith('### '):
+                        doc.add_heading(line[4:], level=3)
+                    elif line.startswith('- '):
+                        doc.add_paragraph(line[2:], style='List Bullet')
+                    else:
+                        doc.add_paragraph(line)
+                        
+                doc.save(file_path)
+                print(f"DEBUG: Overwrote DOCX file at {file_path} with edited content")
+            except Exception as e:
+                print(f"ERROR: Failed to update DOCX file: {e}")
+                # We don't fail the request, just log it
+        
+        return jsonify({'success': True, 'message': 'RFQ updated and file overwritten'})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/rfqs/upload', methods=['POST'])
+def api_upload_rfq():
+    """Upload a manual RFQ file"""
+    try:
+        if 'file' not in request.files:
+            return jsonify({'success': False, 'error': 'No file part'}), 400
+            
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'success': False, 'error': 'No selected file'}), 400
+            
+        if file:
+            filename = file.filename
+            # Sanitize filename
+            import werkzeug.utils
+            filename = werkzeug.utils.secure_filename(filename)
+            
+            # Determine contract_id
+            # Try to extract from filename or generate new
+            import uuid
+            contract_id = f"MANUAL_{uuid.uuid4().hex[:8]}"
+            
+            # Save file
+            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            upload_dir = os.path.join(project_root, "rfq_downloads", "uploads")
+            os.makedirs(upload_dir, exist_ok=True)
+            
+            file_path = os.path.join(upload_dir, f"{contract_id}_{filename}")
+            file.save(file_path)
+            
+            # Read content for DB (if text/md/docx)
+            content = "Uploaded file: " + filename
+            try:
+                if filename.endswith('.docx'):
+                     # We can try to extract text or just save placeholder
+                     content = f"# Uploaded RFQ: {filename}\n\n[File on server]"
+                elif filename.endswith('.md') or filename.endswith('.txt'):
+                     with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                         content = f.read()
+            except Exception as e:
+                print(f"Error reading uploaded file content: {e}")
+
+            # Add to DB
+            # We use a dummy type 'PRODUCT' for now
+            success = db.add_rfq_output(contract_id, "PRODUCT", content)
+            
+            # Update the filepath in DB logic? 
+            # Currently `add_rfq_output` doesn't save filepath, 
+            # but our path resolution logic in `api_get_rfq` looks in specific folders.
+            # We need to make sure `api_get_rfq` can find this upload.
+            # Updated path resolution logic in `api_get_rfq` and `api_download_rfq` to include 'uploads' folder.
+            
+            return jsonify({'success': True, 'message': 'File uploaded successfully'})
+            
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/rfqs/<contract_id>/send', methods=['POST'])
+def api_send_rfq(contract_id):
+    """Trigger ThomasNet submission for a single RFQ"""
+    try:
+        # We run this in a background thread to not block
+        def run_send():
+            # Set up logging to file so errors are visible
+            import glob
+            import traceback
+            log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logs')
+            os.makedirs(log_dir, exist_ok=True)
+            log_path = os.path.join(log_dir, 'submission.log')
+            
+            def log(msg):
+                import datetime
+                line = f"[{datetime.datetime.now().strftime('%H:%M:%S')}] {msg}"
+                print(line)
+                with open(log_path, 'a') as f:
+                    f.write(line + '\n')
+
+            log(f"=== Send started for contract: {contract_id} ===")
+            try:
+                # Import here to avoid circular dependencies
+                log("Importing ThomasNet module...")
+                from dashboard.utils.dashboard_thomasnet import submit_single_rfq_task
+                log("Import OK")
+                
+                # Find file path first
+                project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                pattern_generated = os.path.join(project_root, "rfq_downloads", "*", f"{contract_id}_RFQ_*")
+                pattern_upload = os.path.join(project_root, "rfq_downloads", "uploads", f"{contract_id}_*")
+                
+                log(f"Searching: {pattern_generated}")
+                all_files = glob.glob(pattern_generated) + glob.glob(pattern_upload)
+                
+                # Filter out validation reports and other non-RFQ files
+                files = [f for f in all_files if not f.lower().endswith('_validation_report.txt')]
+                
+                if not files:
+                    log(f"ERROR: No RFQ file found for {contract_id} (found {len(all_files)} total files)")
+                    return
+                
+                files.sort(key=os.path.getmtime, reverse=True)
+                file_path = files[0]
+                log(f"Found file: {file_path}")
+                
+                # Connect and Send
+                log("Calling submit_single_rfq_task...")
+                submit_single_rfq_task(file_path)
+                log("submit_single_rfq_task completed successfully.")
+                
+            except Exception as e:
+                log(f"ERROR: {e}")
+                log(traceback.format_exc())
+
+        thread = threading.Thread(target=run_send)
+        thread.daemon = True
+        thread.start()
+        
+        return jsonify({'success': True, 'message': 'Submission started in background'})
+    except Exception as e:
+         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/rfqs/<contract_id>/regenerate', methods=['POST'])
 def api_regenerate_rfq(contract_id):

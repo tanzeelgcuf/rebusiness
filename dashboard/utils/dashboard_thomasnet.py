@@ -23,6 +23,11 @@ from ai_agents.ThomasNetAgent.form_filler import RFQFormFiller
 
 logger = logging.getLogger(__name__)
 
+from database_manager import DatabaseManager
+
+# Initialize DB
+db = DatabaseManager()
+
 def find_unprocessed_rfqs() -> List[str]:
     """
     Find RFQ files that haven't been submitted to ThomasNet
@@ -30,38 +35,53 @@ def find_unprocessed_rfqs() -> List[str]:
     Returns:
         List of file paths to unprocessed RFQs
     """
-    # Track processed RFQs
-    processed_file = os.path.join(current_dir, 'thomasnet_processed.txt')
-    
-    processed = set()
-    if os.path.exists(processed_file):
-        with open(processed_file, 'r') as f:
-            processed = set(line.strip() for line in f if line.strip())
-    
     # Find all RFQ files
     pattern = os.path.join(current_dir, "rfq_downloads/2*/*_RFQ_PRODUCT.docx")
     all_rfqs = glob.glob(pattern)
     
-    # Normalize paths for comparison
-    all_rfqs = [os.path.abspath(p) for p in all_rfqs]
-    processed = {os.path.abspath(p) for p in processed}
+    # 1. Check DB for already sent RFQs
+    sent_rfqs = db.get_all_rfqs(limit=1000, sent_status='sent')
+    sent_contract_ids = {r['contract_id'] for r in sent_rfqs}
     
-    # Filter unprocessed
-    unprocessed = [rfq for rfq in all_rfqs if rfq not in processed]
+    # 2. Also check legacy text file for safety
+    processed_file = os.path.join(current_dir, 'thomasnet_processed.txt')
+    processed_paths = set()
+    if os.path.exists(processed_file):
+        with open(processed_file, 'r') as f:
+            processed_paths = set(line.strip() for line in f if line.strip())
+            
+    unprocessed = []
+    for rfq_path in all_rfqs:
+        # Extract contract_id from filename (e.g., "id_RFQ_PRODUCT.docx")
+        filename = os.path.basename(rfq_path)
+        contract_id = filename.split('_')[0]
+        
+        # Check if sent in DB OR in text file
+        if contract_id in sent_contract_ids or os.path.abspath(rfq_path) in processed_paths:
+            continue
+            
+        unprocessed.append(rfq_path)
     
-    skipped_count = len(all_rfqs) - len(unprocessed)
-    if skipped_count > 0:
-        logger.info(f"♻️  RESUMING: Skipped {skipped_count} already processed RFQs")
+    processed_count = len(all_rfqs) - len(unprocessed)
+    if processed_count > 0:
+        logger.info(f"♻️  Skipping {processed_count} already processed RFQs")
     
     logger.info(f"Found {len(unprocessed)} unprocessed RFQs (out of {len(all_rfqs)} total)")
     return unprocessed
 
 def mark_as_processed(rfq_path: str):
-    """Mark an RFQ as processed"""
+    """Mark an RFQ as processed in DB and text file"""
+    # 1. Update DB
+    filename = os.path.basename(rfq_path)
+    contract_id = filename.split('_')[0]
+    # We only have email if we extracted it, but for now mark as sent without specific email
+    db.mark_rfq_sent(contract_id, "thomasnet_batch_submission")
+    
+    # 2. Update text file (legacy backup)
     processed_file = os.path.join(current_dir, 'thomasnet_processed.txt')
     with open(processed_file, 'a') as f:
-        f.write(f"{rfq_path}\n")
-    logger.info(f"Marked as processed: {os.path.basename(rfq_path)}")
+        f.write(f"{os.path.abspath(rfq_path)}\n")
+    logger.info(f"Marked as processed: {filename}")
 
 def extract_product_name(rfq_path: str) -> str:
     """
@@ -73,42 +93,90 @@ def extract_product_name(rfq_path: str) -> str:
     Returns:
         Product name string
     """
+    # If it's a PDF or MD, we use a simpler approach or the filename
+    filename = os.path.basename(rfq_path).lower()
+    
+    if filename.endswith('.md') or filename.endswith('.txt'):
+        try:
+            with open(rfq_path, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
+                # Look for "Item Requested:" or "Product:" or "Subject:"
+                import re
+                patterns = [
+                    r'Item Requested:\s*(.*)',
+                    r'Product:\s*(.*)',
+                    r'Subject:\s*(.*)',
+                    r'Notice ID:.*\n\s*(.*)'
+                ]
+                for pattern in patterns:
+                    match = re.search(pattern, content, re.IGNORECASE)
+                    if match:
+                        product = match.group(1).strip()
+                        if product and len(product) > 3 and not any(skip in product.lower() for skip in ['general information', 'scope']):
+                             logger.info(f"✓ Extracted product from {filename}: '{product}'")
+                             return product
+        except:
+             pass
+    
+    # Filename fallback: try to extract product name from "contractid_RFQ_PRODUCT.docx"
+    try:
+        if '_RFQ_' in filename:
+            product = filename.split('_RFQ_')[1].split('.')[0]
+            if product:
+                return product.replace('_', ' ')
+    except:
+        pass
+
+    if not filename.endswith('.docx'):
+        logger.warning(f"File is not .docx, using generic product name for {filename}")
+        return "Industrial Product"
+
     try:
         from docx import Document
         doc = Document(rfq_path)
         
         # Method 1: Look for "Item Requested:" field (most reliable)
-        for para in doc.paragraphs[:40]:  # Search first 40 paragraphs
+        for para in doc.paragraphs[:60]:  # Search first 60 paragraphs
             text = para.text.strip()
-            if text.startswith('Item Requested:'):
-                # Extract the text after "Item Requested:"
-                product = text.replace('Item Requested:', '').strip()
-                if product:
-                    logger.info(f"✓ Extracted product from 'Item Requested:': '{product}'")
-                    return product
+            # Case-insensitive check and more flexible match
+            if 'item requested' in text.lower():
+                # Extract the text after "Item Requested" or "Item Requested:"
+                import re
+                match = re.search(r'item requested:?\s*(.*)', text, re.IGNORECASE)
+                if match:
+                    product = match.group(1).strip()
+                    if product:
+                        logger.info(f"✓ Extracted product from 'Item Requested:': '{product}'")
+                        return product
         
-        # Method 2: Product name is typically the line RIGHT AFTER "Notice ID:" line
-        for i, para in enumerate(doc.paragraphs[:15]):
+        # Method 2: Product name is typically the line RIGHT AFTER "Notice ID:\" line
+        for i, para in enumerate(doc.paragraphs[:20]):
             text = para.text.strip()
-            if text.startswith('Notice ID:'):
+            if 'notice id' in text.lower():
                 # Get the next non-empty paragraph
-                for j in range(i+1, min(i+5, len(doc.paragraphs))):
+                for j in range(i+1, min(i+8, len(doc.paragraphs))):
                     next_text = doc.paragraphs[j].text.strip()
                     if next_text and len(next_text) > 3:
                         # This should be the product name
                         # Skip if it's a common header/greeting
                         if not any(skip in next_text.lower() for skip in 
-                                 ['dear vendor', 'we are writing', 'your response']):
+                                 ['dear vendor', 'we are writing', 'your response', 'general information']):
                             logger.info(f"✓ Extracted product (from title): '{next_text}'")
                             return next_text
         
         # Fallback: Look for first meaningful paragraph
-        for para in doc.paragraphs[:10]:
+        for para in doc.paragraphs[:15]:
             text = para.text.strip()
-            if text and 10 < len(text) < 150:  # Reasonable product name length
-                if not any(skip in text.lower() for skip in 
-                         ['request for quotation', 'rfq', 'date:', 'contract', 
-                          'camp sable', 'dear vendor', 'notice id', 'we are writing']):
+            # Check for reasonable product name length and avoids short section headers
+            if text and 10 < len(text) < 150:
+                text_lower = text.lower()
+                skip_list = [
+                    'request for quotation', 'rfq', 'date:', 'contract', 
+                    'camp sable', 'dear vendor', 'notice id', 'we are writing',
+                    'general information', 'scope of work', 'background',
+                    'requirements', 'specifications', 'instructions', 'terms and conditions'
+                ]
+                if not any(skip in text_lower for skip in skip_list):
                     logger.info(f"✓ Extracted product (fallback): '{text}'")
                     return text
         
@@ -234,7 +302,9 @@ def run_dashboard_thomasnet_submission(max_vendors: int = 5, cdp_url: str = "htt
     try:
         # Connect to browser
         logger.info("Connecting to browser...")
+        print("DEBUG: Connecting to browser via connect_to_browser...")
         browser, page, connector = connect_to_browser(cdp_url, validate_login=True)
+        print("DEBUG: Browser connected successfully.")
         
         # Find unprocessed RFQs
         unprocessed = find_unprocessed_rfqs()
@@ -256,6 +326,7 @@ def run_dashboard_thomasnet_submission(max_vendors: int = 5, cdp_url: str = "htt
         rfqs_processed = 0
         
         for rfq_path in unprocessed:
+            print(f"DEBUG: Processing RFQ: {rfq_path}")
             result = submit_rfq_to_vendors(page, rfq_path, max_vendors)
             
             if result.get('success'):
@@ -291,6 +362,54 @@ def run_dashboard_thomasnet_submission(max_vendors: int = 5, cdp_url: str = "htt
             'rfqs_processed': 0,
             'vendors_contacted': 0
         }
+
+
+def submit_single_rfq_task(rfq_path: str, max_vendors: int = 5, cdp_url: str = "http://127.0.0.1:9222"):
+    """
+    Run submission for a single RFQ task (intended for background threads)
+    """
+    # Wire ALL loggers to write to submission.log for full visibility
+    log_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'logs')
+    os.makedirs(log_dir, exist_ok=True)
+    log_path = os.path.join(log_dir, 'submission.log')
+
+    file_handler = logging.FileHandler(log_path)
+    file_handler.setLevel(logging.DEBUG)
+    file_handler.setFormatter(logging.Formatter('[%(asctime)s] %(name)s - %(levelname)s - %(message)s', datefmt='%H:%M:%S'))
+
+    # Attach to root so browser_connector, searcher, form_filler all write here
+    root_logger = logging.getLogger()
+    root_logger.addHandler(file_handler)
+    root_logger.setLevel(logging.INFO)
+
+    logger.info(f"=== SINGLE RFQ SUBMISSION: {os.path.basename(rfq_path)} ===")
+
+    conn = None
+    try:
+        logger.info("Connecting to browser (headless via auth_state.json)...")
+        browser, page, conn = connect_to_browser(cdp_url, validate_login=True)
+        logger.info("Browser connected successfully.")
+
+        logger.info("Calling submit_rfq_to_vendors...")
+        result = submit_rfq_to_vendors(page, rfq_path, max_vendors)
+        logger.info(f"Result: {result}")
+
+        if result.get('success'):
+            mark_as_processed(rfq_path)
+            logger.info(f"✅ Submission successful: {result.get('vendors_contacted', 0)} vendors contacted")
+        else:
+            logger.error(f"❌ Submission failed: {result.get('error')}")
+
+    except Exception as e:
+        logger.error(f"Single submission error: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+    finally:
+        if conn:
+            logger.info("Closing browser connection.")
+            conn.close()
+        root_logger.removeHandler(file_handler)
+        file_handler.close()
 
 
 if __name__ == "__main__":

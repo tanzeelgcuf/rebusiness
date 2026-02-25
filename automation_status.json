@@ -1,0 +1,17 @@
+{
+  "status": "RUNNING",
+  "start_time": "2026-02-12T20:54:09.555327",
+  "end_time": "2026-02-19T20:54:09.555327",
+  "current_time": "2026-02-12T20:54:09.555498",
+  "elapsed_hours": 0.0,
+  "remaining_hours": 168.0,
+  "duration_days": 7,
+  "check_interval_minutes": 180,
+  "cycles_completed": 0,
+  "rfqs_generated": 0,
+  "vendors_contacted": 0,
+  "test_mode": true,
+  "last_update": "2026-02-12T20:54:09.555498",
+  "log_file": "logs/weekly_automation/weekly_20260212_205409.log",
+  "errors": []
+}

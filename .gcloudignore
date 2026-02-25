@@ -1,0 +1,47 @@
+.gcloudignore
+.git
+.gitignore
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Large junk HTML files (thousands of files, not needed on server)
+page_source_*.html
+temp_*.html
+google_search_fail_*.html
+google_search_fail_*.png
+google_search_error_*.png
+ddg_search_*.png
+ddg_search_error_*.png
+
+# Large log files
+*.log
+enrichment*.log
+campaign_run*.log
+main_pipeline*.log
+
+# Local databases (server will create its own)
+*.db
+
+# Large installer
+pandoc-*.pkg
+
+# Browser automation artifacts
+selenium_profile/
+screenshots/
+downloads/
+
+# RFQ downloads (large, regenerated on server)
+rfq_downloads/
+
+# Debug/test screenshots
+debug_*.png
+debug_*.html
+nexxt_*.png
+nexxt_*.html
+sam_*.png
+sam_*.html
+thomasnet_debug.*
+error_state.png
+image.png

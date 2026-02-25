@@ -5,7 +5,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Optional, Generator
 
-from playwright_stealth import Stealth
+from playwright_stealth import stealth_sync
 
 from playwright.sync_api import sync_playwright, Page, Browser, BrowserContext, Playwright
 # ... (rest of imports)
@@ -93,25 +93,25 @@ class ThomasNetAuth:
             "--ignore-certificate-errors",
             "--disable-extensions",
             "--disable-dev-shm-usage",
+            "--disable-accelerated-2d-canvas",
+            "--disable-gpu",
         ]
 
-        # Use persistent context to save session/cookies
-        user_data_dir = Path(__file__).parent / "chrome_profile"
-        user_data_dir.mkdir(exist_ok=True)
-        
         # Prepare proxy config if available
         proxy_config = None
         if self.proxy_url:
             proxy_config = {"server": self.proxy_url}
-            # If using authenticated proxy, username/pass are usually in the URL
-            # e.g. http://user:pass@host:port
             logger.info(f"Using proxy: {self.proxy_url}")
 
-        self.context = browser_type.launch_persistent_context(
-            user_data_dir=user_data_dir,
+        # Use regular browser launch (persistent context causes Chrome crashes)
+        self.browser = browser_type.launch(
             headless=self.headless,
             args=args,
-            proxy=proxy_config,
+            proxy=proxy_config
+        )
+        
+        # Create a new context with anti-detection settings
+        self.context = self.browser.new_context(
             user_agent=user_agent,
             viewport={'width': 1440, 'height': 900},
             locale="en-US",
@@ -119,24 +119,41 @@ class ThomasNetAuth:
             permissions=["geolocation"]
         )
         
-        self.browser = None # persistent context manages browser process
-        
         # Add init script to remove webdriver property
         self.context.add_init_script("""
+            // Remove webdriver property
             Object.defineProperty(navigator, 'webdriver', {
                 get: () => undefined
             });
+            
+            // Override the navigator.plugins to avoid detection
+            Object.defineProperty(navigator, 'plugins', {
+                get: () => [1, 2, 3, 4, 5]
+            });
+            
+            // Override chrome property
+            window.chrome = {
+                runtime: {}
+            };
+            
+            // Override permissions
+            const originalQuery = window.navigator.permissions.query;
+            window.navigator.permissions.query = (parameters) => (
+                parameters.name === 'notifications' ?
+                    Promise.resolve({ state: Notification.permission }) :
+                    originalQuery(parameters)
+            );
         """)
         
         # Set default timeout
         self.context.set_default_timeout(CONFIG["thomasnet"]["browser_timeout"])
         
-        self.page = self.context.pages[0] if self.context.pages else self.context.new_page()
+        # Create new page
+        self.page = self.context.new_page()
         
-        # Apply stealth only for Chromium
-        if CONFIG["thomasnet"].get("browser_type", "chromium") == "chromium":
-            Stealth().apply_stealth_sync(self.page) 
-            
+        # Apply Stealth
+        stealth_sync(self.page)
+        
         return self.page
 
     def login(self) -> bool:
@@ -151,7 +168,12 @@ class ThomasNetAuth:
 
         logger.info("Navigate to login page...")
         try:
-            self.page.goto(CONFIG["thomasnet"]["login_url"])
+            # First navigate to blank page to clear any default URL (fixes automationcontrolled issue)
+            self.page.goto("about:blank", wait_until="domcontentloaded")
+            
+            # Now navigate to actual login URL
+            self.page.goto(CONFIG["thomasnet"]["login_url"], wait_until="domcontentloaded")
+
             
             # Check if already logged in (redirected to home or dashboard)
             if "login" not in self.page.url:
@@ -280,6 +302,8 @@ class ThomasNetAuth:
 
     def close(self):
         """Close browser resources."""
+        if self.page:
+            self.page.close()
         if self.context:
             self.context.close()
         if self.browser:

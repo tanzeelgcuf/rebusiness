@@ -30,3 +30,6 @@ page_source_*.html
 *.png
 *.webp
 !leads.csv
+
+# ThomasNet session (contains login cookies - never commit)
+dashboard/auth_state.json
