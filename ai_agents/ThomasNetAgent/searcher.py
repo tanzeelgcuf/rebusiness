@@ -428,7 +428,7 @@ if __name__ == "__main__":
     # but we can try search without login for some sites
     from auth import ThomasNetAuth
     
-    with ThomasNetAuth(headless=False) as auth:
+    with ThomasNetAuth(headless=True) as auth:
         # auth.start_browser() # Already started in __enter__
         search = ThomasNetSearch(auth.page)
         results = search.search_vendors("fasteners", max_results=5)

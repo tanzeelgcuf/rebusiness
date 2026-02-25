@@ -103,7 +103,7 @@ class ProxiflyManager:
             
         return False
 
-    def get_working_proxy(self, protocols=None, max_attempts=15, us_only=False):
+    def get_working_proxy(self, protocols=None, max_attempts=40, us_only=False):
         """
         Fetches proxies, shuffles them, and tests them until one works.
         Returns a dictionary suitable for Playwright's proxy configuration, or None.
