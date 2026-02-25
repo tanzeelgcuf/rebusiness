@@ -22,6 +22,8 @@ from config import GEMINI_API_KEY
 # Lazy load genai to prevent startup timeouts
 # import google.generativeai as genai
 
+from proxy_manager import ProxiflyManager
+
 class ThomasNetAgent:
     """
     Agent for finding wholesalers/manufacturers by directly searching Thomasnet.com.
@@ -83,11 +85,21 @@ class ThomasNetAgent:
                 except Exception as cdp_error:
                     print(f"  CDP connection failed: {cdp_error}")
                     print("  Falling back to regular Chrome launch...")
+                    
+                    # Fetch proxy if available
+                    pm = ProxiflyManager(test_url="https://www.thomasnet.com", timeout=8)
+                    proxy_config = pm.get_working_proxy(protocols=['http', 'socks5'], us_only=True)
+                    if not proxy_config:
+                        print("  Warning: No working proxy found, proceeding without proxy.")
+                    else:
+                        print(f"  Using proxy: {proxy_config['server']}")
+
                     # Fallback: regular launch without persistent context
                     browser = p.chromium.launch(
                         headless=False,
                         channel="chrome",
-                        args=['--disable-blink-features=AutomationControlled']
+                        args=['--disable-blink-features=AutomationControlled'],
+                        proxy=proxy_config
                     )
                     context = browser.new_context(
                         viewport={'width': 1366, 'height': 768}
@@ -475,10 +487,19 @@ Contact: {IDENTITY['EMAIL']}
                 user_data_dir = os.path.join(tempfile.gettempdir(), f"thomasnet_chrome_{uuid.uuid4()}")
                 os.makedirs(user_data_dir, exist_ok=True)
                 
+                # Fetch proxy if available
+                pm = ProxiflyManager(test_url="https://www.thomasnet.com", timeout=8)
+                proxy_config = pm.get_working_proxy(protocols=['http', 'socks5'], us_only=True)
+                if not proxy_config:
+                    print("  Warning: No working proxy found, proceeding without proxy.")
+                else:
+                     print(f"  Using proxy: {proxy_config['server']}")
+
                 # Launch options - Use regular Firefox launch (not persistent context)
                 browser = p.firefox.launch(
                     headless=False,  # Show browser for manual login
-                    args=['--disable-blink-features=AutomationControlled']
+                    args=['--disable-blink-features=AutomationControlled'],
+                    proxy=proxy_config
                 )
                 
                 browser_context = browser.new_context(
