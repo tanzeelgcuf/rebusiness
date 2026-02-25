@@ -5,9 +5,10 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Optional, Generator
 
-from playwright_stealth import stealth_sync
+from playwright_stealth import stealth
 
 from playwright.sync_api import sync_playwright, Page, Browser, BrowserContext, Playwright
+from proxy_manager import ProxiflyManager
 # ... (rest of imports)
 
 # ... (inside ThomasNetAuth class)
@@ -101,7 +102,17 @@ class ThomasNetAuth:
         proxy_config = None
         if self.proxy_url:
             proxy_config = {"server": self.proxy_url}
-            logger.info(f"Using proxy: {self.proxy_url}")
+            logger.info(f"Using environment proxy: {self.proxy_url}")
+        else:
+            # Fallback to Proxifly open source proxies
+            logger.info("No environment proxy set, attempting to fetch from Proxifly...")
+            pm = ProxiflyManager(test_url="https://www.thomasnet.com", timeout=8)
+            fetched_proxy = pm.get_working_proxy(protocols=['http', 'socks5'], us_only=True)
+            if fetched_proxy:
+                proxy_config = fetched_proxy
+                logger.info(f"Using fetched proxy: {proxy_config['server']}")
+            else:
+                logger.warning("No working proxy found from Proxifly, proceeding without proxy.")
 
         # Use regular browser launch (persistent context causes Chrome crashes)
         self.browser = browser_type.launch(
@@ -152,7 +163,7 @@ class ThomasNetAuth:
         self.page = self.context.new_page()
         
         # Apply Stealth
-        stealth_sync(self.page)
+        stealth(self.page)
         
         return self.page
 
