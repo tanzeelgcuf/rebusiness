@@ -5,7 +5,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Optional, Generator
 
-from playwright_stealth import stealth
+from playwright_stealth import Stealth
 
 from playwright.sync_api import sync_playwright, Page, Browser, BrowserContext, Playwright
 from proxy_manager import ProxiflyManager
@@ -163,7 +163,7 @@ class ThomasNetAuth:
         self.page = self.context.new_page()
         
         # Apply Stealth
-        stealth(self.page)
+        Stealth().apply_stealth_sync(self.page)
         
         return self.page
 
