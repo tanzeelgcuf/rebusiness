@@ -5,7 +5,9 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Optional, Generator
 
+from urllib.parse import urlparse
 from playwright_stealth import Stealth
+from captcha_solver import DataDomeSolver, detect_datadome
 
 from playwright.sync_api import sync_playwright, Page, Browser, BrowserContext, Playwright
 from proxy_manager import ProxiflyManager
@@ -68,104 +70,123 @@ class ThomasNetAuth:
         self.browser: Optional[Browser] = None
         self.context: Optional[BrowserContext] = None
         self.page: Optional[Page] = None
+        
+        self.proxy_config: Optional[dict] = None
+        self.solver: Optional[DataDomeSolver] = None
+        
+        api_key = os.getenv("TWO_CAPTCHA_API_KEY")
+        if api_key and os.getenv("THOMASNET_SOLVER_ENABLED") == "True":
+            self.solver = DataDomeSolver(api_key)
+            logger.info("2Captcha solver enabled.")
 
     def start_browser(self) -> Page:
         """Start browser and return a page object."""
         self.playwright = sync_playwright().start()
         
+        # Prepare proxy config
+        proxy_config = None
+        if self.proxy_url:
+            parsed = urlparse(self.proxy_url)
+            proxy_config = {
+                "server": f"{parsed.scheme}://{parsed.hostname}:{parsed.port}",
+                "username": parsed.username,
+                "password": parsed.password
+            }
+            logger.info(f"Using proxy: {proxy_config['server']}")
+
+        logger.info("Launching browser...")
+        # Get browser type from config or default to chromium
         browser_type_name = CONFIG["thomasnet"].get("browser_type", "chromium").lower()
-        
         if browser_type_name == "firefox":
             browser_type = self.playwright.firefox
-        elif browser_type_name == "webkit":
-            browser_type = self.playwright.webkit
         else:
             browser_type = self.playwright.chromium
 
-        # Recent User Agent for Mac (Chrome 121)
-        user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
-        
-        args = [
-            "--disable-blink-features=AutomationControlled",
-            "--no-sandbox",
-            "--disable-setuid-sandbox",
-            "--disable-infobars",
-            "--window-position=0,0",
-            "--ignore-certificate-errors",
-            "--disable-extensions",
-            "--disable-dev-shm-usage",
-            "--disable-accelerated-2d-canvas",
-            "--disable-gpu",
-        ]
-
-        # Prepare proxy config if available
-        proxy_config = None
-        if self.proxy_url:
-            proxy_config = {"server": self.proxy_url}
-            logger.info(f"Using environment proxy: {self.proxy_url}")
-        else:
-            # Fallback to Proxifly open source proxies
-            logger.info("No environment proxy set, attempting to fetch from Proxifly...")
-            pm = ProxiflyManager(test_url="https://www.thomasnet.com", timeout=8)
-            fetched_proxy = pm.get_working_proxy(protocols=['http', 'socks5'], us_only=True)
-            if fetched_proxy:
-                proxy_config = fetched_proxy
-                logger.info(f"Using fetched proxy: {proxy_config['server']}")
-            else:
-                logger.warning("No working proxy found from Proxifly, proceeding without proxy.")
-
-        # Use regular browser launch (persistent context causes Chrome crashes)
         self.browser = browser_type.launch(
             headless=self.headless,
-            args=args,
-            proxy=proxy_config
+            proxy=proxy_config,
+            args=[
+                "--disable-blink-features=AutomationControlled",
+                "--no-sandbox",
+                "--disable-dev-shm-usage"
+            ]
         )
         
-        # Create a new context with anti-detection settings
+        # Create a new context with advanced anti-detection settings
         self.context = self.browser.new_context(
-            user_agent=user_agent,
-            viewport={'width': 1440, 'height': 900},
+            user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+            viewport={'width': 1920, 'height': 1080},
             locale="en-US",
-            timezone_id="America/New_York",
-            permissions=["geolocation"]
+            timezone_id="America/Denver",
         )
         
-        # Add init script to remove webdriver property
+        # Robust Init Script
         self.context.add_init_script("""
-            // Remove webdriver property
-            Object.defineProperty(navigator, 'webdriver', {
-                get: () => undefined
-            });
-            
-            // Override the navigator.plugins to avoid detection
-            Object.defineProperty(navigator, 'plugins', {
-                get: () => [1, 2, 3, 4, 5]
-            });
-            
-            // Override chrome property
-            window.chrome = {
-                runtime: {}
-            };
-            
-            // Override permissions
-            const originalQuery = window.navigator.permissions.query;
-            window.navigator.permissions.query = (parameters) => (
-                parameters.name === 'notifications' ?
-                    Promise.resolve({ state: Notification.permission }) :
-                    originalQuery(parameters)
-            );
+            Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+            Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });
+            Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] });
+            window.chrome = { runtime: {} };
         """)
         
-        # Set default timeout
-        self.context.set_default_timeout(CONFIG["thomasnet"]["browser_timeout"])
-        
-        # Create new page
+        logger.info("Creating page...")
         self.page = self.context.new_page()
         
-        # Apply Stealth
+        logger.info("Applying stealth...")
         Stealth().apply_stealth_sync(self.page)
         
+        self.proxy_config = proxy_config
+        
         return self.page
+
+    def bypass_captcha(self, retries: int = 2) -> bool:
+        """
+        Detects if a DataDome captcha is present and attempts to solve it.
+        """
+        if not self.solver or not self.page:
+            return False
+            
+        # Small wait for the anti-bot script to execute and trigger the challenge
+        time.sleep(3)
+        
+        for attempt in range(retries):
+            if detect_datadome(self.page):
+                logger.warning(f"DataDome Captcha detected (Attempt {attempt+1})! Initiating automated solver...")
+                try:
+                    # Solve the captcha
+                    token = self.solver.solve_datadome(
+                        page_url=self.page.url,
+                        user_agent=self.context.browser.user_agent() if self.context.browser else "Mozilla/5.0",
+                        proxy=self.proxy_config
+                    )
+                    
+                    # Inject the solved cookie
+                    logger.info("Injecting solved DataDome cookie...")
+                    self.context.add_cookies([{
+                        'name': 'datadome',
+                        'value': token,
+                        'domain': '.thomasnet.com',
+                        'path': '/'
+                    }])
+                    
+                    # Reload the page to apply the cookie
+                    logger.info("Cookie injected. Reloading page...")
+                    self.page.reload(wait_until="domcontentloaded")
+                    time.sleep(3) # Wait for reload and new challenge check
+                    
+                    # Check if still blocked
+                    if not detect_datadome(self.page):
+                        logger.info("✅ DataDome captcha successfully bypassed!")
+                        return True
+                    else:
+                        logger.warning("Block persists after solve. Retrying...")
+                    
+                except Exception as e:
+                    logger.error(f"Failed to bypass DataDome on attempt {attempt+1}: {e}")
+                    time.sleep(2)
+            else:
+                # No captcha detected
+                return False
+        return False
 
     def login(self) -> bool:
         """
@@ -184,6 +205,9 @@ class ThomasNetAuth:
             
             # Now navigate to actual login URL
             self.page.goto(CONFIG["thomasnet"]["login_url"], wait_until="domcontentloaded")
+            
+            # Check for DataDome immediately
+            self.bypass_captcha()
 
             
             # Check if already logged in (redirected to home or dashboard)
