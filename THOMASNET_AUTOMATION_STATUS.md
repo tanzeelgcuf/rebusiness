@@ -25,14 +25,12 @@ While the proxy engine works, the script currently fails on the live server ("Se
 - Free proxies were tested (40+ attempts) but are either dead, too slow, or already banned by DataDome.
 - The automation works perfectly on `localhost` because personal WiFi networks use **Residential IPs**, which DataDome trusts.
 
-## Next Steps to Resume
-To get the ThomasNet automation running reliably on the live server without CAPTCHA blocks, the following steps must be taken:
-
-1. **Acquire a Residential Proxy:**
-   - Purchase access to a commercial Residential Proxy network (e.g., IPRoyal, Smartproxy, or BrightData). A Pay-As-You-Go plan is recommended.
-   
-2. **Update the Proxy Configuration:**
-   - Instead of fetching free proxies via `proxy_manager.py`, hardcode or pass the purchased proxy credentials (Host, Port, Username, Password) into the dashboard's environment variables or `auth.py`.
+## Next Steps to- **Residential Proxy (IPRoyal) + 2Captcha**: Successfully integrated (Mar 28, 2026).
+    - **Current Result**: ❌ **Hard Block** (Access Restricted).
+    - **Observed Behavior**: ThomasNet is now blocking the Playwright browser fingerprint directly, bypassing the captcha stage and issuing a "Temporarily Restricted" error even with residential IPs.
+- **Next Proposed Action**:
+    1.  **Manual Seed**: Run with `headless: False` once to solve the block manually and save the session cookies.
+    2.  **Scraper API**: Transition to **ZenRows** or **ScrapingBee** to handle the browser fingerprinting and bypass entirely.
 
 3. **Verify Execution on Server:**
    - Run a test RFQ submission from the server to ensure the residential proxy bypasses DataDome and successfully finds the search box.

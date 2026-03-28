@@ -27,9 +27,14 @@ selenium_profile/
 *.pptx
 *.ppt
 page_source_*.html
+temp_*.html
+*.pkg
 *.png
+*.jpg
+*.jpeg
 *.webp
 !leads.csv
 
 # ThomasNet session (contains login cookies - never commit)
 dashboard/auth_state.json
+auth_state.json
