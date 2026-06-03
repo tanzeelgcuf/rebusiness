@@ -10,7 +10,7 @@ We are writing to request a formal quote for the supply and delivery of a Coolin
 
 Your response is needed on or before January 14, 2026 in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -165,7 +165,7 @@ To be accepted, each site must:
 
 ### Submission Method & Contact
 - Format: Electronically
-- Recipient: john@campsable.com
+- Recipient: bobbysmitty078@gmail.com
 - Subject line: Quote for SPE8E926T1141 - COOLING COIL,AIR,DU
 - Deadline: January 14, 2026
 
@@ -216,7 +216,7 @@ Not Included in This Solicitation - This is a single delivery contract with no o
 5. Work locations: W1A8 DLA DIST SAN JOAQUIN.
 6. Product must meet NSN and approved source specifications for quality and performance.
 7. Not applicable for product procurement.
-8. Submit quote by January 14, 2026, electronically to john@campsable.com.
+8. Submit quote by January 14, 2026, electronically to bobbysmitty078@gmail.com.
 
 ---
 
@@ -226,7 +226,7 @@ Not Included in This Solicitation - This is a single delivery contract with no o
 - [ ] Confirm ability to source from approved manufacturers (87103 19-80-2620M1 or 96169 19-80-2620M1).
 - [ ] Commit to delivery within 120 Days ADO.
 - [ ] Ensure delivery to W1A8 DLA DIST SAN JOAQUIN.
-- [ ] Submit quote electronically to john@campsable.com.
+- [ ] Submit quote electronically to bobbysmitty078@gmail.com.
 - [ ] Submit quote by January 14, 2026.
 - [ ] Review solicitation SPE8E926T1141 for full details.
 - [ ] Acknowledge the requirement for electronic submission.

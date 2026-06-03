@@ -8,7 +8,7 @@ We are writing to request a formal quote for Design-Build/Design-Bid-Build gener
 
 Your response is needed on or before Jan 22, 2026 2:00 PM EST in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -161,7 +161,7 @@ To be accepted, each site must:
 
 ### Submission Method & Contact
 - Format: Electronic proposals (.pdf format) via the PIEE Solicitation Module.
-- Recipient: john@campsable.com
+- Recipient: bobbysmitty078@gmail.com
 - Subject line: RFQ N4008025R9500 - P691 Phase II Aircraft Development and Maintenance Facility Quote
 - Deadline: Jan 22, 2026 2:00 PM EST
 

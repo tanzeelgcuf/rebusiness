@@ -40,13 +40,13 @@ class TestRFQGeneration(unittest.TestCase):
         """Test Case 3, 4, 5: Prompt Integrity Checks"""
         # Ensure Critical Rules are in Product Prompt
         self.assertIn("Internal deadline calculated (4 business days before official)", PRODUCT_RFQ_PROMPT)
-        self.assertIn("john@campsable.com", PRODUCT_RFQ_PROMPT)
+        self.assertIn("bobbysmitty078@gmail.com", PRODUCT_RFQ_PROMPT)
         self.assertIn("NO OTHER BOLD", PRODUCT_RFQ_PROMPT)
         self.assertIn("PRODUCT RFQ SPECIFIC REQUIREMENTS", PRODUCT_RFQ_PROMPT)
         
         # Ensure Critical Rules are in Service Prompt
         self.assertIn("Internal deadline calculated (4 business days before official)", SERVICE_RFQ_PROMPT)
-        self.assertIn("john@campsable.com", SERVICE_RFQ_PROMPT)
+        self.assertIn("bobbysmitty078@gmail.com", SERVICE_RFQ_PROMPT)
         self.assertIn("NO OTHER BOLD", SERVICE_RFQ_PROMPT)
         self.assertIn("SERVICE RFQ SPECIFIC REQUIREMENTS", SERVICE_RFQ_PROMPT)
 

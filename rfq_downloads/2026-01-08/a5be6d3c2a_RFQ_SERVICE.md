@@ -10,7 +10,7 @@ We are writing to request a formal quote for rock purchase and delivery for hard
 
 Your response is needed on or before Jan 19, 2026 in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -166,7 +166,7 @@ To be accepted, each site must:
 
 ### Submission Method & Contact
 - Format: Electronic submission (e.g., email)
-- Recipient: john@campsable.com
+- Recipient: bobbysmitty078@gmail.com
 - Subject line: Quote for W912DQ26QA013 Rock Purchase and Delivery
 - Deadline: Jan 19, 2026
 
@@ -220,7 +220,7 @@ Not Included in This Solicitation - This is a single procurement contract with n
 5. Work locations include a stockpile at 39.20669, -93.74892 (From Missouri Hwy. 24, north on Northrup Road), for hardpoints along the Missouri River at mile 314.1-B and 308.2.
 6. Quality and performance standards require delivery of correct rock types and quantities, meeting daily minimum delivery rates for Type 1 rock, by specified haul methods.
 7. Wage compliance: Not specified in solicitation (no specific wage determination mentioned).
-8. Submission deadline and method: Submit quotes to john@campsable.com by Jan 19, 2026.
+8. Submission deadline and method: Submit quotes to bobbysmitty078@gmail.com by Jan 19, 2026.
 
 ---
 
@@ -233,7 +233,7 @@ Not Included in This Solicitation - This is a single procurement contract with n
 - [ ] Confirm ability to meet 1000-ton minimum Delivery Rate per day for Type 1 rock.
 - [ ] Confirm delivery using Straight Trucks Only (no trailers).
 - [ ] Confirm delivery to the specified stockpile location in Missouri.
-- [ ] Submit quote by Jan 19, 2026 to john@campsable.com.
+- [ ] Submit quote by Jan 19, 2026 to bobbysmitty078@gmail.com.
 - [ ] Review complete specifications in the original solicitation attachment.
 - [ ] Address all costs associated with rock purchase, loading, transport, and delivery.
 - [ ] Ensure compliance with all applicable transportation regulations.

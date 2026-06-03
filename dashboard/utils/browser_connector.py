@@ -160,13 +160,14 @@ class BrowserConnector:
     def validate_thomasnet_login(self, page: Page) -> bool:
         """
         Check if ThomasNet is logged in on the given page
-        
+
         Args:
             page: Playwright page object
-            
+
         Returns:
             True if logged in, False otherwise
         """
+        import time  # Ensure time is available in method scope
         try:
             # Navigate to ThomasNet if not already there
             if "thomasnet.com" not in page.url:

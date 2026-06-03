@@ -8,7 +8,7 @@ We are writing to request a formal quote for B433 Lift Station Utility Repair an
 
 Your response is needed on or before January 9, 2026 11:00 AM CST in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -158,7 +158,7 @@ To be accepted, each site must:
 
 ### Submission Method & Contact
 - Format: Email
-- Recipient: john@campsable.com
+- Recipient: bobbysmitty078@gmail.com
 - Subject line: Quote for FA460026Q0008 - B433 Lift Station Utility Repair
 - Deadline: January 9, 2026 11:00 AM CST
 
@@ -212,7 +212,7 @@ Not Included in This Solicitation - This is a fixed duration contract with no op
 5.  All work must be conducted at Offutt Air Force Base, specifically at 106 Peacekeeper Dr Bldg 3 Ste 2N3, Offutt AFB, NE 68113-4019, United States.
 6.  Ensure all work is completed in a neat, substantial, and competent manner, with satisfactory installation proven by startup and leak testing, and meeting all specified acceptance criteria.
 7.  Comply strictly with the Service Contract Labor Standards (FAR 52.222-41) and Minimum Wages for Contractor Workers under Executive Order 14026 (FAR 52.222-55), using the attached Wage Determination for reference.
-8.  Submit your formal quote electronically via email to john@campsable.com by January 9, 2026, 11:00 AM CST, with the specified subject line.
+8.  Submit your formal quote electronically via email to bobbysmitty078@gmail.com by January 9, 2026, 11:00 AM CST, with the specified subject line.
 
 ---
 
@@ -230,7 +230,7 @@ Not Included in This Solicitation - This is a fixed duration contract with no op
 - [ ] Coordinate closely with Government personnel for system operations, access, and to avoid traffic disruption, providing 15-day notice for utility interruptions.
 - [ ] Obtain all necessary base identification, vehicle passes, and Common Access Cards (CACs) for personnel requiring access.
 - [ ] Dispose of all project waste and removed equipment off-Base in accordance with Offutt AFB Environmental Special Conditions.
-- [ ] Submit your quote via email to john@campsable.com by January 9, 2026, 11:00 AM CST, using the subject line: "Quote for FA460026Q0008 - B433 Lift Station Utility Repair".
+- [ ] Submit your quote via email to bobbysmitty078@gmail.com by January 9, 2026, 11:00 AM CST, using the subject line: "Quote for FA460026Q0008 - B433 Lift Station Utility Repair".
 
 ---
 

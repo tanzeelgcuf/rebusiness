@@ -10,7 +10,7 @@ We are writing to request a formal quote for demolition and removal services. Ca
 
 Your response is needed on or before Jan 15, 2026 12:00 PM CST in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -162,7 +162,7 @@ To be accepted, each site must:
 
 ### Submission Method & Contact
 - Format: Email
-- Recipient: john@campsable.com
+- Recipient: bobbysmitty078@gmail.com
 - Subject line: ACQR6129375 - Quote for Demolish Vacant Barracks Buildings 532 and 132H
 - Deadline: Jan 15, 2026 12:00 PM CST
 
@@ -213,7 +213,7 @@ Not Included in This Solicitation - This is a Sources Sought notice and specific
 5. Work location is Naval Station Great Lakes, Great Lakes, IL.
 6. Quality performance standards include systematic demolition, environmental adherence, and restoration of the site to a clean, level condition.
 7. Wage compliance details are not specified in this Sources Sought notice.
-8. Submit your quote electronically to john@campsable.com, including the Contractor Information Form and a Capabilities Statement.
+8. Submit your quote electronically to bobbysmitty078@gmail.com, including the Contractor Information Form and a Capabilities Statement.
 
 ---
 
@@ -230,7 +230,7 @@ Not Included in This Solicitation - This is a Sources Sought notice and specific
 - [ ] Explain your process for site restoration, including backfilling, compacting, grading, and seeding.
 - [ ] Specifically address the requirement to pump out the flooded basement of Building 532.
 - [ ] Provide a preliminary pricing estimate for the entire scope of work.
-- [ ] Submit all required documents to john@campsable.com by Jan 15, 2026 12:00 PM CST.
+- [ ] Submit all required documents to bobbysmitty078@gmail.com by Jan 15, 2026 12:00 PM CST.
 
 ---
 

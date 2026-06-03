@@ -8,7 +8,7 @@ We are writing to request a formal quote for Medical Equipment and Furnishings, 
 
 Your response is needed on or before January 16, 2026 3:00 PM EST in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -158,7 +158,7 @@ To be accepted, each site must:
 
 ### Submission Method & Contact
 - Format: Quotes in PDF format are preferred via email.
-- Recipient: john@campsable.com
+- Recipient: bobbysmitty078@gmail.com
 - Subject line: RFQ 75H70126Q00008 - IT SaaS Medical Equipment Planning Software Quote
 - Deadline: January 16, 2026 3:00 PM EST
 
@@ -213,14 +213,14 @@ Total Base Contract Price for A software license for medical equipment and FF&E 
 5. The place of acceptance is IHS Office of Environmental Health and Engineering, 5600 Fishers Lane, Rockville, MD 20857.
 6. The software must meet all Section 3 SOO features for acceptance and comply with MILSTD 1682 for medical equipment planning. Compliance with HHS EIT accessibility standards (Section 508) is mandatory.
 7. Adhere to the Wage Determination Montgomery Cty, MD 2015-4269 dated 2025 12 03, including minimum hourly rates ($17.75/hr or $13.30/hr as per EO 14026/13658 or higher WD rate), health & welfare, vacation, holidays, and paid sick leave requirements.
-8. Submit your quote in PDF format via email to john@campsable.com by January 16, 2026 3:00 PM EST, including a cover letter with POC and UEI, acknowledgment of amendments, pricing for all line items, and information on Section 508 compliance.
+8. Submit your quote in PDF format via email to bobbysmitty078@gmail.com by January 16, 2026 3:00 PM EST, including a cover letter with POC and UEI, acknowledgment of amendments, pricing for all line items, and information on Section 508 compliance.
 
 ---
 
 ## 🟩 Key Takeaways for Bidder
 
 - [ ] Quote is due by January 16, 2026 3:00 PM EST.
-- [ ] Email quotes to john@campsable.com in PDF format.
+- [ ] Email quotes to bobbysmitty078@gmail.com in PDF format.
 - [ ] Include a cover letter with your company's Name, Phone, Email POC, and UEI number.
 - [ ] Acknowledge all amendments using SF 30 (Block 8, 15A-15C).
 - [ ] Provide pricing for a base year and one option year for a Medical Equipment Planning SaaS license.

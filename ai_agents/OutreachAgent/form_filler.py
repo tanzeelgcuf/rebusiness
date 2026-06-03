@@ -19,7 +19,7 @@ IDENTITY = {
     "FIRST_NAME": "John",
     "LAST_NAME": "Campbell",
     "FULL_NAME": "John Campbell",
-    "EMAIL": "john@campsable.com",
+    "EMAIL": "bobbysmitty078@gmail.com",
     "PHONE": "720-980-6080",
     "COMPANY": "Camp Sable, LLC",
     "JOB_TITLE": "Procurement Manager"
@@ -430,7 +430,7 @@ Sincerely,
         # We need to initialize EmailService if not already done
         if not self.email_service:
             # TRY TO FIND CREDS or use hardcoded fallback from prompt context
-            # WARNING: Using hardcoded app password found in previous artifacts for 'john@campsable.com' context
+            # WARNING: Using hardcoded app password found in previous artifacts for 'bobbysmitty078@gmail.com' context
             self.email_service = EmailService(
                 smtp_server="smtp.gmail.com",
                 smtp_port=587,

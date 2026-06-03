@@ -10,7 +10,7 @@ We are writing to request a formal quote for Hydraulic Pump Assemblies. Camp Sab
 
 Your response is needed on or before February 10, 2026 in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -132,7 +132,7 @@ This is a Not specified contract with Not specified option years.
 ## 🏛️ Submission Details
 
 Quote Submission:
-Email proposal (PDF preferred) to john@campsable.com
+Email proposal (PDF preferred) to bobbysmitty078@gmail.com
 Subject line: Proposal Submission W912AB-26-Q-0001 ([company_name])
 
 Due Date: February 10, 2026
@@ -178,7 +178,7 @@ In Plain Terms:
 8.  Packaging: Not specified
 9.  Documentation: Not specified
 10. Certifications: Not specified
-11. Submission deadline: February 10, 2026 to john@campsable.com
+11. Submission deadline: February 10, 2026 to bobbysmitty078@gmail.com
 
 ---
 

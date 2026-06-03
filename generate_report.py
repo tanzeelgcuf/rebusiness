@@ -63,7 +63,7 @@ def generate_report():
         for status, count in status_counts:
             print(f"  - {status}: {count}")
             
-        # Specific check for john@campsable.com (Assuming this is the sender email, 
+        # Specific check for bobbysmitty078@gmail.com (Assuming this is the sender email, 
         # but usually we track 'Sent' status. If the user wants to know HOW MANY from that email,
         # we might assume all 'Sent' emails are from the configured sender.)
         

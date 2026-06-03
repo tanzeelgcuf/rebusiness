@@ -8,7 +8,7 @@ We are writing to request a formal quote for maintenance and supply services rel
 
 Your response is needed on or before Not specified in solicitation in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -163,7 +163,7 @@ To be accepted, each site must:
 
 ### Submission Method & Contact
 - Format: Not specified in solicitation
-- Recipient: john@campsable.com
+- Recipient: bobbysmitty078@gmail.com
 - Subject line: RFQ for Drafting Machine Services - Notice ID SPE8E926T0681
 - Deadline: Not specified in solicitation
 
@@ -231,7 +231,7 @@ Not Included in This Solicitation - This is a Not specified in solicitation cont
 - [ ] Be aware that specific wage and labor compliance details are missing.
 - [ ] Note that insurance requirements are not specified.
 - [ ] Acknowledge that bid submission format, required content, and evaluation criteria are not specified.
-- [ ] Contact john@campsable.com for any questions or if interested in bidding, noting the lack of specific details.
+- [ ] Contact bobbysmitty078@gmail.com for any questions or if interested in bidding, noting the lack of specific details.
 - [ ] No government response deadline is specified, therefore Camp Sable's internal deadline is also not specified.
 
 ---

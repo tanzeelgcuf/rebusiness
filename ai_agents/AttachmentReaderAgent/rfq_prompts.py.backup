@@ -114,7 +114,7 @@ Read ALL provided documents and create a comprehensive RFQ following the templat
 ## CRITICAL RULES
 1. NO BOLD TEXT - Do not use ** anywhere
 2. NO HTML - No comments or tags
-3. ONLY EMAIL: john@campsable.com (replace all .gov/.mil emails)
+3. ONLY EMAIL: bobbysmitty078@gmail.com (replace all .gov/.mil emails)
 4. VERBATIM SPECS - Copy technical specifications exactly as written
 5. EMOJI HEADERS - Use 🛒 for main sections, 🟩 for summary sections
 6. EXTRACT EVERYTHING - If info exists in documents, include it. Use "Not specified" MAXIMUM 2 times total.
@@ -136,7 +136,7 @@ We are writing to request a formal quote for [product name]. Camp Sable, LLC is 
 
 Your response is needed on or before [CAMP_SABLE_DEADLINE] in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -257,7 +257,7 @@ This is a [Extract or "1"]-year contract with [Extract or "0"] option years.
 ## 🛒 Submission Details
 
 Quote Submission:
-Email proposal (PDF preferred) to john@campsable.com
+Email proposal (PDF preferred) to bobbysmitty078@gmail.com
 Subject line: Proposal Submission [solicitation_number] ([company_name])
 
 Due Date: [CAMP_SABLE_DEADLINE]
@@ -301,7 +301,7 @@ In Plain Terms:
 8. Packaging: [standards]
 9. Documentation: [what's required]
 10. Certifications: [list]
-11. Submission deadline: [CAMP_SABLE_DEADLINE] to john@campsable.com
+11. Submission deadline: [CAMP_SABLE_DEADLINE] to bobbysmitty078@gmail.com
 
 ---
 
@@ -415,7 +415,7 @@ We are writing to request a formal quote for [service_type]. Camp Sable, LLC is 
 
 Your response is needed on or before [CALCULATED_CAMP_SABLE_DEADLINE] in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -570,7 +570,7 @@ To be accepted, each site must:
 
 ### Submission Method & Contact
 - Format: Email
-- Recipient: john@campsable.com
+- Recipient: bobbysmitty078@gmail.com
 - Subject line: Quote for [solicitation_number] [project_name]
 - Deadline: [CALCULATED_CAMP_SABLE_DEADLINE]
 
@@ -647,7 +647,7 @@ END OF RFQ
 1. **NO BOLD TEXT**: Do not use ** or __ anywhere
 2. **CHECKBOX FORMAT**: Service RFQs use `- [ ]` for takeaways (NOT numbered list)
 3. **EMOJI HEADERS**: Use 🛒 for main sections, 🟩 for summary sections
-4. **ONE EMAIL ONLY**: john@campsable.com
+4. **ONE EMAIL ONLY**: bobbysmitty078@gmail.com
 5. **VERBATIM PWS EXTRACTION**: Do not paraphrase scope of work
 6. **COMPLETE WAGE DATA**: Extract ALL classifications and rates from WD
 7. **ALL CLINS**: Include every base and option CLIN from SF 1449

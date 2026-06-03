@@ -9,7 +9,7 @@ We have successfully implemented a "100% Fidelity" RFQ generation system that pr
 1.  **Strict Fidelity Prompts**: Created `PRODUCT_RFQ_PROMPT` and `SERVICE_RFQ_PROMPT` in `rfq_prompts.py` that enforce:
     - Zero placeholders (or specific fallback text).
     - No bold formatting (except headers/labels).
-    - Single contact point: `john@campsable.com`.
+    - Single contact point: `bobbysmitty078@gmail.com`.
     - Internal deadline calculated 4 business days prior to official deadline.
 2.  **Direct Markdown Generation**: Bypassed the legacy `ProposalWriterAgent` JSON step. `AttachmentReaderAgent` now generates the final RFQ content directly.
 3.  **Database Integration**: Added `rfq_outputs` table to store RFQ text and metadata.

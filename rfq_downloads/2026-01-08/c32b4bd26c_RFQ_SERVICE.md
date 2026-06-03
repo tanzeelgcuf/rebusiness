@@ -10,7 +10,7 @@ We are writing to request a formal quote for Operations & Maintenance Services. 
 
 Your response is needed on or before February 02, 2026 in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -165,7 +165,7 @@ To be accepted, each site must:
 
 ### Submission Method & Contact
 - Format: Not specified in solicitation (electronic submission implied)
-- Recipient: john@campsable.com
+- Recipient: bobbysmitty078@gmail.com
 - Subject line: Not specified in solicitation (suggest: Quote for EPA Cincinnati O&M Bridge Extension - [Your Company Name])
 - Deadline: February 02, 2026
 
@@ -218,7 +218,7 @@ Total Base Contract Price for Operations and Maintenance Services for January 20
 5. Work locations are the EPA-Cincinnati Main Campus, Satellite Facilities, and GSA Leased Buildings.
 6. Performance standards involve ensuring equipment and assets operate efficiently, continuously, and safely, with minimal service lapse.
 7. Wage compliance is based on the incumbent's Collective Bargaining Agreement and the most recent Department of Labor Service Contract Act Wage Determination.
-8. Submission deadline for Camp Sable is February 02, 2026, via email to john@campsable.com.
+8. Submission deadline for Camp Sable is February 02, 2026, via email to bobbysmitty078@gmail.com.
 
 ---
 
@@ -232,7 +232,7 @@ Total Base Contract Price for Operations and Maintenance Services for January 20
 - [ ] Acknowledge compliance with relevant FAR clauses and EPA Interim Policy Notices related to bridge contracts and Executive Orders.
 - [ ] Understand that the purpose of this request is for a bridge extension to prevent service gaps.
 - [ ] Quote should cover all 37 specified O&M tasks detailed in the Scope of Work.
-- [ ] Submit quote to john@campsable.com by February 02, 2026.
+- [ ] Submit quote to bobbysmitty078@gmail.com by February 02, 2026.
 - [ ] Operations are required across 13 facilities, including Main Campus, Satellite Facilities, and GSA Leased Buildings.
 - [ ] Ensure efficient, continuous, and safe operation of all equipment and assets at the EPA-CIN facilities.
 - [ ] Not specified in solicitation

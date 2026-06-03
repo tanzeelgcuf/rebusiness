@@ -10,7 +10,7 @@ We are writing to request a formal quote for NSN 5411012264671 CLOSEOUT PANEL AS
 
 Your response is needed on or before January 14, 2026 in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -160,7 +160,7 @@ To be accepted, the delivered item(s) must:
 
 ### Submission Method & Contact
 - Format: Electronic
-- Recipient: john@campsable.com
+- Recipient: bobbysmitty078@gmail.com
 - Subject line: Not specified in solicitation
 - Deadline: January 14, 2026
 
@@ -210,7 +210,7 @@ Not Included in This Solicitation - This is a single purchase contract with no o
 5. Work Locations: Delivery to W1A8 DLA DISTRIBUTION.
 6. Quality Performance Standards: Product must match NSN and meet technical specifications.
 7. Wage Compliance: Not specified in solicitation.
-8. Submission Deadline and Method: Submit electronic quote to john@campsable.com by January 14, 2026.
+8. Submission Deadline and Method: Submit electronic quote to bobbysmitty078@gmail.com by January 14, 2026.
 
 ---
 
@@ -221,7 +221,7 @@ Not Included in This Solicitation - This is a single purchase contract with no o
 - [ ] Plan for delivery to W1A8 DLA DISTRIBUTION.
 - [ ] Acknowledge delivery within 151 Days After Date of Order (ADO).
 - [ ] Review digitized drawings and Military Specifications and Standards if applicable.
-- [ ] Submit quote electronically to john@campsable.com.
+- [ ] Submit quote electronically to bobbysmitty078@gmail.com.
 - [ ] Meet Camp Sable internal deadline of January 14, 2026.
 - [ ] Confirm capability as a responsible source to fulfill the requirement.
 - [ ] Understand this is a product procurement, not a service contract.

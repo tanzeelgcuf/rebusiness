@@ -10,7 +10,7 @@ We are writing to request a formal quote for design, fabricate, install, and com
 
 Your response is needed on or before January 8, 2026 in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -161,7 +161,7 @@ To be accepted, each site must:
 
 ### Submission Method & Contact
 - Format: Written response, maximum of 3 pages.
-- Recipient: john@campsable.com
+- Recipient: bobbysmitty078@gmail.com
 - Subject line: RFQ Response - Oil Water Separator Design/Install - FA489726SS100
 - Deadline: January 8, 2026
 
@@ -214,7 +214,7 @@ Not Included in This Solicitation - This is a single project with no option peri
 5.  Work location is Hush House No. 2, Mountain Home AFB, ID, requiring base access, identification, and adherence to specific hours of operation.
 6.  Performance standards include 72-hour hydrostatic leak testing, 300 GPM flow capacity validation, oil separation efficiency testing per EPA Method 1664 (if applicable), and full integration without leaks or disruptions.
 7.  Wage compliance requirements are Not specified in solicitation.
-8.  Submit a maximum 3-page response by January 8, 2026, to john@campsable.com, detailing company information, WOSB status, interest, and capability for this $100,000-$250,000 project.
+8.  Submit a maximum 3-page response by January 8, 2026, to bobbysmitty078@gmail.com, detailing company information, WOSB status, interest, and capability for this $100,000-$250,000 project.
 
 ---
 

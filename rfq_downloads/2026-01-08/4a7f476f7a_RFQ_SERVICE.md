@@ -10,7 +10,7 @@ We are writing to request a formal quote for construction and rehabilitation ser
 
 Your response is needed on or before December 4, 2025, 5:00 PM EST in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -182,7 +182,7 @@ Not specified in this Industry Day notice, as this is for market research and fu
 
 ### Submission Method & Contact
 - Format: Email
-- Recipient: john@campsable.com
+- Recipient: bobbysmitty078@gmail.com
 - Subject line: GRAND TETON NP INDUSTRY DAY AND PROJECT OUTREACH - Quote Request - [Your Company Name]
 - Deadline: December 4, 2025, 5:00 PM EST
 
@@ -231,7 +231,7 @@ Not Included in This Solicitation - This is a market research/industry day notic
 5. Work locations: Construction and rehabilitation will take place across numerous sites within Grand Teton National Park, WY, including Moose Entrance, 4 Lazy F Historic Cabins, Mormon Row, Colter Bay, Jenny Lake Lodge, Lupine Meadows, and various historic buildings.
 6. Quality performance standards: A commitment to delivering high-quality, sustainable projects that meet the park's mission, requiring skilled craftsmanship, specialized labor (especially for historic preservation), and careful coordination within a sensitive natural and operational environment.
 7. Wage compliance: Wage determinations and specific labor compliance requirements will be included in future solicitations for each project.
-8. Submission deadline and method: Submit your formal quote and expression of interest via email to john@campsable.com by December 4, 2025, 5:00 PM EST, using the specified subject line format.
+8. Submission deadline and method: Submit your formal quote and expression of interest via email to bobbysmitty078@gmail.com by December 4, 2025, 5:00 PM EST, using the specified subject line format.
 
 ---
 
@@ -248,7 +248,7 @@ Not Included in This Solicitation - This is a market research/industry day notic
 - [ ] Bidders must monitor SAM.gov for official solicitations when they are released by the National Park Service.
 - [ ] Future contracts will require adherence to Federal Acquisition Regulations (FAR) and park-specific technical and environmental requirements.
 - [ ] Consider and be prepared to address logistical challenges such as housing for crews, seasonal access constraints, and potential long lead times for materials during project planning.
-- [ ] Direct all questions regarding this Camp Sable RFQ to john@campsable.com only.
+- [ ] Direct all questions regarding this Camp Sable RFQ to bobbysmitty078@gmail.com only.
 
 ---
 

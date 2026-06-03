@@ -43,6 +43,9 @@ else:
         }
     }
 
+# Session persistence path - aligned with dashboard location for consistency
+SESSION_FILE = Path(__file__).parent.parent.parent.parent / "dashboard" / "auth_state.json"
+
 class ThomasNetAuth:
     """
     Handles authentication and browser session management for ThomasNet.
@@ -79,9 +82,22 @@ class ThomasNetAuth:
             self.solver = DataDomeSolver(api_key)
             logger.info("2Captcha solver enabled.")
 
-    def start_browser(self) -> Page:
-        """Start browser and return a page object."""
-        self.playwright = sync_playwright().start()
+        logger.info("Applying stealth...")
+        Stealth().apply_stealth_sync(self.page)
+        
+        self.proxy_config = proxy_config
+        
+        return self.page
+
+    def start_browser(self, storage_state: Optional[str] = None) -> Page:
+        """
+        Start browser and return a page object.
+        
+        Args:
+            storage_state: Path to a storage state JSON file (cookies/localStorage)
+        """
+        if not self.playwright:
+            self.playwright = sync_playwright().start()
         
         # Prepare proxy config
         proxy_config = None
@@ -95,7 +111,6 @@ class ThomasNetAuth:
             logger.info(f"Using proxy: {proxy_config['server']}")
 
         logger.info("Launching browser...")
-        # Get browser type from config or default to chromium
         browser_type_name = CONFIG["thomasnet"].get("browser_type", "chromium").lower()
         if browser_type_name == "firefox":
             browser_type = self.playwright.firefox
@@ -112,8 +127,15 @@ class ThomasNetAuth:
             ]
         )
         
-        # Create a new context with advanced anti-detection settings
+        # Determine storage state to load
+        state_to_load = storage_state
+        if not state_to_load and SESSION_FILE.exists():
+            state_to_load = str(SESSION_FILE)
+            logger.info(f"Loading existing session from {state_to_load}")
+
+        # Create a new context
         self.context = self.browser.new_context(
+            storage_state=state_to_load,
             user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
             viewport={'width': 1920, 'height': 1080},
             locale="en-US",
@@ -137,6 +159,19 @@ class ThomasNetAuth:
         self.proxy_config = proxy_config
         
         return self.page
+
+    def save_session(self, path: Optional[str] = None):
+        """
+        Saves the current browser context state (cookies, localStorage) to a file.
+        """
+        if not self.context:
+            logger.error("No active browser context to save session from.")
+            return
+
+        target_path = path or str(SESSION_FILE)
+        logger.info(f"Saving session state to {target_path}...")
+        self.context.storage_state(path=target_path)
+        logger.info("Session saved successfully.")
 
     def bypass_captcha(self, retries: int = 2) -> bool:
         """

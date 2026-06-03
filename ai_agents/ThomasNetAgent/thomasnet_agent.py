@@ -10,7 +10,7 @@ sys.modules['html5lib'] = MagicMock()
 
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
-from playwright.sync_api import sync_playwright
+# from playwright.sync_api import sync_playwright (Using ThomasNetAuth instead)
 
 # Add parent directory to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
@@ -23,6 +23,7 @@ from config import GEMINI_API_KEY
 # import google.generativeai as genai
 
 from proxy_manager import ProxiflyManager
+from auth import ThomasNetAuth
 
 class ThomasNetAgent:
     """
@@ -70,43 +71,15 @@ class ThomasNetAgent:
         }
         
         try:
-            with sync_playwright() as p:
-                # STEALTH MODE: Connect to already-running Chrome with remote debugging
-                print("  Connecting to Chrome via CDP (Remote Debugging)...")
-                try:
-                    browser = p.chromium.connect_over_cdp("http://localhost:9222")
-                    context = browser.contexts[0] if browser.contexts else None
-                    if not context:
-                        print("  ERROR: No browser context found. Please ensure Chrome is running with remote debugging.")
-                        print("  Run: python3 setup_chrome_debugging.py for instructions.")
-                        result['error'] = "Chrome remote debugging not enabled"
-                        return result
-                    page = context.pages[0] if context.pages else context.new_page()
-                except Exception as cdp_error:
-                    print(f"  CDP connection failed: {cdp_error}")
-                    print("  Falling back to regular Chrome launch...")
-                    
-                    # Fetch proxy if available
-                    pm = ProxiflyManager(test_url="https://www.thomasnet.com", timeout=8)
-                    proxy_config = pm.get_working_proxy(protocols=['http', 'socks5'], us_only=True)
-                    if not proxy_config:
-                        print("  Warning: No working proxy found, proceeding without proxy.")
-                    else:
-                        print(f"  Using proxy: {proxy_config['server']}")
+            # Use ThomasNetAuth for automated session management and DataDome bypass
+            with ThomasNetAuth() as auth:
+                page = auth.page
+                if not page:
+                    result['error'] = "Failed to initialize ThomasNet page"
+                    return result
 
-                    # Fallback: regular launch without persistent context
-                    browser = p.chromium.launch(
-                        headless=False,
-                        channel="chrome",
-                        args=['--disable-blink-features=AutomationControlled'],
-                        proxy=proxy_config
-                    )
-                    context = browser.new_context(
-                        viewport={'width': 1366, 'height': 768}
-                    )
-                    page = context.new_page()
-                
-                page.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+                # Check for DataDome immediately
+                auth.bypass_captcha()
                 
                 # STEP 1: Navigate and Search (reuse existing logic)
                 print("Step 1: Navigating to ThomasNet...")
@@ -478,37 +451,15 @@ Contact: {IDENTITY['EMAIL']}
         
         # 1. Direct Search on Thomasnet
         try:
-            with sync_playwright() as p:
-                # Use PERSISTENT CONTEXT to save cookies/login state
-                import uuid
-                import tempfile
-                
-                # Create unique temp dir for this run
-                user_data_dir = os.path.join(tempfile.gettempdir(), f"thomasnet_chrome_{uuid.uuid4()}")
-                os.makedirs(user_data_dir, exist_ok=True)
-                
-                # Fetch proxy if available
-                pm = ProxiflyManager(test_url="https://www.thomasnet.com", timeout=8)
-                proxy_config = pm.get_working_proxy(protocols=['http', 'socks5'], us_only=True)
-                if not proxy_config:
-                    print("  Warning: No working proxy found, proceeding without proxy.")
-                else:
-                     print(f"  Using proxy: {proxy_config['server']}")
+            # Use ThomasNetAuth for automated session management and DataDome bypass
+            with ThomasNetAuth() as auth:
+                page = auth.page
+                if not page:
+                    print("  ERROR: Failed to initialize ThomasNet page")
+                    return []
 
-                # Launch options - Use regular Firefox launch (not persistent context)
-                browser = p.firefox.launch(
-                    headless=False,  # Show browser for manual login
-                    args=['--disable-blink-features=AutomationControlled'],
-                    proxy=proxy_config
-                )
-                
-                browser_context = browser.new_context(
-                    viewport={'width': 1366, 'height': 768},
-                    user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
-                )
-                
-                page = browser_context.new_page()
-                page.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+                # Check for DataDome immediately
+                auth.bypass_captcha()
                 
                 # Search via Suppliers Page (Interactive)
                 print(f"  Navigating to Search Page: https://www.thomasnet.com/suppliers")
@@ -517,7 +468,7 @@ Contact: {IDENTITY['EMAIL']}
                 max_retries = 3
                 for attempt in range(max_retries):
                     try:
-                        page.goto("https://www.thomasnet.com/suppliers", timeout=60000, wait_until="networkidle")
+                        page.goto("https://www.thomasnet.com/suppliers", timeout=60000, wait_until="domcontentloaded")
                         break
                     except Exception as e:
                         print(f"  Navigation attempt {attempt+1} failed: {e}")
@@ -527,7 +478,6 @@ Contact: {IDENTITY['EMAIL']}
                             
                 # Strict Wait for "Complete Load" (User Request)
                 print("  Waiting for page to initialize fully...")
-                page.wait_for_load_state("domcontentloaded")
                 time.sleep(5) # Explicit buffer for visual rendering
                 
                 # Wait for Input
@@ -553,12 +503,14 @@ Contact: {IDENTITY['EMAIL']}
                     search_btn_selector = 'button[aria-label="Search"]' 
                     
                     try:
-                         with page.expect_navigation(timeout=10000):
-                            page.click(search_btn_selector)
+                         # Use Enter instead of clicking button for better reliability
+                         page.press(search_input_selector, "Enter")
+                         page.wait_for_load_state("domcontentloaded", timeout=15000)
                     except:
-                        print("  Search click timeout. Attempting Enter key...")
-                        page.press(search_input_selector, "Enter")
-                        page.wait_for_load_state("networkidle", timeout=15000)
+                        print("  Search Enter timeout. Attempting direct URL...")
+                        term = product_name.replace(' ', '+')
+                        url = f"https://www.thomasnet.com/suppliers/search?searchterm={term}&search_type=search-supplier"
+                        page.goto(url, timeout=60000, wait_until="domcontentloaded")
 
                 except Exception as e:
                     print(f"  Interactive search skipped/failed: {e}")
@@ -566,7 +518,10 @@ Contact: {IDENTITY['EMAIL']}
                     term = product_name.replace(' ', '+')
                     url = f"https://www.thomasnet.com/suppliers/search?searchterm={term}&search_type=search-supplier"
                     print(f"  Navigating directly to results: {url}")
-                    page.goto(url, timeout=60000, wait_until="networkidle")
+                    page.goto(url, timeout=60000, wait_until="domcontentloaded")
+                
+                # Solve DataDome if it appears during search
+                auth.bypass_captcha()
                 
                 # CHECK FOR CAPTCHA / BLOCK
                 time.sleep(2) 
@@ -706,13 +661,6 @@ Contact: {IDENTITY['EMAIL']}
                             break
                     else:
                         break
-
-                browser_context.close()
-                browser.close()
-                try:
-                    import shutil
-                    shutil.rmtree(user_data_dir, ignore_errors=True)
-                except: pass
 
         except Exception as e:
             print(f"Search failed: {e}")

@@ -293,7 +293,7 @@ We are writing to request a formal quote for [specific_product_name]. Camp Sable
 
 Your response is needed on or before [CAMP_SABLE_DEADLINE] in order for us to submit your bid.
 
-All requirements, specifications, and compliance criteria are detailed below. Please review the complete RFQ carefully. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+All requirements, specifications, and compliance criteria are detailed below. Please review the complete RFQ carefully. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -508,7 +508,7 @@ The bidder/vendor must possess:
 ## 🏛️ Submission Details
 
 Quote Submission:
-Email proposal (PDF preferred) to john@campsable.com
+Email proposal (PDF preferred) to bobbysmitty078@gmail.com
 Subject line: Proposal Submission [Solicitation_Number] ([Your_Company_Name])
 
 Due Date: [CAMP_SABLE_DEADLINE]
@@ -583,7 +583,7 @@ In Plain Terms:
 10. Certifications: [Complete_list with specific requirements]
 11. **IF Special Requirements:** [List_all - FAT, ITAR, security clearance, etc.]
 12. **IF All-or-None:** Quote must include all items - partial quotes not accepted
-13. Submission deadline: [CAMP_SABLE_DEADLINE] via email to john@campsable.com
+13. Submission deadline: [CAMP_SABLE_DEADLINE] via email to bobbysmitty078@gmail.com
 14. **IF Contact Provided:** Coordinate inspection with [Name] at [Phone/Email]
 15. **Additional Key Point if Applicable**
 
@@ -606,7 +606,7 @@ END OF RFQ
 - Complete professional sentences
 - Specific extracted data
 - Proper emoji (🏛️ for sections, 🟩 for summaries)
-- Only john@campsable.com as contact
+- Only bobbysmitty078@gmail.com as contact
 - Camp Sable deadline (government deadline - 4 business days)
 - **Bold headers in ALL tables** for visibility
 
@@ -640,7 +640,7 @@ We are writing to request a formal quote for [specific_service_type]. Camp Sable
 
 Your response is needed on or before [CAMP_SABLE_DEADLINE] in order for us to submit your bid.
 
-All requirements, specifications, and compliance criteria are detailed below. Please review the complete RFQ carefully. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+All requirements, specifications, and compliance criteria are detailed below. Please review the complete RFQ carefully. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -807,7 +807,7 @@ To be accepted, each site must:
 
 ### Submission Method & Contact
 - Format: [Email or Other] [If email: "PDF attachments preferred"]
-- Recipient: john@campsable.com
+- Recipient: bobbysmitty078@gmail.com
 - Subject line: [Format - e.g., "Quote for W912ES26BA007 - Fargo Forest Planting"]
 - Deadline: [CAMP_SABLE_DEADLINE]
 
@@ -887,7 +887,7 @@ Not Included in This Solicitation - This is a [X]-year contract with no option p
 5. [Work_locations - e.g., "Work occurs at 9 sites across Cass County, ND and Clay County, MN with varying access requirements"]
 6. [Performance_standards - e.g., "Meet specific survival rates, coverage targets, and invasive species control thresholds by end of contract"]
 7. [Wage_compliance - e.g., "Pay prevailing wages per WD 2015-4191 for Minnesota and North Dakota with proper documentation"]
-8. [Submission - e.g., "Submit quote to john@campsable.com by [CAMP_SABLE_DEADLINE] with all required documentation and pricing"]
+8. [Submission - e.g., "Submit quote to bobbysmitty078@gmail.com by [CAMP_SABLE_DEADLINE] with all required documentation and pricing"]
 
 ---
 
@@ -907,7 +907,7 @@ Not Included in This Solicitation - This is a [X]-year contract with no option p
 - [ ] [Takeaway_9 - e.g., "Use Resident Management System (RMS) for all electronic submissions"]
 - [ ] [Takeaway_10 - e.g., "Coordinate access with Contracting Officer; provide 10-day notice for ground disturbance"]
 - [ ] [Takeaway_11 - e.g., "Complete corrective actions for any deficiencies found during final walkthrough at contractor expense"]
-- [ ] [Takeaway_12 - e.g., "Submit quote to john@campsable.com by [CAMP_SABLE_DEADLINE] with itemized pricing for base and option"]
+- [ ] [Takeaway_12 - e.g., "Submit quote to bobbysmitty078@gmail.com by [CAMP_SABLE_DEADLINE] with itemized pricing for base and option"]
 
 **NEVER USE:**
 - Regular bullets: `- Item` ❌

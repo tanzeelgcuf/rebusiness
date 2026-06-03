@@ -195,4 +195,4 @@ Please review this RFQ and let us know if you can provide a quote.
 Thank you,
 
 The Camp Sable Team
-john@campsable.com
+bobbysmitty078@gmail.com

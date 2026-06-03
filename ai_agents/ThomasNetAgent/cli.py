@@ -119,8 +119,8 @@ def submit(rfq, headless, max_vendors, dry_run):
             console.print("[red]❌ Login failed or browser did not start[/red]")
             return
 
-        search = ThomasNetSearch(auth.page)
-        form_filler = RFQFormFiller(auth.page, CONFIG)
+        search = ThomasNetSearch(auth)
+        form_filler = RFQFormFiller(auth, CONFIG)
         
         # Process each product
         for product_idx, product in enumerate(rfq_data['products'], 1):
@@ -247,7 +247,7 @@ def test_search(query, headless):
     console.print(f"\n[bold blue]🔍 Testing search for: '{query}'[/bold blue]\n")
     
     with ThomasNetAuth(headless=headless) as auth:
-        search = ThomasNetSearch(auth.page)
+        search = ThomasNetSearch(auth)
         vendors = search.search_vendors(query, max_results=10)
         
         table = Table(title=f"Search Results for '{query}'")

@@ -5,7 +5,8 @@ import json
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple, Optional
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from openai import OpenAI
 import pdfplumber
 import pandas as pd
@@ -29,7 +30,7 @@ class AttachmentReaderAgent:
         
         # Initialize LLM client
         if config.LLM_PROVIDER == "gemini":
-            genai.configure(api_key=config.GEMINI_API_KEY)
+            self.genai_client = genai.Client(api_key=config.GEMINI_API_KEY)
         elif config.LLM_PROVIDER == "openai":
             self.openai_client = OpenAI(api_key=config.OPENAI_API_KEY)
         
@@ -367,7 +368,7 @@ Place them after your existing _read_file_content method
                 issues.append(f"Missing section: {section}")
         
         # 3. Check for vendor email
-        if "john@campsable.com" not in rfq_content:
+        if "bobbysmitty078@gmail.com" not in rfq_content:
             issues.append("Missing vendor email")
         
         # 4. Check for government emails (should be removed)
@@ -461,24 +462,24 @@ REMEMBER: Output ONLY the final RFQ content. Do NOT include any of the instructi
             logger.info(f"    Using improvement instructions ({len(improvement_instructions)} chars)")
         
         try:
-            model = genai.GenerativeModel(
-                'gemini-3-pro-preview',  # Upgraded to High Fidelity Model
-                system_instruction=system_instruction,  # CRITICAL FIX: Use system_instruction parameter
-                generation_config={
-                    'temperature': 0.1,  # Very low for consistency
-                    'top_p': 0.95,
-                    'top_k': 40,
-                    'max_output_tokens': 8192,  # Ensure complete output
-                    'stop_sequences': ['END OF RFQ'],  # Stop at natural endpoint
-                }
+            # STEP 4: Generate with the new SDK
+            logger.info(f"    Sending to Gemini (High Fidelity)...")
+            
+            # Using the official model name from user choice, or fallback to 1.5 Pro
+            model_id = 'gemini-2.0-flash' # Better performance/reliability
+            
+            response = self.genai_client.models.generate_content(
+                model=model_id,
+                contents=text_content,
+                config=types.GenerateContentConfig(
+                    system_instruction=system_instruction,
+                    temperature=0.1,
+                    top_p=0.95,
+                    top_k=40,
+                    max_output_tokens=8192,
+                    stop_sequences=['END OF RFQ'],
+                )
             )
-            
-            # Build message - ONLY content, no instructions
-            message_parts = text_content  # CRITICAL FIX: Don't prepend instructions
-            
-            # Generate
-            logger.info(f"    Sending to Gemini 1.5 Pro (High Fidelity)...")
-            response = model.generate_content(message_parts)
             
             # Extract text
             rfq_markdown = response.text
@@ -563,7 +564,8 @@ REMEMBER: Output ONLY the final RFQ content. Do NOT include any of the instructi
         if len(full_text) < 200 and self.config.LLM_PROVIDER == "gemini":
             try:
                 logger.info(f"Low text extraction ({len(full_text)} chars). Using Gemini Vision...")
-                file_ref = genai.upload_file(file_path, mime_type="application/pdf")
+                # New SDK: client.files.upload(path=...)
+                file_ref = self.genai_client.files.upload(path=file_path)
                 return file_ref
             except Exception as e:
                 logger.error(f"Gemini upload failed: {e}")
@@ -893,7 +895,7 @@ REMEMBER: Output ONLY the final RFQ content. Do NOT include any of the instructi
         strict_fidelity: bool = False,
         template_type: str = "auto-detect",
         internal_deadline_offset: int = 4,
-        vendor_email: str = "john@campsable.com",
+        vendor_email: str = "bobbysmitty078@gmail.com",
         organization_name: str = "Camp Sable, LLC",
         enable_self_healing: bool = True,
         max_healing_iterations: int = 3
@@ -1225,7 +1227,7 @@ REMEMBER: Output ONLY the final RFQ content. Do NOT include any of the instructi
         # 5. Clean up government emails (replace with vendor email)
         rfq_content = re.sub(
             r'[\w\.-]+@[\w\.-]*\.(?:gov|mil)\b',
-            'john@campsable.com',
+            'bobbysmitty078@gmail.com',
             rfq_content
         )
         

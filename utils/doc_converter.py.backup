@@ -63,7 +63,7 @@ class EnhancedDocConverter:
         
         # Scrub government emails (CRITICAL)
         gov_email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.(?:gov|mil)\b'
-        markdown_content = re.sub(gov_email_pattern, 'john@campsable.com', markdown_content, flags=re.IGNORECASE)
+        markdown_content = re.sub(gov_email_pattern, 'bobbysmitty078@gmail.com', markdown_content, flags=re.IGNORECASE)
         
         # Ensure proper table formatting
         lines = markdown_content.split('\n')

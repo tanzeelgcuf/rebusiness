@@ -35,6 +35,12 @@ def run_thomasnet_submission(rfq_path, args):
     if not args.submit_to_thomasnet:
         return
 
+    # Check for seeded session
+    session_file = os.path.join(os.path.dirname(__file__), 'ai_agents', 'ThomasNetAgent', 'thomasnet_session.json')
+    if not os.path.exists(session_file) and not args.thomasnet_dry_run:
+        logger.warning("⚠️  [ThomasNet] No seeded session found at " + session_file)
+        logger.warning("   [ThomasNet] Bypassing DataDome might fail. Run 'python ai_agents/ThomasNetAgent/setup_session.py' first.")
+
     logger.info(f"🔄 [ThomasNet] Starting submission for: {rfq_path}")
     try:
         # Import here to avoid early dependency failure
@@ -406,7 +412,7 @@ if __name__ == "__main__":
     parser.add_argument("--template-type", type=str, default="auto-detect", help="PRODUCT or SERVICE")
     parser.add_argument("--strict-fidelity", action="store_true", help="Zero-placeholder policy")
     parser.add_argument("--internal-deadline-offset", type=int, default=4, help="Business days before official")
-    parser.add_argument("--vendor-email", type=str, default="john@campsable.com", help="Vendor contact email")
+    parser.add_argument("--vendor-email", type=str, default="bobbysmitty078@gmail.com", help="Vendor contact email")
     parser.add_argument("--organization-name", type=str, default="Camp Sable, LLC", help="Organization name")
     
     # Self-healing QA flags

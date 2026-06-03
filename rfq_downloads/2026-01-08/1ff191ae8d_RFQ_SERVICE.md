@@ -10,7 +10,7 @@ We are writing to request a formal quote for the procurement and delivery of hea
 
 Your response is needed on or before Jan 14, 2026 in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -161,7 +161,7 @@ To be accepted, each item must:
 
 ### Submission Method & Contact
 - Format: Electronically
-- Recipient: john@campsable.com
+- Recipient: bobbysmitty078@gmail.com
 - Subject line: Quote for SPE8E926T1142 - HEATING ELEMENT,ELE
 - Deadline: Jan 14, 2026
 
@@ -212,7 +212,7 @@ Not Included in This Solicitation - This is a single purchase contract with no o
 5.  All work/delivery will occur at W1A8 DLA DISTRIBUTION.
 6.  Quality and performance standards are met by supplying the exact NSN from approved manufacturers.
 7.  Wage compliance requirements are not specified in the solicitation.
-8.  Submission deadline is Jan 14, 2026, with quotes to be sent electronically to john@campsable.com.
+8.  Submission deadline is Jan 14, 2026, with quotes to be sent electronically to bobbysmitty078@gmail.com.
 
 ---
 
@@ -225,7 +225,7 @@ Not Included in This Solicitation - This is a single purchase contract with no o
 - [ ] Must source from approved manufacturers: 07131 155-043628-001; 19857 17714PC11; 19857 5G6443ES.
 - [ ] Quotes must be submitted electronically.
 - [ ] Camp Sable deadline for quotes is Jan 14, 2026.
-- [ ] Contact john@campsable.com for any questions regarding this RFQ.
+- [ ] Contact bobbysmitty078@gmail.com for any questions regarding this RFQ.
 - [ ] Specifications, plans, or drawings for the item are not available.
 - [ ] Provide both unit and total pricing for the required items.
 - [ ] This is a product procurement, not a service contract.

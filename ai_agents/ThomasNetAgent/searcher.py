@@ -19,8 +19,9 @@ class ThomasNetSearch:
     Handles searching for vendors on ThomasNet and parsing results.
     """
     
-    def __init__(self, page: Page):
-        self.page = page
+    def __init__(self, auth: Any):
+        self.auth = auth
+        self.page = auth.page
         self.base_url = CONFIG["thomasnet"]["base_url"]
 
     def search_vendors(self, query: str, max_results: int = 20) -> List[Dict[str, Any]]:
@@ -125,21 +126,9 @@ class ThomasNetSearch:
             logger.error(f"Failed to find or fill search box: {e}")
             return []
         
-        # Step 4: Check for DataDome Captcha
-        try:
-            for _ in range(3):
-                if self.page.frame_locator('iframe[title*="DataDome"]').first.is_visible():
-                    logger.warning("⚠️  DataDome Captcha detected! Please solve it manually.")
-                    logger.warning("Waiting up to 5 minutes for manual completion...")
-                    try:
-                        self.page.wait_for_selector('li:has(h2)', timeout=300000)
-                        logger.info("✓ Captcha solved. Page loaded.")
-                    except:
-                        logger.error("Timed out waiting for page after Captcha.")
-                    break
-                time.sleep(1)
-        except Exception as e:
-            logger.debug(f"Captcha check ignored: {e}")
+        # Step 4: Automated DataDome Captcha Check
+        if hasattr(self.auth, 'bypass_captcha'):
+            self.auth.bypass_captcha()
         
         # Step 5: Clear Supplier Cart (Post-Search)
         # User feedback: The cart appears on the search results page and must be cleared here.

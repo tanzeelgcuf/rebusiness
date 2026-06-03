@@ -10,7 +10,7 @@ We are writing to request a formal quote for design-build construction services 
 
 Your response is needed on or before Jan 31, 2026 12:00 PM CST in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -161,7 +161,7 @@ To be considered for the MACC, each potential prime contractor must:
 
 ### Submission Method & Contact
 - Format: Email
-- Recipient: john@campsable.com
+- Recipient: bobbysmitty078@gmail.com
 - Subject line: QUOTE REQUEST: Multiple Award Construction Contract (MACC) - FA4661-26-X-XXXX
 - Deadline: Jan 31, 2026 12:00 PM CST
 
@@ -211,7 +211,7 @@ Not Included in This Solicitation - This is a five-year ordering period IDIQ con
 5. Work locations will be at Dyess AFB, Texas.
 6. Must be capable of securing bonding up to the amount of individual task orders for future work.
 7. Wage compliance: Not specified in this Sources Sought.
-8. Submission method is via email to john@campsable.com with a descriptive subject line.
+8. Submission method is via email to bobbysmitty078@gmail.com with a descriptive subject line.
 
 ---
 

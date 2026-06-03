@@ -491,7 +491,7 @@ Before finalizing, verify:
 - [ ] Internal deadline adjusted to 4 business days before official
 - [ ] Camp Sable intro paragraph included
 - [ ] Professional opening and closing included
-- [ ] john@campsable.com as contact email
+- [ ] bobbysmitty078@gmail.com as contact email
 
 ---
 

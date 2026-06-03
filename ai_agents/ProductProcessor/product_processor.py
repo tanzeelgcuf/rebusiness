@@ -117,7 +117,7 @@ We are writing to request a formal quote for {item_name.lower()}. Camp Sable, LL
 
 **Internal Deadline:** Please submit your quote to us by {internal_deadline} to allow time for review and submission preparation.
 
-If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -525,7 +525,7 @@ This is a **multi-year contract** with multiple annual ordering periods (if appl
 
 **End of Vendor RFQ**
 
-*For questions or clarifications, contact john@campsable.com*"""
+*For questions or clarifications, contact bobbysmitty078@gmail.com*"""
 
 
 class EnhancedProductProcessor:

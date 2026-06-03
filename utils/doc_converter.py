@@ -161,7 +161,7 @@ class ProfessionalRFQBuilder:
         # Replace government emails
         content = re.sub(
             r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.(?:gov|mil)\b',
-            'john@campsable.com',
+            'bobbysmitty078@gmail.com',
             content,
             flags=re.IGNORECASE
         )
