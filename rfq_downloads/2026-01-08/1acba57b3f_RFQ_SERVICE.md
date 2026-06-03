@@ -10,7 +10,7 @@ We are writing to request a formal quote for CLOTH, CLEANING Product Procurement
 
 Your response is needed on or before Jan 16, 2026 in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -161,7 +161,7 @@ To be accepted, each site must:
 
 ### Submission Method & Contact
 - Format: Electronic
-- Recipient: john@campsable.com
+- Recipient: bobbysmitty078@gmail.com
 - Subject line: Quote for SPE8E526T1292 CLOTH, CLEANING
 - Deadline: Jan 16, 2026
 
@@ -211,7 +211,7 @@ Not Included in This Solicitation - This is a single purchase contract with no o
 5. Delivery must be made to MARINE AVIATION LOGISTICS SQ 16.
 6. Product must meet NSN 7920016143522 specifications.
 7. Wage compliance is not applicable for this product procurement.
-8. Quote must be submitted electronically to john@campsable.com by Jan 16, 2026.
+8. Quote must be submitted electronically to bobbysmitty078@gmail.com by Jan 16, 2026.
 
 ---
 
@@ -222,7 +222,7 @@ Not Included in This Solicitation - This is a single purchase contract with no o
 - [ ] Ensure capability to deliver to MARINE AVIATION LOGISTICS SQ 16.
 - [ ] Confirm ability to deliver within 10 days After Date of Order (ADO).
 - [ ] Prepare a comprehensive price quote for the 19 boxes.
-- [ ] Submit your quote electronically to john@campsable.com.
+- [ ] Submit your quote electronically to bobbysmitty078@gmail.com.
 - [ ] Ensure your quote is submitted by the deadline of Jan 16, 2026.
 - [ ] Verify your company's current registration status in SAM.gov.
 - [ ] Understand that this is a direct product procurement, not a service contract.

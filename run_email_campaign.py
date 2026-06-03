@@ -15,7 +15,7 @@ from ai_agents.DeepSpecAgent.deep_spec_agent import DeepSpecAgent
 # --- Configuration ---
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
-SENDER_EMAIL = "john@campsable.com"
+SENDER_EMAIL = "bobbysmitty078@gmail.com"
 SENDER_PASSWORD = "gwun semw qdwo ckxz" 
 
 DB_PATH = "rebusiness_automation.db"

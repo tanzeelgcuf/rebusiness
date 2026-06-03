@@ -65,7 +65,7 @@ FINAL SCORE: 100/100
 #### Manual Checklist Verification
 - [x] **DOCX Generated**: Yes, file created successfully.
 - [x] **No Bold Formatting**: Confirmed (Script stripped `**`).
-- [x] **Contact Info**: Only `john@campsable.com` present.
+- [x] **Contact Info**: Only `bobbysmitty078@gmail.com` present.
 - [x] **Sections Present**: All SERVICE sections (Summary, Scope, Submission) verified.
 - [x] **Attachments**: All 13 attachments processed and listed.
 

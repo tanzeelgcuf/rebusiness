@@ -31,7 +31,7 @@ class ResponseAgent:
 
         # Init Email Components
         # HARDCODED CREDENTIALS (Synced with OutreachAgent)
-        self.email_user = "john@campsable.com"
+        self.email_user = "bobbysmitty078@gmail.com"
         self.email_pass = "gwun semw qdwo ckxz"
         
         self.monitor = EmailMonitor("imap.gmail.com", self.email_user, self.email_pass)

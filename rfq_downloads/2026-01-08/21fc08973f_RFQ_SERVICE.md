@@ -10,7 +10,7 @@ We are writing to request a formal quote for Fire Alarm Control Panel Replacemen
 
 Your response is needed on or before Jan 15, 2026 2:00 PM PST in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -194,7 +194,7 @@ To be accepted, each site must:
 
 ### Submission Method & Contact
 - Format: Quote content should be prepared for email submission.
-- Recipient: john@campsable.com
+- Recipient: bobbysmitty078@gmail.com
 - Subject line: Quote for N4425526P7000 - REPLACE FIRE ALARM CONTROL PANEL B1950
 - Deadline: Jan 15, 2026 2:00 PM PST
 
@@ -284,7 +284,7 @@ Not Included in This Solicitation - This is a 500 calendar day contract with no 
 5. Work locations: All work will be conducted at Naval Station Everett, Building 1950, located at 2000 West Marine View Drive, Everett, WA 98207. Strict base access procedures apply, requiring advance requests for all personnel and vehicles.
 6. Quality performance standards: The Contractor is responsible for ensuring all quality control inspections and required tests are performed, passed, and documented. Work is subject to Government inspection and acceptance, with any deficiencies noted in a Punch List requiring correction at the contractor’s expense. A one-year warranty on workmanship and materials is required, beginning upon final project acceptance. The FA/MNS system must be maintainable by at least three different companies within 50 miles of Naval Station Everett (NSE).
 7. Wage compliance: Not specified in solicitation.
-8. Submission deadline and method: Your formal quote, including a detailed schedule of prices and cost breakdowns, must be submitted via email to john@campsable.com by Jan 15, 2026 2:00 PM PST.
+8. Submission deadline and method: Your formal quote, including a detailed schedule of prices and cost breakdowns, must be submitted via email to bobbysmitty078@gmail.com by Jan 15, 2026 2:00 PM PST.
 
 ---
 

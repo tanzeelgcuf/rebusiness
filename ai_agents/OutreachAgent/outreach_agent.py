@@ -38,14 +38,14 @@ class OutreachAgent:
         
         # Sender Config
         self.sender_name = "John Campbell"
-        self.sender_email = "john@campsable.com"
+        self.sender_email = "bobbysmitty078@gmail.com"
         self.sender_company = "CampSable LLC"
         
         # Email Config (Hardcoded for now as provided by user)
         self.email_service = EmailService(
             smtp_server="smtp.gmail.com",
             smtp_port=587,
-            sender_email="john@campsable.com",
+            sender_email="bobbysmitty078@gmail.com",
             sender_password="gwun semw qdwo ckxz"
         )
 

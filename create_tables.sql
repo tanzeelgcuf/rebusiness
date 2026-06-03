@@ -1,0 +1,13 @@
+            CREATE TABLE IF NOT EXISTS solicitations (
+            CREATE TABLE IF NOT EXISTS solicitation_analysis (
+            CREATE TABLE IF NOT EXISTS attachments (
+            CREATE TABLE IF NOT EXISTS proposals (
+            CREATE TABLE IF NOT EXISTS vendors (
+            CREATE TABLE IF NOT EXISTS manufacturers (
+            CREATE TABLE IF NOT EXISTS products (
+            CREATE TABLE IF NOT EXISTS price_lists (
+            CREATE TABLE IF NOT EXISTS manufacturer_requests (
+            CREATE TABLE IF NOT EXISTS product_sourcing_status (
+            CREATE TABLE IF NOT EXISTS product_suppliers (
+            CREATE TABLE IF NOT EXISTS rfq_outputs (
+                CREATE TABLE IF NOT EXISTS rfq_outputs (

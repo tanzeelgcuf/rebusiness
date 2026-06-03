@@ -12,7 +12,7 @@ CRITICAL RULES:
 2. NEVER output instruction text, placeholder brackets, or meta-commentary
 3. Output ONLY the final client-facing RFQ email
 4. Use professional, complete sentences - no fragments
-5. Replace government emails with john@campsable.com
+5. Replace government emails with bobbysmitty078@gmail.com
 6. Do NOT use bold formatting (**)
 7. Do NOT include phrases like "EXTRACTION LOGIC", "Must Extract:", "[specific_product_name]", etc.
 
@@ -50,7 +50,7 @@ We are writing to request a formal quote for {product_description}. Camp Sable, 
 
 Your response is needed on or before {camp_deadline} in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -136,7 +136,7 @@ Estimated Overall Duration:
 🏛️ Submission Details
 
 Quote Submission:
-Email proposal (PDF preferred) to john@campsable.com
+Email proposal (PDF preferred) to bobbysmitty078@gmail.com
 Subject line: Proposal Submission {notice_id} ([Your_Company_Name])
 Due Date: {camp_deadline}
 
@@ -168,7 +168,7 @@ CRITICAL RULES:
 2. NEVER output instruction text, placeholder brackets, or meta-commentary
 3. Output ONLY the final client-facing RFQ email
 4. Use professional, complete sentences - no fragments
-5. Replace government emails with john@campsable.com
+5. Replace government emails with bobbysmitty078@gmail.com
 6. Do NOT use bold formatting (**)
 7. Do NOT include phrases like "EXTRACTION LOGIC", "Must Extract:", "See PWS", etc.
 8. Use checkbox format (- [ ]) for Key Takeaways, NOT numbered list
@@ -212,7 +212,7 @@ We are writing to request a formal quote for {service_description}. Camp Sable, 
 
 Your response is needed on or before {camp_deadline} in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 

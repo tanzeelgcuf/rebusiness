@@ -49,7 +49,7 @@ Deadline: February 15, 2026""",
         "contact_info": {
             "name": "John Smith",
             "company": "Camp Sable Manufacturing",
-            "email": "john@campsable.com",
+            "email": "bobbysmitty078@gmail.com",
             "phone": "555-123-4567"
         }
     }

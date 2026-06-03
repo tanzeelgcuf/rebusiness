@@ -10,7 +10,7 @@ We are writing to request a formal quote for Architect Engineering Services – 
 
 Your response is needed on or before February 02, 2026 in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -169,7 +169,7 @@ To be accepted, each site must:
 
 ### Submission Method & Contact
 - Format: Electronic submission (email)
-- Recipient: john@campsable.com
+- Recipient: bobbysmitty078@gmail.com
 - Subject line: Response to W9123726X1B21 - A-E Services Sources Sought
 - Deadline: February 02, 2026
 
@@ -217,7 +217,7 @@ Not Included in This Solicitation - This is a Sources Sought notice to determine
 5. Work locations are across Districts within the U.S. Army Corps of Engineers, Great Lakes and Ohio River Division, including Buffalo, Chicago, Detroit, Huntington, Louisville, Nashville, and Pittsburgh Districts, with primary work through Huntington District. Right-of-entry must be coordinated for all field work.
 6. Quality and performance standards include demonstrating professional registration, extensive company experience, qualified personnel resumes, and examples of comparable work within the past 5 years. All designs must be signed and certified by appropriately licensed Professional Engineers, Surveyors, Architects, and Landscape Architects. Bidders must demonstrate capacity to perform up to $2,500,000.00 in work within a one-year period.
 7. Wage compliance: Not specified in this Sources Sought notice.
-8. Submission deadline and method: Capabilities Statement must be submitted electronically via email to john@campsable.com by February 02, 2026.
+8. Submission deadline and method: Capabilities Statement must be submitted electronically via email to bobbysmitty078@gmail.com by February 02, 2026.
 
 ---
 
@@ -234,7 +234,7 @@ Not Included in This Solicitation - This is a Sources Sought notice to determine
 - [ ] Be prepared to develop specifications using Unified Facility Guide Specifications (UFGS) and the SpecsIntact automated specification processing system.
 - [ ] Be prepared to use M-CACES M-II software for construction cost estimating.
 - [ ] Understand the requirements for obtaining or verifying right-of-entry for all field work.
-- [ ] Submit your response electronically to john@campsable.com by February 02, 2026.
+- [ ] Submit your response electronically to bobbysmitty078@gmail.com by February 02, 2026.
 
 ---
 

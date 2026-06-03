@@ -8,7 +8,7 @@ from ai_agents.OutreachAgent.email_service import EmailService
 # --- Configuration (Hardcoded for this task as per discovery) ---
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
-SENDER_EMAIL = "john@campsable.com"
+SENDER_EMAIL = "bobbysmitty078@gmail.com"
 SENDER_PASSWORD = "gwun semw qdwo ckxz" 
 
 LEADS_FILE = "leads.csv"
@@ -44,7 +44,7 @@ def format_email_body(row):
     subject = f"Request for Quote - {solicitation_id} [{product_keyword}]"
     
     body = f"""Camp Sable, LLC
-john@campsable.com
+bobbysmitty078@gmail.com
 {datetime.date.today().strftime("%B %d, %Y")}
 
 Subject: {subject}
@@ -67,7 +67,7 @@ Warranty information
 
 Response Deadline: We require your quote to be submitted no later than {deadline} to ensure timely evaluation of all proposals.
 
-If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 

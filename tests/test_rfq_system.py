@@ -319,7 +319,7 @@ Vendor: vendor@campsable.com
         # Should replace gov emails with campsable
         self.assertNotIn('@army.mil', cleaned)
         self.assertNotIn('@dla.gov', cleaned)
-        self.assertIn('john@campsable.com', cleaned)
+        self.assertIn('bobbysmitty078@gmail.com', cleaned)
 
 
 class TestIntegration(unittest.TestCase):

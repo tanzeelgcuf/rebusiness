@@ -11,7 +11,7 @@ We are writing to request a formal quote for PIEE Solicitation Module Access. Ca
 
 Your response is needed on or before July 4, 2025 in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -131,7 +131,7 @@ Technical Data Package (TDP) available via SAM.gov_link or "Direct from Contract
 ## 🏛️ Submission Details
 
 Quote Submission:
-Email proposal (PDF preferred) to john@campsable.com
+Email proposal (PDF preferred) to bobbysmitty078@gmail.com
 Subject line: Proposal Submission W911S225U1080 ([Your_Company_Name])
 
 Due Date: July 4, 2025
@@ -166,7 +166,7 @@ Lowest Price Technically Acceptable (LPTA)
 2. Inspection/acceptance: Destination - coordinate [timeframe] before shipment
 3. Delivery terms: FOB Destination, ship to [Specific_location]
 4. Systems required: PIEE
-5. Submission deadline: July 4, 2025 via email to john@campsable.com
+5. Submission deadline: July 4, 2025 via email to bobbysmitty078@gmail.com
 
 ---
 

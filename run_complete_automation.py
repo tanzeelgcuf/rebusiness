@@ -269,7 +269,7 @@ def generate_and_submit_mode(keyword=None, num_pages=10, max_vendors=5):
     args.strict_fidelity = True
     args.template_type = "auto-detect"
     args.internal_deadline_offset = 4
-    args.vendor_email = "john@campsable.com"
+    args.vendor_email = "bobbysmitty078@gmail.com"
     args.organization_name = "Camp Sable, LLC"
     args.no_self_healing = False
     args.max_healing_iterations = 3

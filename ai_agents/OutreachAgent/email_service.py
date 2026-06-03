@@ -59,9 +59,9 @@ if __name__ == "__main__":
     SERVICE = EmailService(
         smtp_server="smtp.gmail.com",
         smtp_port=587,
-        sender_email="john@campsable.com",
+        sender_email="bobbysmitty078@gmail.com",
         sender_password="gwun semw qdwo ckxz"
     )
     
     # Send test email to self
-    SERVICE.send_email("john@campsable.com", "Test Email from Outreach Agent", "Hello John, this is a test.")
+    SERVICE.send_email("bobbysmitty078@gmail.com", "Test Email from Outreach Agent", "Hello John, this is a test.")

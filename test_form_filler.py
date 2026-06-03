@@ -15,7 +15,7 @@ if __name__ == "__main__":
     target_url = "https://www.atlasbolt.com"
     test_data = {
         "name": "John Campbell",
-        "email": "john@campsable.com",
+        "email": "bobbysmitty078@gmail.com",
         "message": "Hello, this is a test inquiry about availability.",
         "subject": "Quote Request",
         "company": "CampSable LLC"

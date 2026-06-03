@@ -1,0 +1,17 @@
+venv/*
+.venv/*
+__pycache__/*
+*.pyc
+.git/*
+.DS_Store
+rfq_downloads/*
+*.zip
+dashboard/rfq_downloads/*
+*.log
+page_source_*.html
+temp_*.html
+selenium_profile/*
+downloads/*
+rfq_outputs/*
+dashboard/logs/*
+data/*

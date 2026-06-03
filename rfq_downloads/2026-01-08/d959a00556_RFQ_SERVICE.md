@@ -10,7 +10,7 @@ We are writing to request a formal quote for procurement of CELL ASSY. Camp Sabl
 
 Your response is needed on or before Jan 14, 2026 in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -158,7 +158,7 @@ To be accepted, each site must:
 
 ### Submission Method & Contact
 - Format: Electronically
-- Recipient: john@campsable.com
+- Recipient: bobbysmitty078@gmail.com
 - Subject line: RFQ Response: SPE8E926T1143 - CELL ASSY
 - Deadline: Jan 14, 2026
 
@@ -208,7 +208,7 @@ Not Included in This Solicitation - This is a single contract with no option per
 5. Work locations: Delivery to W1A8 DLA DISTRIBUTION.
 6. Quality/performance standards: Not specified beyond the NSN and approved sources.
 7. Wage compliance: Not applicable for this product procurement.
-8. Submission deadline and method: Electronically to john@campsable.com by Jan 14, 2026.
+8. Submission deadline and method: Electronically to bobbysmitty078@gmail.com by Jan 14, 2026.
 
 ---
 
@@ -218,7 +218,7 @@ Not Included in This Solicitation - This is a single contract with no option per
 - [ ] Quote price for 19 EA of NSN 4610015464549 CELL ASSY.
 - [ ] Confirm ability to deliver within 166 days ADO.
 - [ ] Ensure electronic submission.
-- [ ] Submit quote to john@campsable.com.
+- [ ] Submit quote to bobbysmitty078@gmail.com.
 - [ ] Submit quote by Jan 14, 2026.
 - [ ] No specifications, plans, or drawings are available.
 - [ ] Delivery location is W1A8 DLA DISTRIBUTION.

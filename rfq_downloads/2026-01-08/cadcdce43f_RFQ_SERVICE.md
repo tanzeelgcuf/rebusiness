@@ -10,7 +10,7 @@ We are writing to request a formal quote for NRP, PORTABLE HOIST related service
 
 Your response is needed on or before Not specified in solicitation in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -157,7 +157,7 @@ To be accepted, each site must:
 
 ### Submission Method & Contact
 - Format: Not specified in solicitation
-- Recipient: john@campsable.com
+- Recipient: bobbysmitty078@gmail.com
 - Subject line: Quote for SPE8EE26Q0060 - Portable Hoist
 - Deadline: Not specified in solicitation
 

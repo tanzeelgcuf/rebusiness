@@ -19,8 +19,9 @@ class RFQFormFiller:
     Handles filling and submitting RFQ forms on ThomasNet vendor pages.
     """
     
-    def __init__(self, page: Page, config: Dict = None):
-        self.page = page
+    def __init__(self, auth: Any, config: Dict = None):
+        self.auth = auth
+        self.page = auth.page
         self.config = config or CONFIG
         self.company_info = self.config.get("company", {})
         
@@ -53,6 +54,10 @@ class RFQFormFiller:
             # 1. Navigate to Vendor Profile
             self.page.goto(profile_url)
             
+            # Check for DataDome immediately after navigation
+            if hasattr(self.auth, 'bypass_captcha'):
+                self.auth.bypass_captcha()
+
             # 2. Find "Contact" or "Quote" button
             # Selectors based on likely ThomasNet buttons
             action_buttons = [

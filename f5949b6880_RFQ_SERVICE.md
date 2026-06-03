@@ -162,7 +162,7 @@ Note: If all areas of mowing are requested, the contractor shall complete all wo
 | Primary Point of Contact  | Shelby Henson, Email: shelby.m.henson@usace.army.mil, Phone: 5013401249                                                                                                                                                                                                                                         |
 | Alternative Point of Contact | Sarah N. Hagood, Email: sarah.n.hagood@usace.army.mil                                                                                                                                                                                                                                                          |
 | Site Visit                | **January 07, 2026 10:00 AM CST** at **700 Heber Springs Road North, Heber Springs, AR 72543**                                                                                                                                                                                                                 |
-| Internal Camp Sable Contact | john@campsable.com                                                                                                                                                                                                                                                                                             |
+| Internal Camp Sable Contact | bobbysmitty078@gmail.com                                                                                                                                                                                                                                                                                             |
 | Period of Performance     | Base year (Date of contract award - **January 31, 2027**) plus four 12-month option years (through **January 31, 2031**).                                                                                                                                                                                       |
 | Order Issuance            | Work is ordered by issuance of Delivery Orders (Standard Form 1449) for task items, and further defined by Work Orders that may include earlier completion dates.                                                                                                                                                  |
 | Government Furnished Items | Contractor may use water and electricity available in parks for work at no charge.                                                                                                                                                                                                                             |
@@ -328,7 +328,7 @@ Total Option Period 1 Price for Mowing Services at Greers Ferry Lake Project: **
 
 ---
 
-Please reach out to john@campsable.com with any questions or for assistance with your response. We look forward to supporting your bid.
+Please reach out to bobbysmitty078@gmail.com with any questions or for assistance with your response. We look forward to supporting your bid.
 
 Sincerely,
 

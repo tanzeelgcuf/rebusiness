@@ -11,7 +11,7 @@ Your response is needed on or before 4 business days prior in order for us to su
 
 There are other documents that I can send you, if this is a project that you would be interested in bidding. 
 
-If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 

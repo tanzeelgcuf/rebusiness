@@ -22,7 +22,7 @@
 ### `.env` File
 ```bash
 # ThomasNet Automation
-THOMASNET_EMAIL=john@campsable.com
+THOMASNET_EMAIL=bobbysmitty078@gmail.com
 THOMASNET_PASSWORD=JohnKris$1
 
 # Smart Proxy Configuration

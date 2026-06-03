@@ -9,7 +9,7 @@ We are writing to request a formal quote for tree removal services at the Togus 
 
 Your response is needed on or before January 8, 2026 in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -162,7 +162,7 @@ N/A
 
 ### Submission Method & Contact
 - Format: Email PDF attachments preferred
-- Recipient: john@campsable.com
+- Recipient: bobbysmitty078@gmail.com
 - Subject line: Quote for 36C24126Q0088 - Togus Tree Removal
 - Deadline: January 8, 2026
 
@@ -223,7 +223,7 @@ Total Option 1 Price for Tree Removal Services (if exercised)
 9. Provide weight documentation for all removed tree components and mulch.
 10. Provide photographic documentation of each work area, including before and after images.
 11. Submit a completely filled and signed Limitation of Subcontracting in accordance with VAAR 852.219-75.
-12. Submit quote to john@campsable.com by January 12, 2026 at 5:00 PM EST.
+12. Submit quote to bobbysmitty078@gmail.com by January 12, 2026 at 5:00 PM EST.
 
 ---
 
@@ -240,7 +240,7 @@ Total Option 1 Price for Tree Removal Services (if exercised)
 - [ ] Provide weight documentation for all removed tree components and mulch.
 - [ ] Provide photographic documentation of each work area.
 - [ ] Submit a completely filled and signed Limitation of Subcontracting.
-- [ ] Submit quote to john@campsable.com by January 8, 2026.
+- [ ] Submit quote to bobbysmitty078@gmail.com by January 8, 2026.
 
 ---
 

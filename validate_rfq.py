@@ -143,7 +143,7 @@ class RFQValidator:
         # ========== CATEGORY 2: CONTACT & DEADLINE ACCURACY (30 pts) ==========
         
         # 2.1 Camp Sable email (15 pts)
-        if 'john@campsable.com' in text:
+        if 'bobbysmitty078@gmail.com' in text:
             score += 15
             details['camp_sable_email'] = "✓ Present"
         else:
@@ -153,7 +153,7 @@ class RFQValidator:
         # 2.2 No government emails (15 pts)
         gov_email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.(?:gov|mil)\b'
         gov_emails = re.findall(gov_email_pattern, text, re.IGNORECASE)
-        # Filter out false positives (john@campsable.com shouldn't match)
+        # Filter out false positives (bobbysmitty078@gmail.com shouldn't match)
         gov_emails = [e for e in gov_emails if 'campsable' not in e.lower()]
         
         if not gov_emails:

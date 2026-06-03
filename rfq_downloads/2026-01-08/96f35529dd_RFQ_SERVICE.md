@@ -10,7 +10,7 @@ We are writing to request a formal quote for construction services for Project #
 
 Your response is needed on or before February 2, 2026, 2:00 PM EST in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -159,7 +159,7 @@ To be accepted, each site must:
 
 ### Submission Method & Contact
 - Format: Not specified in solicitation (expected in full solicitation)
-- Recipient: john@campsable.com
+- Recipient: bobbysmitty078@gmail.com
 - Subject line: RFQ for VA Project # 614-17-113, Renovate Bldg. 1 Primary Care (36C24926R0037)
 - Deadline: February 2, 2026, 2:00 PM EST
 
@@ -209,7 +209,7 @@ Not Included in This Solicitation - This is a Not specified in solicitation cont
 5.  All work will be performed at the Lt. Col. Luke Weathers, Jr Memphis VA Medical Center, Memphis, TN.
 6.  The award will be based on a Lowest Price Technically Acceptable (LPTA) source selection process, with specific technical and evaluation factors to be detailed in the full solicitation.
 7.  Comply with all applicable wage and labor laws; specific wage determination details are not provided in this presolicitation but will be part of the full solicitation.
-8.  Submit your quote to john@campsable.com by February 2, 2026, 2:00 PM EST, including content as requested in the full solicitation document once released.
+8.  Submit your quote to bobbysmitty078@gmail.com by February 2, 2026, 2:00 PM EST, including content as requested in the full solicitation document once released.
 
 ---
 
@@ -224,7 +224,7 @@ Not Included in This Solicitation - This is a Not specified in solicitation cont
 - [ ] Evaluation factors and sub-factors will be available upon solicitation release.
 - [ ] The proposed contractor must be determined responsible in accordance with FAR Part 9.
 - [ ] Your quote is needed by Camp Sable, LLC on or before February 2, 2026, 2:00 PM EST.
-- [ ] Send all inquiries and bids to john@campsable.com.
+- [ ] Send all inquiries and bids to bobbysmitty078@gmail.com.
 - [ ] The project involves interior build-out, wall construction, finishes, mechanical, lighting, plumbing, and removal/remodeling of existing clinical lab areas.
 - [ ] The Statement of Work, Project Specifications, and Drawings will be released with the full solicitation.
 

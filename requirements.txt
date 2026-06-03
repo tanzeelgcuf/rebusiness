@@ -21,3 +21,13 @@ google-auth-oauthlib
 tiktoken
 PyCryptodome
 mammoth
+flask
+flask-cors
+gunicorn
+pdfplumber
+playwright-stealth
+rich
+click
+pyyaml
+2captcha-python
+requests[socks]

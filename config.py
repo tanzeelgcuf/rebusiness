@@ -48,11 +48,11 @@ COMPANY_INFO = {
     "WHY_CHOOSE_US": """Experienced Team: Skilled professionals with extensive\nexperience in federal logistics, procurement planning, and\ncontract compliance.\nCompliance-Driven: We understand the strict requirements of\nfederal acquisitions and align our services with all applicable\nregulations (FAR, DFARS, etc.).\nMission-Focused Execution: From sourcing to delivery, we\nexecute with efficiency and precision—on time, within budget,\nand aligned with mission needs.""",
     "COMPANY_SNAPSHOT": {
         "Legal Business Name": "CampSable LLC",
-        "Point of Contact": "John Campbell",
+        "Point of Contact": "Bobby Smitty",
         "UEI": "R7ERBNQAGKQ8",
         "CAGE Code": "08H05",
         "Socio Economic Status": "Minority Owned",
-        "Email": "Johnm2511@yahoo.com",
+        "Email": "bobbysmitty078@gmail.com",
         "Phone Number": "+1 (720) 980-6080",
         "Physical Address": "14264 Hop Clover Trail"
     },
@@ -74,5 +74,5 @@ RFQ_DEADLINE_OFFSET_BUSINESS_DAYS = 4
 RFQ_OUTPUT_FORMAT = "docx"
 RFQ_REMOVE_GOVERNMENT_DEADLINE = True
 RFQ_SHOW_ONLY_CAMPABLE_EMAIL = True
-RFQ_VENDOR_EMAIL = "john@campsable.com"
+RFQ_VENDOR_EMAIL = "bobbysmitty078@gmail.com"
 RFQ_COMPANY_NAME = "Camp Sable, LLC"

@@ -1,25 +1,52 @@
 import time
-from auth import ThomasNetAuth
+import sys
+import os
+from pathlib import Path
+
+# Add current directory to path for imports
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+from auth import ThomasNetAuth, SESSION_FILE
 
 def setup_session():
-    print("Opening browser for manual session setup...")
-    print("Please:")
-    print("1. Log in to ThomasNet")
-    print("2. Solve any captchas")
-    print("3. Ensure you can see the search bar")
-    print("4. Close the browser window when done")
+    print("\n" + "="*60)
+    print("THOMASNET SESSION SETUP (DATA DOME BYPASS SEEDING)")
+    print("="*60)
+    print("\nThis script will open a browser for you to manually log in.")
+    print("This 'seeds' a valid session that the automation can reuse.")
+    print("\nSTEPS:")
+    print("1. A browser window will open.")
+    print("2. Navigate to ThomasNet and LOG IN if prompted.")
+    print("3. Solve any DataDome CAPTCHAs that appear.")
+    print("4. Once you are successfully on the dashboard/search page,")
+    print("   come back to this terminal and press ENTER.")
+    print("="*60 + "\n")
     
-    # Force headless=False for manual interaction
-    with ThomasNetAuth(headless=False) as auth:
-        print("Browser launched. Waiting for you to close it...")
-        # Keep script running until browser is closed
-        try:
-            while auth.context.pages:
-                time.sleep(1)
-        except Exception as e:
-            print(f"Browser closed or disconnected: {e}")
-            
-    print("Session setup complete! Cookies/State should be saved in 'chrome_profile'.")
+    # Initialize auth in non-headless mode
+    # We pass storage_state=None to ensure we start fresh if needed, 
+    # or it will naturally load the existing one if we want to 'refresh' it.
+    auth = ThomasNetAuth(headless=False)
+    page = auth.start_browser()
+    
+    try:
+        print("Opening ThomasNet...")
+        page.goto("https://www.thomasnet.com", wait_until="domcontentloaded")
+        
+        input(">>> Press ENTER here once you have logged in and solved all CAPTCHAs...")
+        
+        print("\nSaving session state...")
+        auth.save_session()
+        print(f"✅ Session saved successfully to: {SESSION_FILE}")
+        
+    except Exception as e:
+        print(f"❌ Error during setup: {e}")
+    finally:
+        auth.close()
+
+    print("\n" + "="*60)
+    print("SETUP COMPLETE")
+    print("You can now run the automation in headless mode.")
+    print("="*60 + "\n")
 
 if __name__ == "__main__":
     setup_session()

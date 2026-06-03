@@ -28,7 +28,7 @@ def send_2_test_emails():
         service = EmailService(
             "smtp.gmail.com", 
             587, 
-            "john@campsable.com", 
+            "bobbysmitty078@gmail.com", 
             "gwun semw qdwo ckxz"
         )
     except Exception as e:

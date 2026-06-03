@@ -8,7 +8,7 @@ We are writing to request a formal quote for janitorial and custodial services. 
 
 Your response is needed on or before March 04, 2026 in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -150,7 +150,7 @@ To be accepted, each site must:
 
 ### Submission Method & Contact
 - Format: Email
-- Recipient: john@campsable.com
+- Recipient: bobbysmitty078@gmail.com
 - Subject line: Quote for GS-05-P-26-XXXX Janitorial and Custodial Services
 - Deadline: March 04, 2026
 
@@ -210,7 +210,7 @@ Total Option 1 Price for Option Year 1 Janitorial and Custodial Services (if exe
 
 ## 🟩 Key Takeaways for Bidder
 
-- [ ] Submit your quote to john@campsable.com by March 04, 2026.
+- [ ] Submit your quote to bobbysmitty078@gmail.com by March 04, 2026.
 - [ ] The solicitation is for janitorial and custodial services at the Federal Building in Chicago, IL.
 - [ ] Services include daily, weekly, and semi-annual tasks as outlined in the Scope of Work.
 - [ ] The project has a base year and one option year, covering up to two years of service.

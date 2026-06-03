@@ -216,7 +216,7 @@ class SelfHealingQAAgent:
             logger.warning("    ✗ Bold formatting present")
         
         if re.search(r'[\w\.-]+@[\w\.-]*\.(?:gov|mil)\b', rfq_content):
-            issues.append("Government emails found - should be replaced with john@campsable.com")
+            issues.append("Government emails found - should be replaced with bobbysmitty078@gmail.com")
             logger.warning("    ✗ Government emails present")
         
         # Final verdict

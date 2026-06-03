@@ -110,7 +110,7 @@ Quotes Due: [CAMP_SABLE_DEADLINE in Month DD, YYYY format]
 # Lines 264-272: Replace with complete requirements language
 Your response is needed on or before [CAMP_SABLE_DEADLINE] in order for us to submit your bid.
 
-All requirements, specifications, and compliance criteria are detailed below. Please review the complete RFQ carefully and contact me if you need any clarification. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+All requirements, specifications, and compliance criteria are detailed below. Please review the complete RFQ carefully and contact me if you need any clarification. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 ```

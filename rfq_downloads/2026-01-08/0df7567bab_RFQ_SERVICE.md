@@ -10,7 +10,7 @@ We are writing to request a formal quote for Fiber Rope Assembly. Camp Sable, LL
 
 Your response is needed on or before Not specified in solicitation (Government response date is blank as this is an Award Notice) in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -161,7 +161,7 @@ To be accepted, each site must:
 
 ### Submission Method & Contact
 - Format: Not specified in solicitation
-- Recipient: john@campsable.com
+- Recipient: bobbysmitty078@gmail.com
 - Subject line: Not specified in solicitation
 - Deadline: Not specified in solicitation (Government response date is blank as this is an Award Notice)
 
@@ -229,7 +229,7 @@ Not Included in This Solicitation - This is a Not specified contract with no opt
 - [ ] Compliance points such as safety standards, licensing, or environmental requirements are not detailed.
 - [ ] No wage determination or insurance requirements are listed.
 - [ ] There are no bid submission instructions or evaluation criteria as this is an awarded contract.
-- [ ] The contact email for Camp Sable inquiries is john@campsable.com.
+- [ ] The contact email for Camp Sable inquiries is bobbysmitty078@gmail.com.
 
 ---
 

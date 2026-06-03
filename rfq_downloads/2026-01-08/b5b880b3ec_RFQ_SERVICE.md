@@ -8,7 +8,7 @@ We are writing to request a formal quote for construction services for an Airpor
 
 Your response is needed on or before February 25, 2026, 5:00 PM CST in order for us to submit your bid.
 
-There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+There are other documents that I can send you, if this is a project that you would be interested in bidding. If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -160,7 +160,7 @@ To be accepted, each site must:
 
 ### Submission Method & Contact
 - Format: Electronic means (email)
-- Recipient: john@campsable.com
+- Recipient: bobbysmitty078@gmail.com
 - Subject line: RFQ Response - Construction of New Airport Traffic Control Tower (ATCT) - Grand Forks, ND - 697DCK-26-R-00034
 - Deadline: February 25, 2026, 5:00 PM CST
 
@@ -263,7 +263,7 @@ Not Included in This Solicitation - This is a 730 calendar day contract with no 
 5. All work will occur at the Grand Forks International Airport (GFK), Grand Forks, North Dakota, requiring adherence to FAA access protocols and coordination for site visits.
 6. Maintain high quality performance standards through an adequate inspection system, an on-site Construction Quality Manager, and a robust quality management plan.
 7. Comply with the Davis-Bacon Act (WD# ND20250014), Executive Order 13706 for Paid Sick Leave, and Executive Order 13658 for Minimum Wage, and use the E-Verify program.
-8. Submit proposals electronically to john@campsable.com by February 25, 2026, 5:00 PM CST, ensuring all required volumes (Business, Technical, Price) and attachments are complete and accurate.
+8. Submit proposals electronically to bobbysmitty078@gmail.com by February 25, 2026, 5:00 PM CST, ensuring all required volumes (Business, Technical, Price) and attachments are complete and accurate.
 
 ---
 
@@ -271,7 +271,7 @@ Not Included in This Solicitation - This is a 730 calendar day contract with no 
 
 - [ ] Your bid must be for the construction of a new Airport Traffic Control Tower and Base Building at Grand Forks International Airport, Grand Forks, ND.
 - [ ] The contract duration is 730 calendar days after the Notice to Proceed, with no option periods.
-- [ ] Submit your formal quote to john@campsable.com on or before February 25, 2026, 5:00 PM CST.
+- [ ] Submit your formal quote to bobbysmitty078@gmail.com on or before February 25, 2026, 5:00 PM CST.
 - [ ] Your proposal must include a Cover Letter, Signed SIR and Amendments, comprehensive Financial Capability documentation, and a Certificate of Liability.
 - [ ] You must provide a letter from a Treasury-approved bonding company confirming bonding capability equal to or exceeding $70,000,000.00.
 - [ ] An Experience Modification Rate (EMR) of 1.0 or less is required, provided on insurance carrier or NCCI/state bureau letterhead.

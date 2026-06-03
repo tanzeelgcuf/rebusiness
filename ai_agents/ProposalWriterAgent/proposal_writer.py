@@ -54,7 +54,7 @@ Dear [Vendor]:
 
 We are writing to request a formal quote for {title.lower()}. Camp Sable, LLC is currently evaluating potential suppliers and would appreciate your consideration for this opportunity. Camp Sable, LLC is a registered government procurement contractor. We are a certified majority owned woman minority company, and also qualify for the small business set-aside.
 
-If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -158,7 +158,7 @@ Campsable LLC
     sub = analysis.get('submission', {})
     sections.append(f"### 🔹 Submission Details")
     sections.append(f"• **Method:** {sub.get('method', 'Electronic Submission (Email)')}")
-    sections.append(f"• **Email for Quotes:** {sub.get('email', 'john@campsable.com')}")
+    sections.append(f"• **Email for Quotes:** {sub.get('email', 'bobbysmitty078@gmail.com')}")
     sections.append(f"• **Subject Line Format:** {sub.get('subject', f'[Quote] {notice_id} - {title}')}")
     sections.append(f"• **Due Date:** **{sub.get('due_date', 'Not included')}**")
     sections.append(f"• **Internal Submission Deadline:** **{internal_due_formatted}**")
@@ -248,7 +248,7 @@ Your response is needed on or before **{internal_due_formatted}** in order for u
 
 There are other documents that I can send you, if this is a project that you would be interested in bidding. 
 
-If you have any questions regarding this request or need additional information, please contact me at john@campsable.com. We look forward to establishing a mutually beneficial business relationship.
+If you have any questions regarding this request or need additional information, please contact me at bobbysmitty078@gmail.com. We look forward to establishing a mutually beneficial business relationship.
 
 Thank you for your time and consideration.
 
@@ -395,7 +395,7 @@ Campsable LLC
     
     sections.append("#### Submission Method & Contact")
     sections.append(f"• **Format:** {bid_ins.get('delivery_options', 'Email proposal (PDF)')}")
-    sections.append(f"• **Email Address:** john@campsable.com")
+    sections.append(f"• **Email Address:** bobbysmitty078@gmail.com")
     sections.append(f"• **Deadline:** **{bid_ins.get('due_date', due_date_str)}**")
     
     sections.append("\n#### Required Quote Content")
