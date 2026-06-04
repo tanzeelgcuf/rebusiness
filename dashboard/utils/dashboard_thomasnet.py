@@ -204,6 +204,24 @@ def submit_rfq_to_vendors(page, rfq_path: str, max_vendors: int = 5) -> Dict:
     logger.info(f"\n{'='*80}")
     logger.info(f"Processing RFQ: {os.path.basename(rfq_path)}")
     logger.info(f"{'='*80}")
+
+    # Slider verification check before starting
+    slider_solved = None
+    try:
+        from captcha_solver import detect_datadome
+        if detect_datadome(page):
+            logger.info("⚠️  DataDome slider detected — attempting automated solve...")
+            from ai_agents.ThomasNetAgent.form_filler import solve_slider_if_present
+            slider_solved = solve_slider_if_present(page)
+            if slider_solved:
+                logger.info("✅ DataDome slider solved successfully before submission")
+            else:
+                logger.warning("❌ DataDome slider NOT solved — submission may fail")
+        else:
+            logger.info("✅ No DataDome slider detected — proceeding")
+            slider_solved = True
+    except Exception as e:
+        logger.warning(f"Slider check skipped: {e}")
     
     try:
         # Extract product name
@@ -229,7 +247,8 @@ def submit_rfq_to_vendors(page, rfq_path: str, max_vendors: int = 5) -> Dict:
             return {
                 'success': False,
                 'error': 'No vendors found',
-                'vendors_contacted': 0
+                'vendors_contacted': 0,
+                'slider_solved': slider_solved
             }
         
         logger.info(f"Found {len(vendors)} vendors")
@@ -247,7 +266,8 @@ def submit_rfq_to_vendors(page, rfq_path: str, max_vendors: int = 5) -> Dict:
             return {
                 'success': False,
                 'error': 'No valid vendors to contact',
-                'vendors_contacted': 0
+                'vendors_contacted': 0,
+                'slider_solved': slider_solved
             }
         
         # Submit RFQs using multi-vendor batch system
@@ -273,7 +293,8 @@ def submit_rfq_to_vendors(page, rfq_path: str, max_vendors: int = 5) -> Dict:
             logger.error(f"\n{'='*80}")
             logger.error(f"❌ Failed: {result.get('error')}")
             logger.error(f"{'='*80}\n")
-        
+
+        result['slider_solved'] = slider_solved
         return result
         
     except Exception as e:
@@ -281,7 +302,8 @@ def submit_rfq_to_vendors(page, rfq_path: str, max_vendors: int = 5) -> Dict:
         return {
             'success': False,
             'error': str(e),
-            'vendors_contacted': 0
+            'vendors_contacted': 0,
+            'slider_solved': slider_solved
         }
 
 def run_dashboard_thomasnet_submission(max_vendors: int = 5, cdp_url: str = "http://127.0.0.1:9222") -> Dict:
@@ -393,6 +415,15 @@ def submit_single_rfq_task(rfq_path: str, max_vendors: int = 5, cdp_url: str = "
         logger.info("Calling submit_rfq_to_vendors...")
         result = submit_rfq_to_vendors(page, rfq_path, max_vendors)
         logger.info(f"Result: {result}")
+
+        # Log slider status
+        slider = result.get('slider_solved')
+        if slider is True:
+            logger.info("✅ DataDome slider: Solved")
+        elif slider is False:
+            logger.warning("❌ DataDome slider: NOT solved")
+        else:
+            logger.info("⚪ DataDome slider: Not checked")
 
         if result.get('success'):
             mark_as_processed(rfq_path)

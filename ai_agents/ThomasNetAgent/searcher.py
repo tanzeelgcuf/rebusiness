@@ -20,8 +20,13 @@ class ThomasNetSearch:
     """
     
     def __init__(self, auth: Any):
-        self.auth = auth
-        self.page = auth.page
+        # Accept either an auth object (with .page) or a direct Page
+        if hasattr(auth, 'page'):
+            self.auth = auth
+            self.page = auth.page
+        else:
+            self.auth = None
+            self.page = auth  # caller passed a Page directly
         self.base_url = CONFIG["thomasnet"]["base_url"]
 
     def search_vendors(self, query: str, max_results: int = 20) -> List[Dict[str, Any]]:
@@ -212,7 +217,8 @@ class ThomasNetSearch:
 
             # Wait for the JSON-LD script with a shorter timeout
             try:
-                self.page.wait_for_selector('script[type="application/ld+json"]', timeout=3000)
+                # Use 'attached' state because <script> tags are always display:none / hidden
+                self.page.wait_for_selector('script[type="application/ld+json"]', state='attached', timeout=3000)
                 logger.info("JSON-LD script tag found")
             except PlaywrightTimeoutError:
                 logger.warning("JSON-LD script tag not found (3s timeout)")
@@ -419,7 +425,7 @@ if __name__ == "__main__":
     
     with ThomasNetAuth(headless=True) as auth:
         # auth.start_browser() # Already started in __enter__
-        search = ThomasNetSearch(auth.page)
+        search = ThomasNetSearch(auth)
         results = search.search_vendors("fasteners", max_results=5)
         import json
         print(json.dumps(results, indent=2))

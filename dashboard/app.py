@@ -696,6 +696,14 @@ def api_submit_rfqs():
                         f.write(f"   Vendors contacted: {result.get('vendors_contacted', 0)}\n")
                     else:
                         f.write(f"\n❌ FAILED: {result.get('error', 'Unknown error')}\n")
+                    # Slider status
+                    slider = result.get('slider_solved')
+                    if slider is True:
+                        f.write(f"   ✅ DataDome slider: Solved\n")
+                    elif slider is False:
+                        f.write(f"   ❌ DataDome slider: NOT solved\n")
+                    else:
+                        f.write(f"   ⚪ DataDome slider: Not checked\n")
                     f.write(f"{'='*80}\n THOMASNET SUBMISSION COMPLETE\n{'='*80}\n")
                     
             except Exception as e:

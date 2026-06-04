@@ -1,5 +1,6 @@
 import logging
 import time
+import os
 from pathlib import Path
 from typing import Dict, Any, Optional, List
 from playwright.sync_api import Page, TimeoutError as PlaywrightTimeoutError
@@ -14,14 +15,73 @@ if CONFIG_PATH.exists():
     with open(CONFIG_PATH, "r") as f:
         CONFIG = yaml.safe_load(f)
 
+
+def solve_slider_if_present(page, auth=None) -> bool:
+    """
+    Detect and solve DataDome slider captcha using CapSolver/2Captcha.
+    Returns True if no captcha or successfully solved, False if failed.
+
+    Args:
+        page: Playwright Page object
+        auth: Optional ThomasNetAuth instance (if available)
+    """
+    # Quick check — no DataDome iframe? nothing to do.
+    from captcha_solver import detect_datadome
+    if not detect_datadome(page):
+        return True
+
+    logger.warning("⚠️  DataDome slider detected — attempting automated solve...")
+
+    # If auth object with solver exists, use it
+    if auth and hasattr(auth, 'bypass_captcha'):
+        return auth.bypass_captcha(retries=3)
+
+    # Fallback: use standalone solver
+    from captcha_solver import DataDomeSolver
+    api_key = os.getenv("TWO_CAPTCHA_API_KEY")
+    cap_key = os.getenv("CAPSOLVER_API_KEY")
+    if not api_key and cap_key and cap_key != "your_capsolver_key_here":
+        solver = DataDomeSolver()
+    elif api_key:
+        solver = DataDomeSolver(api_key)
+    else:
+        logger.error("No captcha solver configured — set TWO_CAPTCHA_API_KEY or CAPSOLVER_API_KEY")
+        return False
+
+    try:
+        ua = page.evaluate("navigator.userAgent")
+        token = solver.solve_datadome(page.url, ua)
+        logger.info("Adding solved datadome cookie...")
+        page.context.add_cookies([{
+            'name': 'datadome',
+            'value': token,
+            'domain': '.thomasnet.com',
+            'path': '/'
+        }])
+        page.reload(wait_until="domcontentloaded")
+        time.sleep(3)
+        if detect_datadome(page):
+            logger.error("DataDome still present after solve.")
+            return False
+        logger.info("✅ DataDome slider solved successfully!")
+        return True
+    except Exception as e:
+        logger.error(f"Slider solve failed: {e}")
+        return False
+
 class RFQFormFiller:
     """
     Handles filling and submitting RFQ forms on ThomasNet vendor pages.
     """
     
     def __init__(self, auth: Any, config: Dict = None):
-        self.auth = auth
-        self.page = auth.page
+        # Accept either an auth object (with .page) or a direct Page
+        if hasattr(auth, 'page'):
+            self.auth = auth
+            self.page = auth.page
+        else:
+            self.auth = None
+            self.page = auth  # caller passed a Page directly
         self.config = config or CONFIG
         self.company_info = self.config.get("company", {})
         
@@ -55,8 +115,10 @@ class RFQFormFiller:
             self.page.goto(profile_url)
             
             # Check for DataDome immediately after navigation
-            if hasattr(self.auth, 'bypass_captcha'):
+            if self.auth and hasattr(self.auth, 'bypass_captcha'):
                 self.auth.bypass_captcha()
+            else:
+                solve_slider_if_present(self.page)
 
             # 2. Find "Contact" or "Quote" button
             # Selectors based on likely ThomasNet buttons
@@ -117,7 +179,7 @@ class RFQFormFiller:
             
             submitted = False
             for btn in submit_buttons:
-                if self.page.locator(btn).first.isVisible():
+                if self.page.locator(btn).first.is_visible():
                      self.page.locator(btn).first.click()
                      submitted = True
                      break
@@ -259,7 +321,18 @@ class RFQFormFiller:
         
         return "Submitted (no confirmation number found)"
 
-    def submit_multi_vendor_rfq(self, product_name: str, vendors: List[str], 
+    def _ensure_auth_page(self):
+        """Ensure auth has a valid page; attempt login if not."""
+        if not self.page:
+            from auth import ThomasNetAuth
+            if not isinstance(self.auth, ThomasNetAuth):
+                raise RuntimeError("No valid page and auth is not ThomasNetAuth")
+            if not self.auth.page:
+                self.auth.start_browser()
+                self.auth.login()
+                self.page = self.auth.page
+
+    def submit_multi_vendor_rfq(self, product_name: str, vendors: List[str],
                                 summary: str, rfq_file_path: str) -> Dict[str, Any]:
         """
         Submit RFQ to multiple vendors using ThomasNet's batch selection system.
@@ -287,7 +360,14 @@ class RFQFormFiller:
         """
         try:
             logger.info(f"Starting multi-vendor RFQ submission for {len(vendors)} vendors")
-            
+
+            # Ensure page is available
+            self._ensure_auth_page()
+
+            # --- Slider verification before submission ---
+            if not solve_slider_if_present(self.page, self.auth):
+                logger.warning("DataDome slider present and not solved — submission may fail")
+
             # Step 1: Select vendors by clicking "Select" button on each card
             selected_count = 0
             for vendor_name in vendors:
@@ -433,14 +513,16 @@ class RFQFormFiller:
                 
                 # Attach file
                 file_input = self.page.locator('input[type="file"]').first
-                if file_input.count() > 0:
+                if file_input.count() > 0 and rfq_file_path:
                     file_path = Path(rfq_file_path)
-                    if file_path.exists():
+                    if file_path.exists() and file_path.is_file():
                         file_input.set_input_files(str(file_path))
                         logger.info(f"✓ Attached file: {file_path.name}")
                         time.sleep(3)  # Delay after file upload
                     else:
-                        logger.warning(f"File not found: {rfq_file_path}")
+                        logger.warning(f"File not found or not a file: {rfq_file_path}")
+                elif file_input.count() > 0:
+                    logger.info("Skipping file upload — no file path provided")
                 
                 # Check verification checkbox
                 verify_checkbox = self.page.locator('input[type="checkbox"]').first
