@@ -79,8 +79,7 @@ class ThomasNetAgent:
                     return result
 
                 # Check for DataDome immediately
-                auth.bypass_captcha()
-                
+
                 # STEP 1: Navigate and Search (reuse existing logic)
                 print("Step 1: Navigating to ThomasNet...")
                 max_retries = 3
@@ -93,9 +92,12 @@ class ThomasNetAgent:
                         time.sleep(2)
                         if attempt == max_retries - 1:
                             raise e
-                
+
                 page.wait_for_load_state("domcontentloaded")
                 time.sleep(3)
+
+                # Check for DataDome AFTER navigation
+                auth.bypass_captcha()
                 
                 # Dismiss cookie banner
                 try:
@@ -143,6 +145,9 @@ class ThomasNetAgent:
                         except: pass
                         return result
                 
+                # Slider verification before vendor selection
+                from form_filler import solve_slider_if_present
+                solve_slider_if_present(page, auth)
                 # STEP 3: Select Vendors (NEW LOGIC)
                 print(f"Step 3: Selecting {limit} vendors...")
                 time.sleep(2)  # Let page settle
@@ -523,6 +528,8 @@ Contact: {IDENTITY['EMAIL']}
                 # Solve DataDome if it appears during search
                 auth.bypass_captcha()
                 
+                from form_filler import solve_slider_if_present
+                solve_slider_if_present(page, auth)
                 # CHECK FOR CAPTCHA / BLOCK
                 time.sleep(2) 
                 if "Access blocked" in page.title() or "captcha" in page.content().lower():

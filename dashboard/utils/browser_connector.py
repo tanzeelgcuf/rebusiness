@@ -17,11 +17,21 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright, Browser, Page
 from typing import Optional
 
+import yaml
+
 logger = logging.getLogger(__name__)
 
 # Default auth_state.json path — always relative to the dashboard/ folder
 _DASHBOARD_DIR = Path(__file__).parent.parent  # dashboard/utils/../ = dashboard/
 DEFAULT_AUTH_STATE = str(_DASHBOARD_DIR / "auth_state.json")
+
+# Load ThomasNet config for base URL fallback
+_CONFIG_PATH = Path(__file__).parent.parent.parent / "ai_agents" / "ThomasNetAgent" / "config.yaml"
+if _CONFIG_PATH.exists():
+    with open(_CONFIG_PATH) as _f:
+        CONFIG = yaml.safe_load(_f)
+else:
+    CONFIG = {"thomasnet": {"base_url": "https://www.thomasnet.com"}}
 
 class BrowserConnector:
     """Connects to an existing Chrome instance via CDP"""

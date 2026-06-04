@@ -7,14 +7,9 @@ from typing import Optional, Generator
 
 from urllib.parse import urlparse
 from playwright_stealth import Stealth
-from captcha_solver import DataDomeSolver, detect_datadome
 
 from playwright.sync_api import sync_playwright, Page, Browser, BrowserContext, Playwright
 from proxy_manager import ProxiflyManager
-# ... (rest of imports)
-
-# ... (inside ThomasNetAuth class)
-
 
 import yaml
 from dotenv import load_dotenv
@@ -25,6 +20,15 @@ load_dotenv()
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Lazy-import captcha_solver to avoid circular deps at module level
+def _get_solver(api_key: str):
+    from captcha_solver import DataDomeSolver
+    return DataDomeSolver(api_key)
+
+def _detect_datadome(page) -> bool:
+    from captcha_solver import detect_datadome
+    return detect_datadome(page)
 
 # Load config
 CONFIG_PATH = Path(__file__).parent / "config.yaml"
@@ -50,55 +54,46 @@ class ThomasNetAuth:
     """
     Handles authentication and browser session management for ThomasNet.
     """
-    
+
     def __init__(self, headless: Optional[bool] = None):
         """
         Initialize auth handler.
-        
+
         Args:
             headless: Override config headless setting if provided
         """
         self.email = os.getenv("THOMASNET_EMAIL")
         self.password = os.getenv("THOMASNET_PASSWORD")
-        
+
         # Use config value if headless not specified
         if headless is None:
             self.headless = CONFIG["thomasnet"].get("headless", True)
         else:
             self.headless = headless
-            
+
         self.proxy_url = os.getenv("THOMASNET_PROXY")
-            
+
         self.playwright: Optional[Playwright] = None
         self.browser: Optional[Browser] = None
         self.context: Optional[BrowserContext] = None
         self.page: Optional[Page] = None
-        
+
         self.proxy_config: Optional[dict] = None
         self.solver: Optional[DataDomeSolver] = None
-        
-        api_key = os.getenv("TWO_CAPTCHA_API_KEY")
-        if api_key and os.getenv("THOMASNET_SOLVER_ENABLED") == "True":
-            self.solver = DataDomeSolver(api_key)
-            logger.info("2Captcha solver enabled.")
 
-        logger.info("Applying stealth...")
-        Stealth().apply_stealth_sync(self.page)
-        
-        self.proxy_config = proxy_config
-        
-        return self.page
+        # Defer solver init — browser must exist first
+        self._solver_instance = None
 
     def start_browser(self, storage_state: Optional[str] = None) -> Page:
         """
         Start browser and return a page object.
-        
+
         Args:
             storage_state: Path to a storage state JSON file (cookies/localStorage)
         """
         if not self.playwright:
             self.playwright = sync_playwright().start()
-        
+
         # Prepare proxy config
         proxy_config = None
         if self.proxy_url:
@@ -126,7 +121,7 @@ class ThomasNetAuth:
                 "--disable-dev-shm-usage"
             ]
         )
-        
+
         # Determine storage state to load
         state_to_load = storage_state
         if not state_to_load and SESSION_FILE.exists():
@@ -141,7 +136,7 @@ class ThomasNetAuth:
             locale="en-US",
             timezone_id="America/Denver",
         )
-        
+
         # Robust Init Script
         self.context.add_init_script("""
             Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
@@ -149,15 +144,21 @@ class ThomasNetAuth:
             Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] });
             window.chrome = { runtime: {} };
         """)
-        
+
         logger.info("Creating page...")
         self.page = self.context.new_page()
-        
+
         logger.info("Applying stealth...")
         Stealth().apply_stealth_sync(self.page)
-        
+
         self.proxy_config = proxy_config
-        
+
+        # Init solver now that browser exists
+        api_key = os.getenv("TWO_CAPTCHA_API_KEY")
+        if api_key and os.getenv("THOMASNET_SOLVER_ENABLED") == "True":
+            self.solver = _get_solver(api_key)
+            logger.info("2Captcha solver enabled.")
+
         return self.page
 
     def save_session(self, path: Optional[str] = None):
@@ -179,21 +180,27 @@ class ThomasNetAuth:
         """
         if not self.solver or not self.page:
             return False
-            
+
         # Small wait for the anti-bot script to execute and trigger the challenge
         time.sleep(3)
-        
+
+        # Safe UA extraction — context.browser may be None in CDP mode
+        try:
+            ua = self.page.evaluate("navigator.userAgent")
+        except Exception:
+            ua = CONFIG["thomasnet"].get("user_agent", "Mozilla/5.0")
+
         for attempt in range(retries):
-            if detect_datadome(self.page):
+            if _detect_datadome(self.page):
                 logger.warning(f"DataDome Captcha detected (Attempt {attempt+1})! Initiating automated solver...")
                 try:
                     # Solve the captcha
                     token = self.solver.solve_datadome(
                         page_url=self.page.url,
-                        user_agent=self.context.browser.user_agent() if self.context.browser else "Mozilla/5.0",
+                        user_agent=ua,
                         proxy=self.proxy_config
                     )
-                    
+
                     # Inject the solved cookie
                     logger.info("Injecting solved DataDome cookie...")
                     self.context.add_cookies([{
@@ -202,19 +209,19 @@ class ThomasNetAuth:
                         'domain': '.thomasnet.com',
                         'path': '/'
                     }])
-                    
+
                     # Reload the page to apply the cookie
                     logger.info("Cookie injected. Reloading page...")
                     self.page.reload(wait_until="domcontentloaded")
                     time.sleep(3) # Wait for reload and new challenge check
-                    
+
                     # Check if still blocked
-                    if not detect_datadome(self.page):
+                    if not _detect_datadome(self.page):
                         logger.info("✅ DataDome captcha successfully bypassed!")
                         return True
                     else:
                         logger.warning("Block persists after solve. Retrying...")
-                    
+
                 except Exception as e:
                     logger.error(f"Failed to bypass DataDome on attempt {attempt+1}: {e}")
                     time.sleep(2)
