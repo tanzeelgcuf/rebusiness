@@ -22,8 +22,8 @@ from config import GEMINI_API_KEY
 # Lazy load genai to prevent startup timeouts
 # import google.generativeai as genai
 
-from proxy_manager import ProxiflyManager
-from auth import ThomasNetAuth
+from ai_agents.ThomasNetAgent.proxy_manager import ProxiflyManager
+from ai_agents.ThomasNetAgent.auth import ThomasNetAuth
 
 class ThomasNetAgent:
     """
@@ -146,7 +146,7 @@ class ThomasNetAgent:
                         return result
                 
                 # Slider verification before vendor selection
-                from form_filler import solve_slider_if_present
+                from ai_agents.ThomasNetAgent.form_filler import solve_slider_if_present
                 solve_slider_if_present(page, auth)
                 # STEP 3: Select Vendors (NEW LOGIC)
                 print(f"Step 3: Selecting {limit} vendors...")
@@ -528,7 +528,7 @@ Contact: {IDENTITY['EMAIL']}
                 # Solve DataDome if it appears during search
                 auth.bypass_captcha()
                 
-                from form_filler import solve_slider_if_present
+                from ai_agents.ThomasNetAgent.form_filler import solve_slider_if_present
                 solve_slider_if_present(page, auth)
                 # CHECK FOR CAPTCHA / BLOCK
                 time.sleep(2) 

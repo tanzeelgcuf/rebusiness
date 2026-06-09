@@ -55,31 +55,26 @@ def sync_database():
             # Ensure solicitation exists
             cursor.execute("SELECT 1 FROM solicitations WHERE contract_id = ?", (contract_id,))
             if not cursor.fetchone():
-                # Insert dummy solicitation if missing
                 print(f"Adding missing solicitation: {contract_id}")
                 cursor.execute("""
-                    INSERT INTO solicitations (contract_id, title, url, description, posted_date, due_date, active)
-                    VALUES (?, ?, ?, ?, ?, ?, 1)
+                    INSERT INTO solicitations (contract_id, title, url, description)
+                    VALUES (?, ?, ?, ?)
                 """, (
-                    contract_id, 
-                    f"Solicitation for {product_name}", 
+                    contract_id,
+                    f"Solicitation for {product_name}",
                     f"https://sam.gov/opp/{contract_id}/view",
-                    f"Automatically synced solicitation for {product_name}",
-                    created_date,
-                    created_date
+                    f"Automatically synced solicitation for {product_name}"
                 ))
-            
+
             # Insert RFQ
             print(f"Adding RFQ: {contract_id}")
             cursor.execute("""
-                INSERT INTO rfq_outputs (contract_id, rfq_query, rfq_content, generated_date, file_path)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO rfq_outputs (contract_id, rfq_type, rfq_content)
+                VALUES (?, ?, ?)
             """, (
                 contract_id,
-                product_name,
-                "Content not indexed", # We could read the file but it's binary/docx
-                created_date,
-                file_path
+                "PRODUCT",
+                f"RFQ for {product_name}"
             ))
             
             count_added += 1
