@@ -34,7 +34,7 @@ def test_dry_run():
             "python", "cli.py", "submit",
             "--rfq", str(rfq_file),
             "--dry-run",
-            "--headless", "false",
+            "--no-headless",
             "--max-vendors", "3"
         ],
         capture_output=True,

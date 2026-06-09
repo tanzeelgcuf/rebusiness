@@ -26,7 +26,7 @@ def solve_slider_if_present(page, auth=None) -> bool:
         auth: Optional ThomasNetAuth instance (if available)
     """
     # Quick check — no DataDome iframe? nothing to do.
-    from captcha_solver import detect_datadome
+    from ai_agents.ThomasNetAgent.captcha_solver import detect_datadome
     if not detect_datadome(page):
         return True
 
@@ -37,7 +37,7 @@ def solve_slider_if_present(page, auth=None) -> bool:
         return auth.bypass_captcha(retries=3)
 
     # Fallback: use standalone solver
-    from captcha_solver import DataDomeSolver
+    from ai_agents.ThomasNetAgent.captcha_solver import DataDomeSolver
     api_key = os.getenv("TWO_CAPTCHA_API_KEY")
     cap_key = os.getenv("CAPSOLVER_API_KEY")
     if not api_key and cap_key and cap_key != "your_capsolver_key_here":

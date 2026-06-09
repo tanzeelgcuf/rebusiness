@@ -6,7 +6,7 @@ from pathlib import Path
 # Add current directory to path for imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from auth import ThomasNetAuth, SESSION_FILE
+from ai_agents.ThomasNetAgent.auth import ThomasNetAuth, SESSION_FILE
 
 def setup_session():
     print("\n" + "="*60)

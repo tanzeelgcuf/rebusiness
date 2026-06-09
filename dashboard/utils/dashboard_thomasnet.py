@@ -208,7 +208,7 @@ def submit_rfq_to_vendors(page, rfq_path: str, max_vendors: int = 5) -> Dict:
     # Slider verification check before starting
     slider_solved = None
     try:
-        from captcha_solver import detect_datadome
+        from ai_agents.ThomasNetAgent.captcha_solver import detect_datadome
         if detect_datadome(page):
             logger.info("⚠️  DataDome slider detected — attempting automated solve...")
             from ai_agents.ThomasNetAgent.form_filler import solve_slider_if_present

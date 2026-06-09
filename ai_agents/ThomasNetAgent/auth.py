@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 from playwright_stealth import Stealth
 
 from playwright.sync_api import sync_playwright, Page, Browser, BrowserContext, Playwright
-from proxy_manager import ProxiflyManager
+from ai_agents.ThomasNetAgent.proxy_manager import ProxiflyManager
 
 import yaml
 from dotenv import load_dotenv
@@ -23,11 +23,11 @@ logger = logging.getLogger(__name__)
 
 # Lazy-import captcha_solver to avoid circular deps at module level
 def _get_solver(api_key: str):
-    from captcha_solver import DataDomeSolver
+    from ai_agents.ThomasNetAgent.captcha_solver import DataDomeSolver
     return DataDomeSolver(api_key)
 
 def _detect_datadome(page) -> bool:
-    from captcha_solver import detect_datadome
+    from ai_agents.ThomasNetAgent.captcha_solver import detect_datadome
     return detect_datadome(page)
 
 # Load config
