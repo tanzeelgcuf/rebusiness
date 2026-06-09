@@ -1,0 +1,207 @@
+---
+# Deployment Configuration for ThomasNet RFQ Automation Dashboard
+# Controls proxy rotation, DataDome handling, rate limiting, and session management
+
+deployment:
+  mode: local  # Options: local, server
+  headless: auto  # Options: true, false, auto (auto-detects based on deployment mode)
+  chrome_debugging_port: 9222
+  browser_timeout_ms: 30000
+
+# Proxy Configuration
+proxy:
+  enabled: true
+  rotation_strategy: per_vendor  # Options: per_vendor, per_session, disabled
+  sources:
+    - proxifly
+    - proxyscrape
+
+  # Proxy pool management
+  min_pool_size: 10  # Minimum working proxies to maintain
+  cache_ttl_seconds: 300  # How long to cache fetched proxies
+  failure_cooldown_seconds: 600  # Time before retrying a failed proxy
+
+  # Proxy testing
+  test_url: https://www.thomasnet.com
+  test_timeout_seconds: 5
+
+  # Validation
+  validate_on_startup: true
+  warn_if_pool_below: 5
+
+# DataDome Anti-Bot Bypass Configuration
+datadome:
+  detection_enabled: true
+  solving_enabled: true
+
+  # Strategy for handling blocks
+  strategy: adaptive  # Options: adaptive, retry_only, pause_and_retry, skip_and_return
+
+  # Retry parameters
+  max_retries: 3
+  wait_time_seconds: 5  # Wait time before retrying
+  return_time_seconds: 1800  # Time before returning to skipped vendor (30 min)
+
+  # Solvers (in priority order)
+  solvers:
+    - type: capsolver
+      enabled: true
+      priority: 1
+      api_key_env: CAPSOLVER_API_KEY
+
+    - type: two_captcha
+      enabled: true
+      priority: 2
+      api_key_env: TWO_CAPTCHA_API_KEY
+
+# Rate Limiting Configuration
+rate_limiting:
+  # Delays between vendor submissions
+  submission_delay_min_seconds: 3
+  submission_delay_max_seconds: 5
+
+  # Add random jitter to avoid pattern detection
+  add_jitter: true
+
+  # Delays between RFQs
+  rfq_delay_seconds: 2
+
+  # Max submissions per hour (0 = unlimited)
+  max_submissions_per_hour: 0
+
+# Session Management
+session:
+  # Session persistence
+  persistence_enabled: true
+  session_file: dashboard/auth_state.json
+  backup_sessions: true
+  backup_dir: dashboard/sessions_backup
+
+  # Session rotation
+  rotation_enabled: true
+  rotation_interval: 50  # Rotate session after N submissions
+  rotation_time_minutes: 120  # OR rotate after X minutes
+  rotation_strategy: save_new  # Options: save_new, cycle_existing
+
+  # Chrome profile management
+  user_data_dir: /tmp/thomasnet-profile
+  use_persistent_profile: true
+
+# RFQ Processing Configuration
+rfq:
+  # File discovery
+  search_pattern: "rfq_downloads/2*/*_RFQ_PRODUCT.docx"
+
+  # Vendor selection
+  max_vendors_per_rfq: 5
+  vendor_search_results: 20
+
+  # Form filling
+  product_name_extraction_method: auto  # Options: auto, filename, first_paragraph
+  summary_max_length: 100
+
+  # Submission tracking
+  track_in_database: true
+  legacy_tracking_file: thomasnet_processed.txt
+
+# Logging Configuration
+logging:
+  level: INFO  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: dashboard/logs/submission.log
+  file_max_bytes: 10485760  # 10 MB
+  file_backup_count: 5
+
+  # Console output
+  console_output: true
+  verbose_mode: false
+
+# Feature Flags
+features:
+  # Enable/disable specific features
+  datadome_check: true
+  proxy_rotation: true
+  session_rotation: true
+  batch_submission: true
+  attachment_upload: true
+
+  # Test/debug modes
+  test_mode: false  # Only submit to first vendor
+  dry_run: false  # Don't actually submit, just log
+  debug_screenshots: false  # Save browser screenshots on error
+
+# Notification & Monitoring
+monitoring:
+  # Track metrics
+  track_metrics: true
+
+  # Alerts
+  alert_on_datadome_block: true
+  alert_on_proxy_exhaustion: true
+  alert_on_submission_failure: false
+
+  # Thresholds
+  consecutive_failures_threshold: 3
+  proxy_pool_warning_threshold: 5
+
+# Error Handling
+error_handling:
+  max_retries_per_vendor: 3
+  max_retries_per_rfq: 2
+
+  # Recovery strategies
+  auto_recover: true
+  recovery_wait_seconds: 10
+
+  # Cleanup on error
+  cleanup_on_error: true
+  preserve_logs: true
+
+# Performance Tuning
+performance:
+  # Parallelization (careful: may trigger rate limits)
+  parallel_submissions: false  # Submit to multiple vendors in parallel
+  max_parallel_workers: 1
+
+  # Browser optimization
+  close_browser_between_rfqs: false
+  reuse_browser_context: true
+
+  # Memory management
+  gc_enabled: true
+  gc_interval_submissions: 50
+
+# Cloud Deployment Settings
+cloud:
+  enabled: false
+  platform: gcp  # Options: gcp, aws, azure
+
+  # Environment variables override config
+  use_env_vars: true
+  env_var_prefix: THOMASNET_
+
+  # Auto-scaling
+  auto_scale_proxies: false
+  max_concurrent_sessions: 1
+
+# Database Configuration
+database:
+  path: rebusiness_automation.db
+  connection_timeout: 5
+
+  # Backup
+  auto_backup: true
+  backup_dir: database_backups
+  backup_interval_days: 7
+
+# Compliance & Legal
+compliance:
+  respect_robots_txt: false  # ThomasNet blocks automated scraping
+  user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+
+  # Rate limiting to avoid abuse
+  respect_rate_limits: true
+
+  # Logging for audit trail
+  audit_log: true
+  audit_log_file: dashboard/logs/audit.log

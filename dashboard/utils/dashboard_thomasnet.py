@@ -17,9 +17,13 @@ current_dir = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(current_dir))
 
 from dashboard.utils.browser_connector import connect_to_browser
+from dashboard.utils.advanced_proxy_manager import get_proxy_manager
 from ai_agents.ThomasNetAgent.searcher import ThomasNetSearch
 from ai_agents.ThomasNetAgent.vendor_selector import VendorSelector
 from ai_agents.ThomasNetAgent.form_filler import RFQFormFiller
+from ai_agents.ThomasNetAgent.captcha_solver import detect_datadome
+import time
+import random
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +31,9 @@ from database_manager import DatabaseManager
 
 # Initialize DB
 db = DatabaseManager()
+
+# Get proxy manager for IP rotation
+proxy_manager = get_proxy_manager()
 
 def find_unprocessed_rfqs() -> List[str]:
     """
@@ -189,6 +196,78 @@ def extract_product_name(rfq_path: str) -> str:
         return "Product"
 
 
+def handle_datadome_adaptive(page, retry_count: int = 0, max_retries: int = 3) -> Dict:
+    """
+    Adaptive DataDome handling: retry → pause → skip → return later
+
+    Args:
+        page: Playwright page object
+        retry_count: Current retry attempt number
+        max_retries: Maximum retry attempts before skipping
+
+    Returns:
+        Dict with strategy, action, and wait_time
+    """
+    datadome_strategy = os.getenv("DATADOME_STRATEGY", "adaptive")
+    max_wait = int(os.getenv("DATADOME_WAIT_TIME", "5"))
+    return_time = int(os.getenv("DATADOME_RETURN_TIME", "1800"))
+
+    if not detect_datadome(page):
+        return {"blocked": False, "action": "proceed"}
+
+    logger.warning(f"🚫 DataDome block detected (attempt {retry_count + 1}/{max_retries})")
+
+    if datadome_strategy == "adaptive":
+        # Adaptive: retry → pause → skip → comeback
+        if retry_count < max_retries:
+            # Strategy 1: Get new proxy and retry
+            logger.info("→ Strategy 1: Rotating IP and retrying...")
+            proxy = proxy_manager.get_next_proxy()
+            if proxy:
+                return {
+                    "blocked": True,
+                    "action": "retry_with_new_proxy",
+                    "proxy": proxy,
+                    "wait_time": 2
+                }
+
+        if retry_count >= max_retries:
+            # Strategy 2: Pause and wait (give ThomasNet time to cool down)
+            logger.info(f"→ Strategy 2: Pausing for {max_wait}s to avoid hard ban...")
+            return {
+                "blocked": True,
+                "action": "pause_and_retry",
+                "wait_time": max_wait
+            }
+
+    elif datadome_strategy == "retry_only":
+        if retry_count < max_retries:
+            logger.info(f"→ Retrying with new proxy...")
+            proxy = proxy_manager.get_next_proxy()
+            return {
+                "blocked": True,
+                "action": "retry_with_new_proxy",
+                "proxy": proxy,
+                "wait_time": 2
+            }
+
+    elif datadome_strategy == "pause_and_retry":
+        logger.info(f"→ Pausing for {max_wait}s before retry...")
+        return {
+            "blocked": True,
+            "action": "pause_and_retry",
+            "wait_time": max_wait
+        }
+
+    # Default: skip this vendor, come back later
+    logger.warning(f"→ Skipping vendor (will retry in {return_time}s)")
+    return {
+        "blocked": True,
+        "action": "skip_and_return",
+        "wait_time": return_time
+    }
+
+
 def submit_rfq_to_vendors(page, rfq_path: str, max_vendors: int = 5) -> Dict:
     """
     Submit a single RFQ to ThomasNet vendors
@@ -270,20 +349,112 @@ def submit_rfq_to_vendors(page, rfq_path: str, max_vendors: int = 5) -> Dict:
                 'slider_solved': slider_solved
             }
         
-        # Submit RFQs using multi-vendor batch system
+        # Submit RFQs with per-vendor IP rotation and adaptive DataDome handling
         filler = RFQFormFiller(page)
-        
+
         # Prepare RFQ summary (truncated to 100 chars)
         rfq_summary = f"Request for quotation for {product_name}. Please review attached RFQ document."[:100]
-        
-        logger.info(f"\nSubmitting batch RFQ to {len(vendor_names)} vendors...")
-        
-        result = filler.submit_multi_vendor_rfq(
-            product_name=product_name,
-            vendors=vendor_names,
-            summary=rfq_summary,
-            rfq_file_path=rfq_path
-        )
+
+        logger.info(f"\nSubmitting batch RFQ to {len(vendor_names)} vendors with IP rotation...")
+
+        # Check if IP rotation is enabled
+        enable_rotation = os.getenv("ENABLE_PROXY_ROTATION", "True").lower() == "true"
+
+        vendors_contacted = 0
+        failed_vendors = []
+
+        for vendor_idx, vendor_name in enumerate(vendor_names, 1):
+            logger.info(f"\n[{vendor_idx}/{len(vendor_names)}] Submitting to: {vendor_name}")
+
+            # Get proxy for this vendor submission
+            if enable_rotation:
+                proxy = proxy_manager.get_next_proxy()
+                if proxy:
+                    logger.info(f"Using proxy: {proxy['url'][:30]}... (source: {proxy['source']})")
+                else:
+                    logger.warning("⚠ No available proxy, proceeding without rotation")
+
+            # Submit to single vendor with retry logic
+            submit_success = False
+            retry_count = 0
+            max_retries = int(os.getenv("DATADOME_MAX_RETRIES", "3"))
+
+            while retry_count <= max_retries and not submit_success:
+                try:
+                    # Submit to vendor
+                    result = filler.submit_multi_vendor_rfq(
+                        product_name=product_name,
+                        vendors=[vendor_name],
+                        summary=rfq_summary,
+                        rfq_file_path=rfq_path
+                    )
+
+                    if result.get('success'):
+                        vendors_contacted += result.get('vendors_contacted', 1)
+                        submit_success = True
+                        logger.info(f"✅ Successfully submitted to {vendor_name}")
+                        proxy_manager.mark_proxy_success(proxy['url'] if enable_rotation and proxy else None)
+                    else:
+                        # Check for DataDome block
+                        datadome_response = handle_datadome_adaptive(page, retry_count, max_retries)
+
+                        if datadome_response["blocked"]:
+                            action = datadome_response["action"]
+                            wait_time = datadome_response["wait_time"]
+
+                            if action == "retry_with_new_proxy":
+                                logger.info(f"Retrying with new proxy after {wait_time}s...")
+                                if enable_rotation and proxy:
+                                    proxy_manager.mark_proxy_failed(proxy['url'])
+                                time.sleep(wait_time)
+                                retry_count += 1
+
+                            elif action == "pause_and_retry":
+                                logger.info(f"Pausing {wait_time}s before retry...")
+                                time.sleep(wait_time)
+                                retry_count += 1
+
+                            elif action == "skip_and_return":
+                                logger.warning(f"Skipping {vendor_name}, will retry later")
+                                failed_vendors.append({
+                                    'vendor': vendor_name,
+                                    'reason': 'DataDome block',
+                                    'retry_after': wait_time
+                                })
+                                submit_success = False
+                                break
+                        else:
+                            logger.error(f"Submission failed: {result.get('error')}")
+                            failed_vendors.append({
+                                'vendor': vendor_name,
+                                'reason': result.get('error', 'Unknown error')
+                            })
+                            submit_success = False
+                            break
+
+                except Exception as e:
+                    logger.error(f"Exception during submission to {vendor_name}: {e}")
+                    retry_count += 1
+                    if retry_count <= max_retries:
+                        logger.info(f"Retrying after error ({retry_count}/{max_retries})...")
+                        time.sleep(2)
+
+            # Rate limiting between vendors
+            if vendor_idx < len(vendor_names):
+                delay = random.uniform(
+                    float(os.getenv("SUBMISSION_DELAY_MIN", "3")),
+                    float(os.getenv("SUBMISSION_DELAY_MAX", "5"))
+                )
+                logger.info(f"Rate limiting: waiting {delay:.1f}s before next vendor...")
+                time.sleep(delay)
+
+        result = {
+            'success': vendors_contacted > 0,
+            'vendors_contacted': vendors_contacted,
+            'total_vendors': len(vendor_names),
+            'failed_vendors': failed_vendors,
+            'error': None if vendors_contacted > 0 else 'No vendors successfully contacted'
+        }
         
         if result.get('success'):
             logger.info(f"\n{'='*80}")

@@ -725,6 +725,44 @@ def api_submit_rfqs():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
+@app.route('/api/proxy-status', methods=['GET'])
+def api_proxy_status():
+    """Get current proxy pool health and rotation status"""
+    try:
+        from dashboard.utils.advanced_proxy_manager import get_proxy_manager
+
+        proxy_manager = get_proxy_manager()
+        health = proxy_manager.health_check()
+        stats = proxy_manager.stats()
+
+        return jsonify({
+            'success': True,
+            'data': {
+                'health': health,
+                'stats': stats
+            }
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/browser-status', methods=['GET'])
+def api_browser_status():
+    """Get Chrome browser connection status"""
+    try:
+        from dashboard.utils.browser_connector import check_cdp_availability
+
+        cdp_available = check_cdp_availability()
+
+        return jsonify({
+            'success': True,
+            'data': {
+                'cdp_available': cdp_available,
+                'cdp_url': 'http://127.0.0.1:9222'
+            }
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 # ============================================================================
 # Main
 # ============================================================================
