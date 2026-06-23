@@ -605,6 +605,50 @@ class SamGovAgent:
         
         return full_description if full_description.strip() else None
 
+    def _extract_notice_id(self, soup, html_content: str = None) -> str:
+        """
+        Extract the real Notice ID / Solicitation Number from the sam.gov page.
+        Returns the real ID (e.g. 'N0010425QNF13') or None if not found.
+        """
+        # Strategy 1: Look for label text in soup
+        notice_patterns = [
+            re.compile(r'Notice ID', re.IGNORECASE),
+            re.compile(r'Solicitation Number', re.IGNORECASE),
+            re.compile(r'Contract Number', re.IGNORECASE),
+        ]
+
+        for pattern in notice_patterns:
+            label = soup.find(string=pattern)
+            if label:
+                parent = label.find_parent()
+                if parent:
+                    sibling = parent.find_next_sibling()
+                    if sibling:
+                        value = sibling.get_text(strip=True)
+                        if value and len(value) > 3:
+                            return value
+                    # Fallback: extract value from parent text
+                    value = parent.get_text(strip=True)
+                    value = pattern.sub('', value).strip()
+                    if value and len(value) > 3:
+                        return value
+
+        # Strategy 2: Look for specific HTML patterns in sam.gov pages
+        # sam.gov uses <strong> or <span> near label elements
+        if html_content:
+            # Match patterns like "Notice ID N0010425QNF13" or "Solicitation #: N0010425QNF13"
+            m = re.search(r'Notice\s+ID[:\s]+([A-Z0-9][\w-]+)', html_content, re.IGNORECASE)
+            if m:
+                return m.group(1)
+            m = re.search(r'Solicitation\s+Number[:\s]+([A-Z0-9][\w-]+)', html_content, re.IGNORECASE)
+            if m:
+                return m.group(1)
+            m = re.search(r'Contract\s+Number[:\s]+([A-Z0-9][\w-]+)', html_content, re.IGNORECASE)
+            if m:
+                return m.group(1)
+
+        return None
+
     def process_detail_page(self, url: str):
         """
         Enhanced version with comprehensive crawling using Playwright and BS4.
@@ -612,32 +656,40 @@ class SamGovAgent:
         logging.info(f"\n{'='*80}")
         logging.info(f"ENHANCED DETAIL PAGE PROCESSING: {url}")
         logging.info(f"{'='*80}\n")
-        
+
         detail_page = None
         try:
             # Use a new page (tab) to preserve search results on main page
             detail_page = self.context.new_page()
             detail_page.goto(url, timeout=60000, wait_until="domcontentloaded")
-            
+
             # Wait a bit for dynamic content
             try:
                 detail_page.wait_for_selector("main", timeout=10000)
             except:
                 pass # Continue even if main not found
-            time.sleep(3) 
-            
+            time.sleep(3)
+
             # Get HTML content for BS4
             html_content = detail_page.content()
             soup = BeautifulSoup(html_content, 'html.parser')
-            
+
         except Exception as e:
             logging.error(f"Failed to load page: {e}")
             if detail_page: detail_page.close()
             return None
-        
+
         try:
-            # Extract contract ID
-            contract_id = url.split('/')[-2] if '/opp/' in url else f"contract_{int(time.time())}"
+            # Extract real Notice ID first, fallback to URL UUID
+            real_notice_id = self._extract_notice_id(soup, html_content)
+            url_uuid = url.split('/')[-2] if '/opp/' in url else f"contract_{int(time.time())}"
+
+            if real_notice_id:
+                contract_id = real_notice_id
+                logging.info(f"  ✓ Extracted real Notice ID: {contract_id}")
+            else:
+                contract_id = url_uuid
+                logging.warning(f"  ✗ No Notice ID found, using URL fragment: {contract_id}")
             
             # Create save directory
             save_dir = os.path.join(config.SOLICITATION_DATA_DIR, contract_id)

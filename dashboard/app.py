@@ -172,6 +172,48 @@ def docx_to_html(file_path):
     except Exception as e:
         return f'<div class="text-red-500">Error previewing file: {str(e)}</div>'
 
+def markdown_to_html_simple(md_text):
+    """Convert markdown text to simple HTML for preview"""
+    import re as _re
+    if not md_text:
+        return '<div class="p-4 text-gray-500">No RFQ content available.</div>'
+
+    lines = md_text.split('\n')
+    html = ['<div class="rfq-preview font-serif p-8 bg-white text-black">']
+
+    for line in lines:
+        stripped = line.strip()
+        if not stripped:
+            html.append('<br>')
+            continue
+        # Headings
+        if stripped.startswith('# '):
+            html.append(f'<h1 class="text-2xl font-bold mt-6 mb-3 border-b pb-2">{_re.sub(r"<[^>]+>", "", stripped[2:])}</h1>')
+        elif stripped.startswith('## '):
+            html.append(f'<h2 class="text-xl font-bold mt-5 mb-2">{_re.sub(r"<[^>]+>", "", stripped[3:])}</h2>')
+        elif stripped.startswith('### '):
+            html.append(f'<h3 class="text-lg font-bold mt-4 mb-2">{_re.sub(r"<[^>]+>", "", stripped[4:])}</h3>')
+        elif stripped.startswith('---'):
+            html.append('<hr class="my-4 border-gray-300">')
+        elif stripped.startswith('|'):
+            # Table row - skip separator
+            if _re.match(r'^\|[\s\-:]+\|$', stripped):
+                continue
+            cells = [c.strip() for c in stripped.split('|') if c.strip()]
+            row_html = '<tr>' + ''.join(f'<td class="border border-gray-300 p-2 text-sm">{c}</td>' for c in cells) + '</tr>'
+            html.append(row_html)
+        elif stripped.startswith('- '):
+            html.append(f'<li class="ml-6 list-disc">{_re.sub(r"<[^>]+>", "", stripped[2:])}</li>')
+        elif _re.match(r'^\d+\.\s', stripped):
+            html.append(f'<li class="ml-6 list-decimal">{_re.sub(r"<[^>]+>", "", stripped)}</li>')
+        else:
+            clean = _re.sub(r'<[^>]+>', '', stripped)
+            clean = _re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', clean)
+            html.append(f'<p class="mb-3">{clean}</p>')
+
+    html.append('</div>')
+    return '\n'.join(html)
+
 @app.route('/api/rfqs/<contract_id>', methods=['GET'])
 def api_get_rfq(contract_id):
     """Get RFQ details including HTML preview"""
@@ -179,62 +221,88 @@ def api_get_rfq(contract_id):
         rfq = db.get_rfq_by_contract(contract_id)
         if not rfq:
             return jsonify({'success': False, 'error': 'Not found'}), 404
-        
+
         # Add HTML preview if file exists
         file_path_exists = rfq.get('file_path') and os.path.exists(rfq['file_path'])
-        
+
         if file_path_exists:
             rfq['html_content'] = docx_to_html(rfq['file_path'])
         else:
-            # Try to find file if path is missing or invalid - robust path handling
+            # Try to find file — search both .docx and .md
             import glob
             project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            pattern_gen = os.path.join(project_root, "rfq_downloads", "*", f"{contract_id}_RFQ_*.docx")
-            pattern_up = os.path.join(project_root, "rfq_downloads", "uploads", f"{contract_id}_*")
-            
-            files = glob.glob(pattern_gen) + glob.glob(pattern_up)
-            
+            patterns = [
+                os.path.join(project_root, "rfq_downloads", "*", f"{contract_id}_RFQ_*.docx"),
+                os.path.join(project_root, "rfq_downloads", "*", f"{contract_id}_RFQ_*.md"),
+                os.path.join(project_root, "rfq_downloads", "uploads", f"{contract_id}_*"),
+            ]
+
+            files = []
+            for p in patterns:
+                files.extend(glob.glob(p))
+
             if files:
-                # Get latest
                 files.sort(key=os.path.getmtime, reverse=True)
                 rfq['file_path'] = files[0]
-                rfq['html_content'] = docx_to_html(files[0])
+                if files[0].endswith('.md'):
+                    with open(files[0], 'r', encoding='utf-8') as f:
+                        rfq['html_content'] = markdown_to_html_simple(f.read())
+                else:
+                    rfq['html_content'] = docx_to_html(files[0])
             else:
-                rfq['html_content'] = '<div class="p-4 text-gray-500">File not found for preview.</div>'
-        
+                # Fallback: render rfq_content from database
+                rfq_content = rfq.get('rfq_content', '')
+                if rfq_content and len(rfq_content) > 10:
+                    rfq['html_content'] = markdown_to_html_simple(rfq_content)
+                else:
+                    rfq['html_content'] = '<div class="p-4 text-gray-500">File not found for preview.</div>'
+
         return jsonify({'success': True, 'data': rfq})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/rfqs/<contract_id>/download', methods=['GET'])
 def api_download_rfq(contract_id):
-    """Download RFQ .docx file"""
+    """Download RFQ file (.docx, .md, or generated .txt from DB)"""
     try:
+        import glob
         rfq = db.get_rfq_by_contract(contract_id)
         if not rfq:
             return jsonify({'success': False, 'error': 'Not found in DB'}), 404
-        
-        # Find the .docx file - robust path handling
-        import glob
-        # Calculate project root from this file's location (dashboard/app.py -> project_root)
+
         project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        
-        # Pattern to match: project_root/rfq_downloads/ANY_DATE_FOLDER/contractId_RFQ_*.docx
-        pattern = os.path.join(project_root, "rfq_downloads", "*", f"{contract_id}_RFQ_*.docx")
-        
-        print(f"DEBUG: Searching for RFQ file: {pattern}")
-        files = glob.glob(pattern)
-        
-        if not files:
-            print(f"DEBUG: No files found for pattern")
-            return jsonify({'success': False, 'error': 'File not found on server'}), 404
-        
-        # Sort by modification time to get latest if multiple exist
-        files.sort(key=os.path.getmtime, reverse=True)
-        file_path = files[0]
-        print(f"DEBUG: Found RFQ file: {file_path}")
-        
-        return send_file(file_path, as_attachment=True)
+
+        # Search for .docx, .md, and uploads
+        patterns = [
+            os.path.join(project_root, "rfq_downloads", "*", f"{contract_id}_RFQ_*.docx"),
+            os.path.join(project_root, "rfq_downloads", "*", f"{contract_id}_RFQ_*.md"),
+            os.path.join(project_root, "rfq_downloads", "uploads", f"{contract_id}_*"),
+        ]
+
+        files = []
+        for p in patterns:
+            files.extend(glob.glob(p))
+
+        if files:
+            files.sort(key=os.path.getmtime, reverse=True)
+            file_path = files[0]
+            return send_file(file_path, as_attachment=True)
+
+        # Fallback: serve DB content as .txt
+        rfq_content = rfq.get('rfq_content', '')
+        if rfq_content and len(rfq_content) > 10:
+            import tempfile
+            tmp = tempfile.NamedTemporaryFile(
+                mode='w', suffix='.txt', delete=False,
+                prefix=f"{contract_id}_RFQ_"
+            )
+            tmp.write(rfq_content)
+            tmp.flush()
+            return send_file(tmp.name, as_attachment=True,
+                             download_name=f"{contract_id}_RFQ.txt",
+                             mimetype='text/plain')
+
+        return jsonify({'success': False, 'error': 'File not found on server'}), 404
         
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
