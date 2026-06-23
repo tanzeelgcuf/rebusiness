@@ -172,11 +172,7 @@ def extract_notice_id_from_html(html: str) -> str:
 
 
 def generate_rfq_from_description(description_text: str, contract_id: str) -> dict:
-    """Generate RFQ content from description text using LLM."""
-    from google import genai
-
-    client = genai.Client(api_key=config.GEMINI_API_KEY)
-
+    """Generate RFQ content from description text using LLM (Gemini first, OpenAI fallback)."""
     prompt = f"""You are a procurement specialist. Generate a professional RFQ (Request for Quotation) document based on the following government solicitation description.
 
 IMPORTANT RULES:
@@ -193,22 +189,46 @@ SOLICITATION DESCRIPTION:
 
 Generate a complete RFQ document now:"""
 
+    # Detect type
+    rfq_type = "SERVICE" if any(w in description_text.lower() for w in [
+        "service", "maintenance", "repair", "cleaning", "consulting"
+    ]) and "product" not in description_text.lower() else "PRODUCT"
+
+    # Try Gemini first
     try:
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=prompt
-        )
-        rfq_content = response.text
-
-        # Detect type
-        rfq_type = "SERVICE" if any(w in description_text.lower() for w in [
-            "service", "maintenance", "repair", "cleaning", "consulting"
-        ]) and "product" not in description_text.lower() else "PRODUCT"
-
-        return {"rfq_content": rfq_content, "rfq_type": rfq_type}
+        from google import genai
+        gemini_key = config.GEMINI_API_KEY
+        if gemini_key and not gemini_key.startswith("your_"):
+            client = genai.Client(api_key=gemini_key)
+            response = client.models.generate_content(
+                model="gemini-2.0-flash",
+                contents=prompt
+            )
+            return {"rfq_content": response.text, "rfq_type": rfq_type}
     except Exception as e:
-        logger.error(f"LLM generation failed: {e}")
-        return None
+        logger.warning(f"Gemini failed: {e}")
+
+    # Fallback to OpenAI
+    try:
+        import os
+        openai_key = os.environ.get("OPENAI_API_KEY", "")
+        if not openai_key:
+            openai_key = getattr(config, 'OPENAI_API_KEY', '')
+        if openai_key and not openai_key.startswith("your_"):
+            from openai import OpenAI
+            client = OpenAI(api_key=openai_key)
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=4000,
+                temperature=0.3
+            )
+            return {"rfq_content": response.choices[0].message.content, "rfq_type": rfq_type}
+    except Exception as e:
+        logger.error(f"OpenAI fallback failed: {e}")
+
+    logger.error("All LLM providers failed")
+    return None
 
 
 def save_solicitation_data(contract_id: str, description: str, url: str):
