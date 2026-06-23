@@ -38,41 +38,48 @@ proxy_manager = get_proxy_manager()
 def find_unprocessed_rfqs() -> List[str]:
     """
     Find RFQ files that haven't been submitted to ThomasNet
-    
+
     Returns:
         List of file paths to unprocessed RFQs
     """
-    # Find all RFQ files
-    pattern = os.path.join(current_dir, "rfq_downloads/2*/*_RFQ_PRODUCT.docx")
-    all_rfqs = glob.glob(pattern)
-    
+    # Find all RFQ files - look for markdown files in generated_rfqs
+    markdown_pattern = os.path.join(current_dir, "generated_rfqs/*.md")
+    all_rfqs = glob.glob(markdown_pattern)
+
+    # Fallback: also look for docx files if they exist
+    if not all_rfqs:
+        docx_pattern = os.path.join(current_dir, "rfq_downloads/2*/*_RFQ_PRODUCT.docx")
+        all_rfqs = glob.glob(docx_pattern)
+
     # 1. Check DB for already sent RFQs
     sent_rfqs = db.get_all_rfqs(limit=1000, sent_status='sent')
     sent_contract_ids = {r['contract_id'] for r in sent_rfqs}
-    
+
     # 2. Also check legacy text file for safety
     processed_file = os.path.join(current_dir, 'thomasnet_processed.txt')
     processed_paths = set()
     if os.path.exists(processed_file):
         with open(processed_file, 'r') as f:
             processed_paths = set(line.strip() for line in f if line.strip())
-            
+
     unprocessed = []
     for rfq_path in all_rfqs:
-        # Extract contract_id from filename (e.g., "id_RFQ_PRODUCT.docx")
+        # Extract contract_id from filename (e.g., "id_RFQ_PRODUCT.docx" or "N0010425QNF13_RFQ_service_final_v2.md")
         filename = os.path.basename(rfq_path)
+
+        # Try to extract contract_id - works with "id_RFQ_*" format or just filename
         contract_id = filename.split('_')[0]
-        
+
         # Check if sent in DB OR in text file
         if contract_id in sent_contract_ids or os.path.abspath(rfq_path) in processed_paths:
             continue
-            
+
         unprocessed.append(rfq_path)
-    
+
     processed_count = len(all_rfqs) - len(unprocessed)
     if processed_count > 0:
         logger.info(f"♻️  Skipping {processed_count} already processed RFQs")
-    
+
     logger.info(f"Found {len(unprocessed)} unprocessed RFQs (out of {len(all_rfqs)} total)")
     return unprocessed
 

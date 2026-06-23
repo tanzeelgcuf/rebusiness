@@ -634,7 +634,7 @@ def api_generate_rfqs():
                     f.flush()
                     
                     subprocess.run(
-                        ['python3', 'main_workflow.py', '--keyword', keyword, '--pages', str(pages)],
+                        ['/home/apple/rebusiness/venv/bin/python3', 'main_workflow.py', '--keyword', keyword, '--pages', str(pages)],
                         cwd=BASE_DIR,
                         stdout=f,
                         stderr=subprocess.STDOUT,
