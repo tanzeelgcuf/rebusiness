@@ -22,6 +22,13 @@ sys.path.insert(0, BASE_DIR)
 import config
 from database_manager import DatabaseManager
 
+# Load .env file for API keys
+try:
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(BASE_DIR, '.env'))
+except ImportError:
+    pass
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s [%(levelname)s] %(message)s',
@@ -172,7 +179,7 @@ def extract_notice_id_from_html(html: str) -> str:
 
 
 def generate_rfq_from_description(description_text: str, contract_id: str) -> dict:
-    """Generate RFQ content from description text using LLM (Gemini first, OpenAI fallback)."""
+    """Generate RFQ content using Groq (free, Llama 3.1 open-source model)."""
     prompt = f"""You are a procurement specialist. Generate a professional RFQ (Request for Quotation) document based on the following government solicitation description.
 
 IMPORTANT RULES:
@@ -194,33 +201,36 @@ Generate a complete RFQ document now:"""
         "service", "maintenance", "repair", "cleaning", "consulting"
     ]) and "product" not in description_text.lower() else "PRODUCT"
 
-    # Try Gemini first
+    # Groq (free, open-source Llama 3.1)
     try:
-        from google import genai
-        gemini_key = config.GEMINI_API_KEY
-        if gemini_key and not gemini_key.startswith("your_"):
-            client = genai.Client(api_key=gemini_key)
-            response = client.models.generate_content(
-                model="gemini-2.0-flash",
-                contents=prompt
+        import os
+        groq_key = os.environ.get("GROQ_API_KEY", "")
+        if groq_key and not groq_key.startswith("your_"):
+            from groq import Groq
+            client = Groq(api_key=groq_key)
+            response = client.chat.completions.create(
+                model="llama-3.1-8b-instant",
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=4096,
+                temperature=0.3
             )
-            return {"rfq_content": response.text, "rfq_type": rfq_type}
+            return {"rfq_content": response.choices[0].message.content, "rfq_type": rfq_type}
+        else:
+            logger.warning("No GROQ_API_KEY found")
     except Exception as e:
-        logger.warning(f"Gemini failed: {e}")
+        logger.error(f"Groq failed: {e}")
 
-    # Fallback to OpenAI
+    # Fallback: OpenAI-compatible providers
     try:
         import os
         openai_key = os.environ.get("OPENAI_API_KEY", "")
-        if not openai_key:
-            openai_key = getattr(config, 'OPENAI_API_KEY', '')
         if openai_key and not openai_key.startswith("your_"):
             from openai import OpenAI
             client = OpenAI(api_key=openai_key)
             response = client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=4000,
+                max_tokens=4096,
                 temperature=0.3
             )
             return {"rfq_content": response.choices[0].message.content, "rfq_type": rfq_type}
