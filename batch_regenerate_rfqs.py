@@ -254,6 +254,7 @@ def main():
     parser = argparse.ArgumentParser(description='Batch regenerate RFQs')
     parser.add_argument('--dry-run', action='store_true', help='Only fetch and save descriptions, skip RFQ generation')
     parser.add_argument('--limit', type=int, default=0, help='Limit number of solicitations to process (0=all)')
+    parser.add_argument('--offset', type=int, default=0, help='Skip first N solicitations')
     parser.add_argument('--skip-fetch', action='store_true', help='Skip fetching, use existing solicitation_data/')
     args = parser.parse_args()
 
@@ -265,6 +266,10 @@ def main():
     cursor.execute("SELECT contract_id, url, title FROM solicitations WHERE url IS NOT NULL AND url LIKE '%sam.gov%'")
     solicitations = cursor.fetchall()
     logger.info(f"Found {len(solicitations)} solicitations with sam.gov URLs")
+
+    if args.offset > 0:
+        solicitations = solicitations[args.offset:]
+        logger.info(f"Skipping first {args.offset} solicitations (offset={args.offset})")
 
     if args.limit > 0:
         solicitations = solicitations[:args.limit]
