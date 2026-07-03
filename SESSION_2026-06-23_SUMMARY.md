@@ -72,7 +72,7 @@ cd ~/rebusiness && git pull origin Main && sudo systemctl restart rfq-dashboard
 
 # Run RFQ regeneration (if needed)
 cd ~/rebusiness
-GROQ_API_KEY=<REDACTED> \
+GROQ_API_KEY=<your-groq-api-key> \
   venv/bin/python3 batch_regenerate_rfqs.py --limit 30
 ```
 
@@ -138,7 +138,7 @@ GROQ_API_KEY=<REDACTED> \
 
 | Key | Status | Purpose |
 |-----|--------|---------|
-| `GROQ_API_KEY` | ✅ Active | Free LLM for RFQ generation (Llama 3.1) |
+| `GROQ_API_KEY` | ✅ Active | Free LLM for RFQ generation (Llama 3.1) — stored in VM .env only |
 | `GEMINI_API_KEY` | ❌ Blocked | "Reported as leaked" — do not use |
 | `OPENAI_API_KEY` | ❌ Expired | Invalid API key |
 | `CAPSOLVER_API_KEY` | ✅ Active | DataDome bypass for ThomasNet |
