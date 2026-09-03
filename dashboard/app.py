@@ -832,6 +832,138 @@ def api_browser_status():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 # ============================================================================
+# API Endpoints - RFQ Review Queue
+# ============================================================================
+
+@app.route('/api/rfqs/review', methods=['GET'])
+def api_get_review_queue():
+    """Get RFQs pending review with counts by status"""
+    try:
+        pending = db.get_pending_review_rfqs()
+        counts = db.get_rfq_counts()
+        return jsonify({
+            'success': True,
+            'data': pending,
+            'counts': counts
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/rfqs/<int:rfq_id>/review', methods=['POST'])
+def api_review_rfq(rfq_id):
+    """Approve or reject an RFQ"""
+    try:
+        data = request.get_json()
+        action = data.get('action')
+        reviewed_by = data.get('reviewed_by', 'admin')
+        notes = data.get('notes', '')
+
+        if action not in ('approve', 'reject'):
+            return jsonify({'success': False, 'error': 'action must be approve or reject'}), 400
+
+        status = 'approved' if action == 'approve' else 'rejected'
+        success = db.update_rfq_review(rfq_id, status, reviewed_by)
+
+        if success:
+            # Log the review in validation_issues if notes provided
+            if notes:
+                conn = db._connect_db()
+                cursor = conn.cursor()
+                cursor.execute(
+                    "UPDATE rfq_outputs SET validation_issues = COALESCE(validation_issues, '') || ? WHERE id = ?",
+                    (f"\nReview ({status}): {notes}", rfq_id)
+                )
+                conn.commit()
+                db._close_db()
+
+            return jsonify({'success': True, 'message': f'RFQ {status}'})
+        else:
+            return jsonify({'success': False, 'error': 'RFQ not found'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# ============================================================================
+# API Endpoints - Submission Tracking
+# ============================================================================
+
+@app.route('/api/submissions', methods=['GET'])
+def api_get_submissions():
+    """Get submission log entries"""
+    try:
+        limit = int(request.args.get('limit', 50))
+        rfq_id = request.args.get('rfq_id', type=int)
+
+        if rfq_id:
+            submissions = db.get_submissions_for_rfq(rfq_id)
+        else:
+            submissions = db.get_recent_submissions(limit)
+
+        return jsonify({
+            'success': True,
+            'data': submissions
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/submissions', methods=['POST'])
+def api_log_submission():
+    """Log a new submission"""
+    try:
+        data = request.get_json()
+        required = ['solicitation_id', 'rfq_id', 'vendor_id', 'vendor_name', 'method']
+        missing = [f for f in required if not data.get(f)]
+        if missing:
+            return jsonify({'success': False, 'error': f'Missing fields: {missing}'}), 400
+
+        sub_id = db.log_submission(
+            solicitation_id=data['solicitation_id'],
+            rfq_id=data['rfq_id'],
+            vendor_id=data['vendor_id'],
+            vendor_name=data['vendor_name'],
+            method=data['method'],
+            status=data.get('status', 'sent'),
+            notes=data.get('notes')
+        )
+
+        if sub_id:
+            return jsonify({'success': True, 'data': {'id': sub_id}})
+        else:
+            return jsonify({'success': False, 'error': 'Failed to log submission'}), 500
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/submissions/<int:sub_id>/response', methods=['PUT'])
+def api_update_submission_response(sub_id):
+    """Update submission with vendor response"""
+    try:
+        data = request.get_json()
+        response_status = data.get('response_status')
+        notes = data.get('notes')
+
+        if response_status not in ('quoted', 'declined', 'no_response'):
+            return jsonify({'success': False, 'error': 'Invalid response_status'}), 400
+
+        success = db.update_submission_response(sub_id, response_status, notes)
+        if success:
+            return jsonify({'success': True, 'message': 'Response updated'})
+        else:
+            return jsonify({'success': False, 'error': 'Submission not found'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/pipeline/metrics', methods=['GET'])
+def api_pipeline_metrics():
+    """Get aggregated pipeline metrics"""
+    try:
+        metrics = db.get_pipeline_metrics()
+        return jsonify({
+            'success': True,
+            'data': metrics
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# ============================================================================
 # Main
 # ============================================================================
 
