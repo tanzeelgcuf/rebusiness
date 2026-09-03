@@ -238,6 +238,36 @@ class DatabaseManager:
             )
         """)
 
+        # Pipeline rebuild: review status + validation tracking
+        for col, definition in [
+            ("review_status", "TEXT DEFAULT 'pending'"),
+            ("validation_issues", "TEXT"),
+            ("reviewed_by", "TEXT"),
+            ("reviewed_at", "TIMESTAMP"),
+        ]:
+            try:
+                cursor.execute(f"ALTER TABLE rfq_outputs ADD COLUMN {col} {definition}")
+            except sqlite3.OperationalError:
+                pass  # column exists
+
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS submission_log (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                solicitation_id TEXT,
+                rfq_id INTEGER,
+                vendor_id INTEGER,
+                vendor_name TEXT,
+                submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                submission_method TEXT,
+                submission_status TEXT DEFAULT 'pending',
+                response_received_at TIMESTAMP,
+                response_status TEXT DEFAULT 'no_response',
+                notes TEXT,
+                FOREIGN KEY (rfq_id) REFERENCES rfq_outputs(id),
+                FOREIGN KEY (vendor_id) REFERENCES vendors(id)
+            )
+        """)
+
         conn.commit()
         self._close_db()
         print("Database tables created or already exist.")
@@ -1149,6 +1179,204 @@ class DatabaseManager:
             cursor.execute("SELECT * FROM solicitations WHERE contract_id = ?", (contract_id,))
             row = cursor.fetchone()
             return dict(row) if row else None
+        finally:
+            self._close_db()
+
+
+    # ─── New methods for pipeline rebuild ────────────────────────────────
+
+    def update_rfq_review(self, rfq_id: int, status: str, reviewed_by: str = "admin") -> bool:
+        """Update RFQ review status (pending_review, approved, rejected, auto_rejected)."""
+        conn = self._connect_db()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("""
+                UPDATE rfq_outputs
+                SET review_status = ?, reviewed_by = ?, reviewed_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+            """, (status, reviewed_by, rfq_id))
+            conn.commit()
+            return cursor.rowcount > 0
+        except Exception as e:
+            print(f"Error updating RFQ review: {e}")
+            conn.rollback()
+            return False
+        finally:
+            self._close_db()
+
+    def get_pending_review_rfqs(self) -> list:
+        """Fetch all RFQs with review_status='pending_review'."""
+        conn = self._connect_db()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("""
+                SELECT
+                    r.id, r.contract_id, r.rfq_type, r.rfq_content,
+                    r.review_status, r.validation_issues, r.created_at,
+                    s.title as solicitation_title
+                FROM rfq_outputs r
+                LEFT JOIN solicitations s ON r.contract_id = s.contract_id
+                WHERE r.review_status = 'pending_review'
+                ORDER BY r.created_at ASC
+            """)
+            rows = cursor.fetchall()
+            return [dict(row) for row in rows]
+        finally:
+            self._close_db()
+
+    def get_rfq_counts(self) -> dict:
+        """Get counts of RFQs by review status."""
+        conn = self._connect_db()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("""
+                SELECT review_status, COUNT(*) as count
+                FROM rfq_outputs
+                GROUP BY review_status
+            """)
+            rows = cursor.fetchall()
+            counts = {row['review_status']: row['count'] for row in rows}
+            return {
+                'pending_review': counts.get('pending_review', 0),
+                'approved': counts.get('approved', 0),
+                'rejected': counts.get('rejected', 0),
+                'auto_rejected': counts.get('auto_rejected', 0),
+                'total': sum(counts.values()),
+            }
+        finally:
+            self._close_db()
+
+    def get_pipeline_metrics(self) -> dict:
+        """Get aggregated pipeline metrics including submission funnel."""
+        conn = self._connect_db()
+        cursor = conn.cursor()
+        try:
+            # RFQ counts
+            rfq_counts = self.get_rfq_counts()
+
+            # Submission stats
+            cursor.execute("""
+                SELECT
+                    submission_status,
+                    response_status,
+                    COUNT(*) as count
+                FROM submission_log
+                GROUP BY submission_status, response_status
+            """)
+            sub_rows = cursor.fetchall()
+
+            total_submissions = sum(r['count'] for r in sub_rows)
+            sent_count = sum(r['count'] for r in sub_rows if r['submission_status'] == 'sent')
+            failed_count = sum(r['count'] for r in sub_rows if r['submission_status'] == 'failed')
+            quoted_count = sum(r['count'] for r in sub_rows if r['response_status'] == 'quoted')
+            declined_count = sum(r['count'] for r in sub_rows if r['response_status'] == 'declined')
+            no_response_count = sum(r['count'] for r in sub_rows if r['response_status'] == 'no_response')
+
+            # Recent submissions
+            cursor.execute("""
+                SELECT
+                    sl.id, sl.solicitation_id, sl.rfq_id, sl.vendor_name,
+                    sl.submitted_at, sl.submission_method, sl.submission_status,
+                    sl.response_received_at, sl.response_status, sl.notes
+                FROM submission_log sl
+                ORDER BY sl.submitted_at DESC
+                LIMIT 50
+            """)
+            recent_rows = cursor.fetchall()
+            recent_submissions = [dict(row) for row in recent_rows]
+
+            return {
+                'rfq_counts': rfq_counts,
+                'total_submissions': total_submissions,
+                'sent_count': sent_count,
+                'failed_count': failed_count,
+                'quoted_count': quoted_count,
+                'declined_count': declined_count,
+                'no_response_count': no_response_count,
+                'response_rate': (quoted_count + declined_count) / sent_count * 100 if sent_count > 0 else 0,
+                'conversion_rate': quoted_count / sent_count * 100 if sent_count > 0 else 0,
+                'recent_submissions': recent_submissions,
+            }
+        finally:
+            self._close_db()
+
+    def log_submission(self, solicitation_id: str, rfq_id: int, vendor_id: int,
+                       vendor_name: str, method: str, status: str, notes: str = None) -> int:
+        """Log a submission attempt to a vendor. Returns submission_log ID."""
+        conn = self._connect_db()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("""
+                INSERT INTO submission_log
+                (solicitation_id, rfq_id, vendor_id, vendor_name, submission_method, submission_status, notes)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (solicitation_id, rfq_id, vendor_id, vendor_name, method, status, notes))
+            conn.commit()
+            return cursor.lastrowid
+        except Exception as e:
+            print(f"Error logging submission: {e}")
+            conn.rollback()
+            return None
+        finally:
+            self._close_db()
+
+    def update_submission_response(self, submission_id: int, response_status: str, notes: str = None) -> bool:
+        """Update a submission log entry with vendor response."""
+        conn = self._connect_db()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("""
+                UPDATE submission_log
+                SET response_received_at = CURRENT_TIMESTAMP,
+                    response_status = ?,
+                    notes = COALESCE(?, notes)
+                WHERE id = ?
+            """, (response_status, notes, submission_id))
+            conn.commit()
+            return cursor.rowcount > 0
+        except Exception as e:
+            print(f"Error updating submission response: {e}")
+            conn.rollback()
+            return False
+        finally:
+            self._close_db()
+
+    def get_submission_stats(self) -> dict:
+        """Return aggregated submission statistics."""
+        return self.get_pipeline_metrics()
+
+    def get_submissions_for_rfq(self, rfq_id: int) -> list:
+        """Get all submission log entries for a specific RFQ."""
+        conn = self._connect_db()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("""
+                SELECT *
+                FROM submission_log
+                WHERE rfq_id = ?
+                ORDER BY submitted_at DESC
+            """, (rfq_id,))
+            rows = cursor.fetchall()
+            return [dict(row) for row in rows]
+        finally:
+            self._close_db()
+
+    def get_recent_submissions(self, limit: int = 50) -> list:
+        """Get recent submission log entries."""
+        conn = self._connect_db()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("""
+                SELECT
+                    sl.id, sl.solicitation_id, sl.rfq_id, sl.vendor_id, sl.vendor_name,
+                    sl.submitted_at, sl.submission_method, sl.submission_status,
+                    sl.response_received_at, sl.response_status, sl.notes
+                FROM submission_log sl
+                ORDER BY sl.submitted_at DESC
+                LIMIT ?
+            """, (limit,))
+            rows = cursor.fetchall()
+            return [dict(row) for row in rows]
         finally:
             self._close_db()
 

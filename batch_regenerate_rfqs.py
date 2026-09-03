@@ -21,6 +21,8 @@ sys.path.insert(0, BASE_DIR)
 
 import config
 from database_manager import DatabaseManager
+from rfq_validator import validate_rfq, ValidationResult
+import re
 
 # Load .env file for API keys
 try:
@@ -250,6 +252,28 @@ def save_solicitation_data(contract_id: str, description: str, url: str):
         f.write(description)
 
 
+def parse_llm_rfq_output(raw_text: str) -> dict:
+    """Extract structured fields from LLM's markdown RFQ output for validation."""
+    result = {"body": raw_text or ""}
+    if not raw_text:
+        return result
+
+    patterns = {
+        "scope": r"(?:scope|description|summary|overview)[:\s]+(.+?)(?:\n\n|\n#|\Z)",
+        "quantity": r"(?:quantity|qty|amount|units?)[:\s]+(.+?)(?:\n|\Z)",
+        "deadline": r"(?:deadline|due\s*date|response\s*date|submission\s*date)[:\s]+(.+?)(?:\n|\Z)",
+        "delivery_location": r"(?:delivery|ship\s*to|location|place\s*of\s*performance)[:\s]+(.+?)(?:\n\n|\n#|\Z)",
+        "contact": r"(?:contact|email|phone|point\s*of\s*contact)[:\s]+(.+?)(?:\n|\Z)",
+    }
+
+    for field, pattern in patterns.items():
+        match = re.search(pattern, raw_text, re.IGNORECASE | re.DOTALL)
+        if match:
+            result[field] = match.group(1).strip()[:500]
+
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description='Batch regenerate RFQs')
     parser.add_argument('--dry-run', action='store_true', help='Only fetch and save descriptions, skip RFQ generation')
@@ -278,6 +302,8 @@ def main():
     processed = 0
     skipped = 0
     errors = 0
+    rejected = 0
+    warnings = 0
 
     for idx, (contract_id, url, title) in enumerate(solicitations, 1):
         logger.info(f"\n[{idx}/{len(solicitations)}] Processing: {contract_id[:30]}...")
@@ -353,6 +379,21 @@ def main():
             rfq_type = result['rfq_type']
             logger.info(f"  Generated {rfq_type} RFQ ({len(rfq_content)} chars)")
 
+            # Step 2b: Validate RFQ quality
+            rfq_dict = parse_llm_rfq_output(rfq_content)
+            validation = validate_rfq(rfq_dict)
+            review_status = "approved" if validation.severity == "ok" else \
+                            "pending_review" if validation.severity == "warning" else \
+                            "auto_rejected"
+            issues_json = json.dumps(validation.issues) if validation.issues else None
+            logger.info(f"  Validation: severity={validation.severity}, issues={len(validation.issues)}")
+            if validation.severity == "reject":
+                logger.warning(f"  REJECTED: {validation.issues}")
+                rejected += 1
+            elif validation.severity == "warning":
+                logger.warning(f"  WARNING: {validation.issues}")
+                warnings += 1
+
             # Step 3: Save .docx file
             try:
                 from utils.doc_converter import convert_md_to_docx
@@ -365,17 +406,17 @@ def main():
             except Exception as e:
                 logger.warning(f"  DOCX save failed: {e}")
 
-            # Step 4: Update database
+            # Step 4: Update database with validation result
             cursor.execute("""
                 UPDATE rfq_outputs
-                SET rfq_content = ?, rfq_type = ?, format = 'markdown'
+                SET rfq_content = ?, rfq_type = ?, format = 'markdown',
+                    review_status = ?, validation_issues = ?
                 WHERE contract_id = ?
-            """, (rfq_content, rfq_type, contract_id))
+            """, (rfq_content, rfq_type, review_status, issues_json, contract_id))
 
             # Also update title if still generic
             if title == 'Solicitation for Product' or title == 'Solicitation for Service':
                 # Extract title from description
-                import re
                 title_match = re.search(r'(?:Title|Solicitation)[:\s]+(.+)', description[:500], re.IGNORECASE)
                 new_title = title_match.group(1).strip()[:200] if title_match else title
                 cursor.execute("UPDATE solicitations SET title = ?, description = ? WHERE contract_id = ?",
@@ -395,7 +436,13 @@ def main():
         time.sleep(1)
 
     logger.info(f"\n{'='*80}")
-    logger.info(f"BATCH COMPLETE: {processed} processed, {skipped} skipped, {errors} errors")
+    logger.info(f"BATCH COMPLETE")
+    logger.info(f"  Processed: {processed}")
+    logger.info(f"  Skipped:   {skipped}")
+    logger.info(f"  Errors:    {errors}")
+    logger.info(f"  Approved:  {processed - rejected - warnings}")
+    logger.info(f"  Warnings:  {warnings} (pending review)")
+    logger.info(f"  Rejected:  {rejected} (auto-rejected)")
     logger.info(f"{'='*80}")
 
     db._close_db()
