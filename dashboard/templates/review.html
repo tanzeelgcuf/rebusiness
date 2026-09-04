@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block title %}RFQ Review Queue{% endblock %}
+
+{% block content %}
+<div x-data="reviewApp()">
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h2 class="text-3xl font-bold mb-4">🔍 RFQ Review Queue</h2>
+            <p class="text-gray-600">Review and approve/reject RFQs before vendor submission</p>
+        </div>
+    </div>
+
+    <!-- Status Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-yellow-500">
+            <div class="text-sm text-gray-500">Pending Review</div>
+            <div class="text-3xl font-bold text-yellow-600" x-text="counts.pending_review || 0"></div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
+            <div class="text-sm text-gray-500">Approved</div>
+            <div class="text-3xl font-bold text-green-600" x-text="counts.approved || 0"></div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-red-500">
+            <div class="text-sm text-gray-500">Rejected</div>
+            <div class="text-3xl font-bold text-red-600" x-text="counts.rejected || 0"></div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-gray-500">
+            <div class="text-sm text-gray-500">Auto-Rejected</div>
+            <div class="text-3xl font-bold text-gray-600" x-text="counts.auto_rejected || 0"></div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white rounded-lg shadow p-4 mb-6">
+        <div class="flex flex-wrap gap-4 items-center">
+            <select x-model="filterStatus" @change="loadQueue()" class="border rounded px-3 py-2 text-sm">
+                <option value="pending_review">Pending Review</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+                <option value="auto_rejected">Auto-Rejected</option>
+            </select>
+            <button @click="loadQueue()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition">Refresh</button>
+        </div>
+    </div>
+
+    <!-- Review Queue Table -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contract ID</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Issues</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                <template x-for="rfq in queue" :key="rfq.id">
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 text-sm font-mono" x-text="rfq.contract_id"></td>
+                        <td class="px-6 py-4 text-sm" x-text="rfq.solicitation_title || 'N/A'"></td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-1 text-xs rounded-full"
+                                :class="rfq.rfq_type === 'PRODUCT' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'"
+                                x-text="rfq.rfq_type"></span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-1 text-xs rounded-full"
+                                :class="statusClass(rfq.review_status)"
+                                x-text="rfq.review_status"></span>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600 max-w-xs truncate" x-text="rfq.validation_issues || '—'"></td>
+                        <td class="px-6 py-4 text-sm text-gray-500" x-text="formatDate(rfq.created_at)"></td>
+                        <td class="px-6 py-4 text-sm space-x-2">
+                            <button @click="viewRFQ(rfq)" class="text-blue-600 hover:text-blue-800" title="View Details">View</button>
+                            <button @click="reviewRFQ(rfq.id, 'approve')" x-show="rfq.review_status === 'pending_review'" class="text-green-600 hover:text-green-800 font-bold" title="Approve">✓ Approve</button>
+                            <button @click="reviewRFQ(rfq.id, 'reject')" x-show="rfq.review_status === 'pending_review'" class="text-red-600 hover:text-red-800 font-bold" title="Reject">✗ Reject</button>
+                            <span x-show="rfq.review_status !== 'pending_review'" class="text-gray-400 text-xs">Reviewed: <span x-text="rfq.reviewed_by"></span> at <span x-text="formatDate(rfq.reviewed_at)"></span></span>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+
+        <template x-if="queue.length === 0">
+            <div class="text-center py-12 text-gray-500">
+                <p class="text-xl">No RFQs in this queue</p>
+            </div>
+        </template>
+    </div>
+
+    <!-- RFQ Detail Modal -->
+    <div x-show="showModal" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true" @click="showModal = false">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-5xl sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" x-text="selectedRfq.contract_id + ' - Review'"></h3>
+                            <div class="mt-4 space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Title</label>
+                                    <p class="text-gray-900" x-text="selectedRfq.solicitation_title || 'N/A'"></p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Type</label>
+                                    <p class="text-gray-900" x-text="selectedRfq.rfq_type"></p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Status</label>
+                                    <span class="px-2 py-1 text-xs rounded-full" :class="statusClass(selectedRfq.review_status)" x-text="selectedRfq.review_status"></span>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Validation Issues</label>
+                                    <pre class="bg-gray-100 p-3 rounded text-sm whitespace-pre-wrap text-red-600" x-text="selectedRfq.validation_issues || 'None'"></pre>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">RFQ Content</label>
+                                    <div class="border rounded p-4 bg-gray-50 overflow-y-auto" style="max-height: 60vh;">
+                                        <div x-html="rfqContent"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" @click="showModal = false" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Close
+                    </button>
+                    <button type="button" @click="reviewRFQ(selectedRfq.id, 'approve')" x-show="selectedRfq.review_status === 'pending_review'" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                        Approve
+                    </button>
+                    <button type="button" @click="reviewRFQ(selectedRfq.id, 'reject')" x-show="selectedRfq.review_status === 'pending_review'" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                        Reject
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function reviewApp() {
+        return {
+            queue: [],
+            counts: {},
+            filterStatus: 'pending_review',
+            showModal: false,
+            selectedRfq: null,
+            rfqContent: '',
+
+            async init() {
+                await this.loadCounts();
+                await this.loadQueue();
+            },
+
+            async loadCounts() {
+                try {
+                    const response = await fetch('/api/rfqs/review');
+                    const data = await response.json();
+                    if (data.success) {
+                        this.counts = data.counts;
+                    }
+                } catch (error) {
+                    console.error('Error loading counts:', error);
+                }
+            },
+
+            async loadQueue() {
+                try {
+                    const response = await fetch('/api/rfqs/review');
+                    const data = await response.json();
+                    if (data.success) {
+                        this.queue = data.data.filter(r => r.review_status === this.filterStatus);
+                    }
+                } catch (error) {
+                    console.error('Error loading queue:', error);
+                    alert('Failed to load review queue');
+                }
+            },
+
+            async viewRFQ(rfq) {
+                this.selectedRfq = rfq;
+                this.rfqContent = '<div class="flex justify-center p-8"><span class="animate-spin text-4xl">⏳</span></div>';
+                this.showModal = true;
+
+                try {
+                    const response = await fetch(`/api/rfqs/${rfq.contract_id}`);
+                    const data = await response.json();
+                    if (data.success) {
+                        this.rfqContent = data.data.html_content || '<div class="text-gray-500">No preview available.</div>';
+                    } else {
+                        this.rfqContent = '<div class="text-red-500">Failed to load content</div>';
+                    }
+                } catch (error) {
+                    console.error('Error viewing RFQ:', error);
+                    this.rfqContent = '<div class="text-red-500">Error loading content</div>';
+                }
+            },
+
+            async reviewRFQ(rfqId, action) {
+                const notes = prompt(`Confirm ${action} this RFQ?\n\nEnter optional notes:`);
+                if (notes === null) return; // User cancelled
+
+                try {
+                    const response = await fetch(`/api/rfqs/${rfqId}/review`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action, reviewed_by: 'admin', notes: notes || '' })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        alert(`RFQ ${action}d successfully!`);
+                        this.showModal = false;
+                        await this.loadCounts();
+                        await this.loadQueue();
+                    } else {
+                        alert('Failed: ' + data.error);
+                    }
+                } catch (error) {
+                    console.error('Error reviewing RFQ:', error);
+                    alert('Error reviewing RFQ');
+                }
+            },
+
+            statusClass(status) {
+                switch (status) {
+                    case 'pending_review': return 'bg-yellow-100 text-yellow-800';
+                    case 'approved': return 'bg-green-100 text-green-800';
+                    case 'rejected': return 'bg-red-100 text-red-800';
+                    case 'auto_rejected': return 'bg-gray-100 text-gray-800';
+                    default: return 'bg-gray-100 text-gray-800';
+                }
+            },
+
+            formatDate(dateString) {
+                if (!dateString) return '—';
+                return new Date(dateString).toLocaleString();
+            }
+        }
+    }
+</script>
+{% endblock %}

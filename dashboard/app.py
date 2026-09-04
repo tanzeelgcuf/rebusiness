@@ -55,6 +55,16 @@ def automation_page():
     """Automation control page"""
     return render_template('automation.html')
 
+@app.route('/review')
+def review_page():
+    """RFQ Review Queue page"""
+    return render_template('review.html')
+
+@app.route('/submissions')
+def submissions_page():
+    """Submission Tracker page"""
+    return render_template('submissions.html')
+
 # ============================================================================
 # API Endpoints - Solicitations
 # ============================================================================

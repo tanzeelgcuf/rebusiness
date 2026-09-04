@@ -35,6 +35,9 @@ temp_*.html
 *.webp
 !leads.csv
 
+# Databases
+*.db
+
 # ThomasNet session (contains login cookies - never commit)
 dashboard/auth_state.json
 auth_state.json

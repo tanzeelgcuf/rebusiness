@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Submission Tracker{% endblock %}
+
+{% block content %}
+<div x-data="submissionsApp()">
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h2 class="text-3xl font-bold mb-4">🚀 Submission Tracker</h2>
+            <p class="text-gray-600">Track RFQ submissions and vendor responses</p>
+        </div>
+        <button @click="loadSubmissions()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition">Refresh</button>
+    </div>
+
+    <!-- Pipeline Metrics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
+            <div class="text-sm text-gray-500">Total Submissions</div>
+            <div class="text-3xl font-bold text-blue-600" x-text="metrics.total_submissions || 0"></div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
+            <div class="text-sm text-gray-500">Sent</div>
+            <div class="text-3xl font-bold text-green-600" x-text="metrics.sent_count || 0"></div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-red-500">
+            <div class="text-sm text-gray-500">Failed</div>
+            <div class="text-3xl font-bold text-red-600" x-text="metrics.failed_count || 0"></div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-purple-500">
+            <div class="text-sm text-gray-500">Quoted</div>
+            <div class="text-3xl font-bold text-purple-600" x-text="metrics.quoted_count || 0"></div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-yellow-500">
+            <div class="text-sm text-gray-500">No Response</div>
+            <div class="text-3xl font-bold text-yellow-600" x-text="metrics.no_response_count || 0"></div>
+        </div>
+    </div>
+
+    <!-- Response Rates -->
+    <div class="bg-white rounded-lg shadow p-4 mb-6" x-show="metrics.total_submissions > 0">
+        <div class="flex items-center space-x-6">
+            <div>
+                <span class="text-sm text-gray-500">Response Rate:</span>
+                <span class="text-lg font-bold" :class="metrics.response_rate > 50 ? 'text-green-600' : 'text-red-600'" x-text="(metrics.response_rate || 0).toFixed(1) + '%'"></span>
+            </div>
+            <div>
+                <span class="text-sm text-gray-500">Conversion Rate:</span>
+                <span class="text-lg font-bold" :class="metrics.conversion_rate > 20 ? 'text-green-600' : 'text-red-600'" x-text="(metrics.conversion_rate || 0).toFixed(1) + '%'"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submissions Table -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Solicitation</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Vendor</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Method</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Response</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Submitted</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                <template x-for="sub in submissions" :key="sub.id">
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 text-sm font-mono" x-text="sub.id"></td>
+                        <td class="px-6 py-4 text-sm font-mono text-xs max-w-[150px] truncate" x-text="sub.solicitation_id"></td>
+                        <td class="px-6 py-4 text-sm" x-text="sub.vendor_name"></td>
+                        <td class="px-6 py-4 text-sm text-gray-600" x-text="sub.submission_method"></td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-1 text-xs rounded-full"
+                                :class="sub.submission_status === 'sent' ? 'bg-green-100 text-green-800' : sub.submission_status === 'failed' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'"
+                                x-text="sub.submission_status"></span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-1 text-xs rounded-full"
+                                :class="responseClass(sub.response_status)"
+                                x-text="sub.response_status"></span>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-500" x-text="formatDate(sub.submitted_at)"></td>
+                        <td class="px-6 py-4 text-sm space-x-2">
+                            <button @click="updateResponse(sub.id, 'quoted')" x-show="sub.response_status === 'no_response'" class="text-green-600 hover:text-green-800 font-bold" title="Mark Quoted">✓ Quoted</button>
+                            <button @click="updateResponse(sub.id, 'declined')" x-show="sub.response_status === 'no_response'" class="text-red-600 hover:text-red-800" title="Mark Declined">✗ Declined</button>
+                            <span x-show="sub.response_status !== 'no_response'" class="text-gray-400 text-xs">—</span>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+
+        <template x-if="submissions.length === 0">
+            <div class="text-center py-12 text-gray-500">
+                <p class="text-xl">No submissions yet</p>
+            </div>
+        </template>
+    </div>
+</div>
+
+<script>
+    function submissionsApp() {
+        return {
+            submissions: [],
+            metrics: {},
+
+            async init() {
+                await this.loadMetrics();
+                await this.loadSubmissions();
+            },
+
+            async loadMetrics() {
+                try {
+                    const response = await fetch('/api/pipeline/metrics');
+                    const data = await response.json();
+                    if (data.success) {
+                        this.metrics = data.data;
+                    }
+                } catch (error) {
+                    console.error('Error loading metrics:', error);
+                }
+            },
+
+            async loadSubmissions() {
+                try {
+                    const response = await fetch('/api/submissions?limit=100');
+                    const data = await response.json();
+                    if (data.success) {
+                        this.submissions = data.data;
+                    }
+                } catch (error) {
+                    console.error('Error loading submissions:', error);
+                    alert('Failed to load submissions');
+                }
+            },
+
+            async updateResponse(subId, status) {
+                const notes = prompt(`Update response status to "${status}"?\n\nEnter optional notes:`);
+                if (notes === null) return;
+
+                try {
+                    const response = await fetch(`/api/submissions/${subId}/response`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ response_status: status, notes: notes || '' })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        alert('Response updated!');
+                        await this.loadMetrics();
+                        await this.loadSubmissions();
+                    } else {
+                        alert('Failed: ' + data.error);
+                    }
+                } catch (error) {
+                    console.error('Error updating response:', error);
+                    alert('Error updating response');
+                }
+            },
+
+            responseClass(status) {
+                switch (status) {
+                    case 'quoted': return 'bg-purple-100 text-purple-800';
+                    case 'declined': return 'bg-red-100 text-red-800';
+                    case 'no_response': return 'bg-yellow-100 text-yellow-800';
+                    default: return 'bg-gray-100 text-gray-800';
+                }
+            },
+
+            formatDate(dateString) {
+                if (!dateString) return '—';
+                return new Date(dateString).toLocaleString();
+            }
+        }
+    }
+</script>
+{% endblock %}
