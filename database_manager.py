@@ -942,14 +942,15 @@ class DatabaseManager:
     # Dashboard API Methods
     # ========================================================================
     
-    def get_all_rfqs(self, limit=50, offset=0, sent_status=None):
+    def get_all_rfqs(self, limit=50, offset=0, sent_status=None, review_status=None):
         """
         Get RFQs with pagination for dashboard
-        
+
         Args:
             limit: Number of records
             offset: Pagination offset
             sent_status: 'pending' (sent_to_vendor=0) or 'sent' (sent_to_vendor=1), or None for all
+            review_status: Filter by review_status column, or None for all
         """
         conn = self._connect_db()
         cursor = conn.cursor()
@@ -959,35 +960,51 @@ class DatabaseManager:
                 FROM rfq_outputs r
                 LEFT JOIN solicitations s ON r.contract_id = s.contract_id
             """
+            conditions = []
             params = []
-            
+
             if sent_status == 'pending':
-                query += " WHERE r.sent_to_vendor = 0"
+                conditions.append("r.sent_to_vendor = 0")
             elif sent_status == 'sent':
-                query += " WHERE r.sent_to_vendor = 1"
-                
+                conditions.append("r.sent_to_vendor = 1")
+
+            if review_status:
+                conditions.append("r.review_status = ?")
+                params.append(review_status)
+
+            if conditions:
+                query += " WHERE " + " AND ".join(conditions)
+
             query += " ORDER BY r.generated_date DESC LIMIT ? OFFSET ?"
             params.extend([limit, offset])
-            
+
             cursor.execute(query, tuple(params))
             rfqs = [dict(row) for row in cursor.fetchall()]
             return rfqs
         finally:
             self._close_db()
 
-    def get_rfqs_count(self, sent_status=None):
+    def get_rfqs_count(self, sent_status=None, review_status=None):
         """Get total RFQ count, optionally filtered by status"""
         conn = self._connect_db()
         cursor = conn.cursor()
         try:
             query = "SELECT COUNT(*) FROM rfq_outputs"
+            conditions = []
             params = []
-            
+
             if sent_status == 'pending':
-                query += " WHERE sent_to_vendor = 0"
+                conditions.append("sent_to_vendor = 0")
             elif sent_status == 'sent':
-                query += " WHERE sent_to_vendor = 1"
-                
+                conditions.append("sent_to_vendor = 1")
+
+            if review_status:
+                conditions.append("review_status = ?")
+                params.append(review_status)
+
+            if conditions:
+                query += " WHERE " + " AND ".join(conditions)
+
             cursor.execute(query, tuple(params))
             count = cursor.fetchone()[0]
             return count

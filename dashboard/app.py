@@ -121,8 +121,9 @@ def api_get_rfqs():
     try:
         limit = int(request.args.get('limit', 50))
         offset = int(request.args.get('offset', 0))
-        status = request.args.get('status', 'pending') # Default to pending
-        
+        status = request.args.get('status', 'pending')  # Default to pending
+        review_status = request.args.get('review_status', None)
+
         # Convert status for DB
         sent_status = None
         if status == 'pending':
@@ -131,10 +132,10 @@ def api_get_rfqs():
             sent_status = 'sent'
         elif status == 'all':
             sent_status = None
-            
-        rfqs = db.get_all_rfqs(limit=limit, offset=offset, sent_status=sent_status)
-        total = db.get_rfqs_count(sent_status=sent_status)
-        
+
+        rfqs = db.get_all_rfqs(limit=limit, offset=offset, sent_status=sent_status, review_status=review_status)
+        total = db.get_rfqs_count(sent_status=sent_status, review_status=review_status)
+
         return jsonify({
             'success': True,
             'data': rfqs,
