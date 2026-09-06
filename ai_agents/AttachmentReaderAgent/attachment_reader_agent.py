@@ -8,6 +8,7 @@ from typing import Dict, List, Tuple, Optional
 from google import genai
 from google.genai import types
 from openai import OpenAI
+from groq import Groq
 import pdfplumber
 import pandas as pd
 
@@ -27,13 +28,15 @@ class AttachmentReaderAgent:
     def __init__(self):
         self.db_manager = DatabaseManager()
         self.config = config
-        
+
         # Initialize LLM client
         if config.LLM_PROVIDER == "gemini":
             self.genai_client = genai.Client(api_key=config.GEMINI_API_KEY)
         elif config.LLM_PROVIDER == "openai":
             self.openai_client = OpenAI(api_key=config.OPENAI_API_KEY)
-        
+        elif config.LLM_PROVIDER == "groq":
+            self.groq_client = Groq(api_key=config.GROQ_API_KEY)
+
         # Initialize encoding for token counting
         try:
             import tiktoken
@@ -462,27 +465,53 @@ REMEMBER: Output ONLY the final RFQ content. Do NOT include any of the instructi
             logger.info(f"    Using improvement instructions ({len(improvement_instructions)} chars)")
         
         try:
-            # STEP 4: Generate with the new SDK
-            logger.info(f"    Sending to Gemini (High Fidelity)...")
-            
-            # Using the official model name from user choice, or fallback to 1.5 Pro
-            model_id = 'gemini-2.0-flash' # Better performance/reliability
-            
-            response = self.genai_client.models.generate_content(
-                model=model_id,
-                contents=text_content,
-                config=types.GenerateContentConfig(
-                    system_instruction=system_instruction,
+            # STEP 4: Generate with the appropriate LLM provider
+            if config.LLM_PROVIDER == "gemini":
+                logger.info(f"    Sending to Gemini (High Fidelity)...")
+                model_id = 'gemini-2.0-flash'
+                response = self.genai_client.models.generate_content(
+                    model=model_id,
+                    contents=text_content,
+                    config=types.GenerateContentConfig(
+                        system_instruction=system_instruction,
+                        temperature=0.1,
+                        top_p=0.95,
+                        top_k=40,
+                        max_output_tokens=8192,
+                        stop_sequences=['END OF RFQ'],
+                    )
+                )
+                rfq_markdown = response.text
+            elif config.LLM_PROVIDER == "openai":
+                logger.info(f"    Sending to OpenAI (High Fidelity)...")
+                response = self.openai_client.chat.completions.create(
+                    model="gpt-4o",
+                    messages=[
+                        {"role": "system", "content": system_instruction},
+                        {"role": "user", "content": "\n".join(str(c) for c in text_content)}
+                    ],
                     temperature=0.1,
                     top_p=0.95,
-                    top_k=40,
-                    max_output_tokens=8192,
-                    stop_sequences=['END OF RFQ'],
+                    max_tokens=8192,
+                    stop=['END OF RFQ'],
                 )
-            )
-            
-            # Extract text
-            rfq_markdown = response.text
+                rfq_markdown = response.choices[0].message.content
+            elif config.LLM_PROVIDER == "groq":
+                logger.info(f"    Sending to Groq (High Fidelity)...")
+                response = self.groq_client.chat.completions.create(
+                    model="llama-3.3-70b-versatile",
+                    messages=[
+                        {"role": "system", "content": system_instruction},
+                        {"role": "user", "content": "\n".join(str(c) for c in text_content)}
+                    ],
+                    temperature=0.1,
+                    top_p=0.95,
+                    max_tokens=8192,
+                    stop=['END OF RFQ'],
+                )
+                rfq_markdown = response.choices[0].message.content
+            else:
+                raise ValueError(f"Unknown LLM_PROVIDER: {config.LLM_PROVIDER}")
             
             # Validate minimum length
             if not rfq_markdown or len(rfq_markdown) < 1000:

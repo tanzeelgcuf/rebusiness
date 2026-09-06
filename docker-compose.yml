@@ -1,15 +1,275 @@
+# Multi-Tenant SaaS RFQ Automation Platform - Production Docker Compose
+# Complete stack: Flask + PostgreSQL + Redis + Celery + Nginx + Celery Beat
+# All services on isolated network with healthchecks and restart policies
+
 version: '3.8'
 
+# ============================================================
+# Services
+# ============================================================
 services:
-  dashboard:
-    build: .
-    ports:
-      - "5001:5001"
-    volumes:
-      - ./rfq_downloads:/app/rfq_downloads
-      - ./dashboard/logs:/app/dashboard/logs
-      - ./dashboard/rebusiness_automation.db:/app/dashboard/rebusiness_automation.db
-      - ./auth_state.json:/app/auth_state.json
-    environment:
-      - PYTHONUNBUFFERED=1
+  # --------------------------------------------------------
+  # Nginx: Reverse proxy, SSL termination, static files
+  # --------------------------------------------------------
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: rfq_nginx
     restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - static_files:/app/static:ro
+    depends_on:
+      flask:
+        condition: service_healthy
+    networks:
+      - rfq_network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # --------------------------------------------------------
+  # Flask: Main API + web application
+  # --------------------------------------------------------
+  flask:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rfq_flask
+    restart: unless-stopped
+    expose:
+      - "5000"
+    environment:
+      FLASK_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-rfq_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-rfq_saas}
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      SECRET_KEY: ${SECRET_KEY}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      # LLM provider keys
+      LLM_PROVIDER: ${LLM_PROVIDER:-gemini}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      # Email configuration
+      SMTP_SERVER: ${SMTP_SERVER}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_SENDER_EMAIL: ${SMTP_SENDER_EMAIL}
+      # SAM.gov credentials
+      SAM_GOV_API_KEY: ${SAM_GOV_API_KEY}
+      SAM_GOV_ENTITY_ID: ${SAM_GOV_ENTITY_ID}
+      # Feature flags
+      FEATURE_THOMASNET_SUBMISSION: "true"
+      FEATURE_EMAIL_SUBMISSION: "true"
+      FEATURE_BATCH_PROCESSING: "true"
+      # Logging
+      LOG_LEVEL: INFO
+      LOG_FILE: /app/logs/app.log
+      GUNICORN_WORKERS: ${GUNICORN_WORKERS:-4}
+    volumes:
+      - app_data:/app/data
+      - app_logs:/app/logs
+      - app_uploads:/app/uploads
+      - static_files:/app/static
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - rfq_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # --------------------------------------------------------
+  # Celery Worker: Background automation tasks
+  # --------------------------------------------------------
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rfq_celery_worker
+    restart: unless-stopped
+    command: celery -A celery_worker.celery worker --loglevel=info --concurrency=2 --max-tasks-per-child=50
+    environment:
+      FLASK_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-rfq_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-rfq_saas}
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      SECRET_KEY: ${SECRET_KEY}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      LLM_PROVIDER: ${LLM_PROVIDER:-gemini}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      SMTP_SERVER: ${SMTP_SERVER}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SAM_GOV_API_KEY: ${SAM_GOV_API_KEY}
+      SAM_GOV_ENTITY_ID: ${SAM_GOV_ENTITY_ID}
+      LOG_LEVEL: INFO
+    volumes:
+      - app_data:/app/data
+      - app_logs:/app/logs
+      - app_uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - rfq_network
+    healthcheck:
+      test: ["CMD-SHELL", "celery -A celery_worker.celery inspect ping -d celery@$$HOSTNAME || exit 1"]
+      interval: 30s
+      timeout: 15s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.5'
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # --------------------------------------------------------
+  # Celery Beat: Scheduled tasks (health checks, cleanup)
+  # --------------------------------------------------------
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rfq_celery_beat
+    restart: unless-stopped
+    command: celery -A celery_worker.celery beat --loglevel=info --schedule=/app/data/celerybeat-schedule
+    environment:
+      FLASK_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-rfq_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-rfq_saas}
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      SECRET_KEY: ${SECRET_KEY}
+      LOG_LEVEL: INFO
+    volumes:
+      - app_data:/app/data
+      - app_logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - rfq_network
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # --------------------------------------------------------
+  # PostgreSQL: Multi-tenant database with row-level security
+  # --------------------------------------------------------
+  postgres:
+    image: postgres:15-alpine
+    container_name: rfq_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-rfq_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-rfq_saas}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations/postgres_schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    networks:
+      - rfq_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-rfq_user} -d ${POSTGRES_DB:-rfq_saas}"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # --------------------------------------------------------
+  # Redis: Cache + Celery broker + result backend
+  # --------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: rfq_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    networks:
+      - rfq_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# ============================================================
+# Named Volumes for Data Persistence
+# ============================================================
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  app_data:
+    driver: local
+  app_logs:
+    driver: local
+  app_uploads:
+    driver: local
+  static_files:
+    driver: local
+
+# ============================================================
+# Isolated Docker Network
+# ============================================================
+networks:
+  rfq_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

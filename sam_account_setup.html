@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAM.gov Account Setup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .header {
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 16px;
+            background: #667eea;
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .label-required {
+            color: #e74c3c;
+        }
+
+        .label-optional {
+            color: #999;
+            font-size: 12px;
+            font-weight: normal;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input.error,
+        select.error {
+            border-color: #e74c3c;
+            background: #fef5f5;
+        }
+
+        input.success,
+        select.success {
+            border-color: #27ae60;
+            background: #f0fdf4;
+        }
+
+        .input-helper {
+            font-size: 13px;
+            color: #666;
+            margin-top: 6px;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            color: #27ae60;
+            font-size: 13px;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .multi-select-wrapper {
+            position: relative;
+        }
+
+        .multi-select-container {
+            border: 1.5px solid #ddd;
+            border-radius: 6px;
+            background: #fafafa;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .multi-select-container:focus-within {
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            padding: 8px 10px;
+            border-radius: 4px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .checkbox-group:hover {
+            background: #f0f0f0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            flex: 1;
+            cursor: pointer;
+            font-weight: 400;
+        }
+
+        .selected-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 6px;
+            min-height: 40px;
+            align-items: center;
+        }
+
+        .tag {
+            background: #667eea;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            font-weight: bold;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .tag-remove:hover {
+            opacity: 1;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ddd;
+            transition: 0.3s;
+            border-radius: 28px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #667eea;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+        .range-inputs {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .range-inputs input {
+            flex: 1;
+        }
+
+        .range-separator {
+            color: #999;
+            font-weight: 500;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #5568d3;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #e8e8e8;
+        }
+
+        .btn-test {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-test:hover:not(:disabled) {
+            background: #2980b9;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-test:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #999;
+        }
+
+        .status-dot.testing {
+            background: #f39c12;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .status-dot.success {
+            background: #27ae60;
+        }
+
+        .status-dot.error {
+            background: #e74c3c;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .connection-result {
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .connection-result.show {
+            display: block;
+        }
+
+        .connection-result.success {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            color: #166534;
+        }
+
+        .connection-result.error {
+            background: #fef5f5;
+            border: 1px solid #fca5a5;
+            color: #991b1b;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .info-box {
+            background: #f0f7ff;
+            border-left: 4px solid #3498db;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #0c3d66;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>SAM.gov Account Setup</h1>
+            <p class="subtitle">Configure your SAM.gov integration for solicitation monitoring</p>
+        </div>
+
+        <form id="samSetupForm">
+            <!-- API Credentials Section -->
+            <div class="form-section">
+                <div class="section-title">API Credentials</div>
+
+                <div class="form-group">
+                    <label>
+                        SAM.gov API Key
+                        <span class="label-required">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="apiKey"
+                        name="apiKey"
+                        placeholder="Enter your SAM.gov API key"
+                        required
+                    >
+                    <div class="error-message" id="apiKeyError"></div>
+                    <div class="input-helper">Your API key is used to access SAM.gov data. Keep it secure.</div>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        SAM.gov Entity ID
+                        <span class="label-optional">(Optional)</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="entityId"
+                        name="entityId"
+                        placeholder="e.g., 123456789"
+                    >
+                    <div class="input-helper">Your unique SAM.gov entity identifier. Leave blank to monitor all opportunities.</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Notification Email <span class="label-required">*</span></label>
+                    <input
+                        type="email"
+                        id="notificationEmail"
+                        name="notificationEmail"
+                        placeholder="alerts@company.com"
+                        required
+                    >
+                    <div class="error-message" id="emailError"></div>
+                    <div class="input-helper">Where solicitation alerts will be sent</div>
+                </div>
+            </div>
+
+            <!-- Connection Test Section -->
+            <div class="form-section">
+                <div class="section-title">Connection Test</div>
+
+                <div class="form-group">
+                    <button type="button" class="btn-test" id="testConnectionBtn" onclick="testConnection()">
+                        Test Connection
+                    </button>
+                    <div class="connection-result" id="connectionResult"></div>
+                </div>
+            </div>
+
+            <!-- Search Configuration Section -->
+            <div class="form-section">
+                <div class="section-title">Search Configuration</div>
+
+                <div class="form-group">
+                    <label>
+                        Search Keywords
+                        <span class="label-required">*</span>
+                    </label>
+                    <div class="multi-select-wrapper">
+                        <div class="multi-select-container" id="keywordContainer">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="keyword-software" name="keywords" value="software">
+                                <label for="keyword-software">Software Development</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="keyword-services" name="keywords" value="services">
+                                <label for="keyword-services">Professional Services</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="keyword-consulting" name="keywords" value="consulting">
+                                <label for="keyword-consulting">Consulting</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="keyword-it" name="keywords" value="it">
+                                <label for="keyword-it">IT Infrastructure</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="keyword-maintenance" name="keywords" value="maintenance">
+                                <label for="keyword-maintenance">Maintenance & Support</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="keyword-hardware" name="keywords" value="hardware">
+                                <label for="keyword-hardware">Hardware</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="keyword-security" name="keywords" value="security">
+                                <label for="keyword-security">Security Services</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="keyword-analytics" name="keywords" value="analytics">
+                                <label for="keyword-analytics">Data & Analytics</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="selected-tags" id="selectedTags"></div>
+                    <div class="error-message" id="keywordError"></div>
+                </div>
+            </div>
+
+            <!-- Auto-Refresh Configuration -->
+            <div class="form-section">
+                <div class="section-title">Auto-Refresh Settings</div>
+
+                <div class="form-group">
+                    <label>Refresh Interval <span class="label-required">*</span></label>
+                    <select id="refreshInterval" name="refreshInterval" required>
+                        <option value="">-- Select refresh interval --</option>
+                        <option value="hourly">Hourly (every hour)</option>
+                        <option value="daily">Daily (every 24 hours)</option>
+                        <option value="weekly">Weekly (every 7 days)</option>
+                    </select>
+                    <div class="error-message" id="refreshError"></div>
+                </div>
+            </div>
+
+            <!-- Solicitation Filters Section -->
+            <div class="form-section">
+                <div class="section-title">Solicitation Filters</div>
+
+                <div class="form-group">
+                    <label>Status Filter</label>
+                    <select id="statusFilter" name="statusFilter">
+                        <option value="">-- All Status --</option>
+                        <option value="active">Active</option>
+                        <option value="closed">Closed</option>
+                        <option value="upcoming">Upcoming</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Agency Filter</label>
+                    <select id="agencyFilter" name="agencyFilter">
+                        <option value="">-- All Agencies --</option>
+                        <option value="dod">Department of Defense (DoD)</option>
+                        <option value="dhs">Department of Homeland Security (DHS)</option>
+                        <option value="dot">Department of Transportation (DOT)</option>
+                        <option value="gsa">General Services Administration (GSA)</option>
+                        <option value="nasa">NASA</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Contract Amount Range (USD)</label>
+                    <div class="range-inputs">
+                        <input
+                            type="number"
+                            id="amountMin"
+                            name="amountMin"
+                            placeholder="Min"
+                            min="0"
+                        >
+                        <span class="range-separator">to</span>
+                        <input
+                            type="number"
+                            id="amountMax"
+                            name="amountMax"
+                            placeholder="Max"
+                            min="0"
+                        >
+                    </div>
+                    <div class="error-message" id="amountError"></div>
+                </div>
+            </div>
+
+            <!-- Requirements Section -->
+            <div class="form-section">
+                <div class="section-title">Requirements</div>
+
+                <div class="form-group">
+                    <div class="toggle-switch">
+                        <label class="switch">
+                            <input type="checkbox" id="pastPerformance" name="pastPerformance">
+                            <span class="slider"></span>
+                        </label>
+                        <label for="pastPerformance" style="margin: 0; cursor: pointer;">
+                            Require Past Performance Documentation
+                        </label>
+                    </div>
+                    <div class="info-box">Filters opportunities requiring past performance evidence or relevant experience</div>
+                </div>
+
+                <div class="form-group">
+                    <div class="toggle-switch">
+                        <label class="switch">
+                            <input type="checkbox" id="securityClearance" name="securityClearance">
+                            <span class="slider"></span>
+                        </label>
+                        <label for="securityClearance" style="margin: 0; cursor: pointer;">
+                            Security Clearance Requirements
+                        </label>
+                    </div>
+                    <div class="info-box">Flags opportunities requiring security clearance (Secret, Top Secret, etc.)</div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="button-group">
+                <button type="reset" class="btn-secondary" onclick="resetForm()">Reset</button>
+                <button type="submit" class="btn-primary">Save Configuration</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Validation rules
+        const validationRules = {
+            apiKey: {
+                minLength: 20,
+                pattern: /^[A-Za-z0-9\-_]+$/,
+                message: 'API key must be at least 20 characters and contain only alphanumeric characters, hyphens, and underscores'
+            },
+            entityId: {
+                pattern: /^[0-9]{6,12}$/,
+                message: 'Entity ID must be 6-12 digits'
+            },
+            notificationEmail: {
+                pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: 'Please enter a valid email address'
+            },
+            amountRange: {
+                message: 'Minimum amount must be less than or equal to maximum amount'
+            }
+        };
+
+        // Initialize keyword selection
+        function initializeKeywords() {
+            const checkboxes = document.querySelectorAll('input[name="keywords"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateSelectedTags);
+            });
+        }
+
+        // Update selected keyword tags
+        function updateSelectedTags() {
+            const selectedTags = document.getElementById('selectedTags');
+            const checkedKeywords = document.querySelectorAll('input[name="keywords"]:checked');
+
+            selectedTags.innerHTML = '';
+            checkedKeywords.forEach(keyword => {
+                const label = document.querySelector(`label[for="${keyword.id}"]`).textContent;
+                const tag = document.createElement('div');
+                tag.className = 'tag';
+                tag.innerHTML = `
+                    ${label}
+                    <span class="tag-remove" onclick="removeKeyword('${keyword.id}')">&times;</span>
+                `;
+                selectedTags.appendChild(tag);
+            });
+        }
+
+        // Remove keyword tag
+        function removeKeyword(elementId) {
+            document.getElementById(elementId).checked = false;
+            updateSelectedTags();
+        }
+
+        // Validate API Key
+        function validateApiKey(value) {
+            if (!value) return false;
+            if (value.length < validationRules.apiKey.minLength) return false;
+            if (!validationRules.apiKey.pattern.test(value)) return false;
+            return true;
+        }
+
+        // Validate Email
+        function validateEmail(value) {
+            return validationRules.notificationEmail.pattern.test(value);
+        }
+
+        // Validate Entity ID (optional, but if provided must be valid)
+        function validateEntityId(value) {
+            if (!value) return true; // Optional field
+            return validationRules.entityId.pattern.test(value);
+        }
+
+        // Validate amount range
+        function validateAmountRange() {
+            const min = document.getElementById('amountMin').value;
+            const max = document.getElementById('amountMax').value;
+
+            if (!min && !max) return true;
+            if (min && max && parseInt(min) > parseInt(max)) return false;
+            return true;
+        }
+
+        // Validate keywords
+        function validateKeywords() {
+            const checkedKeywords = document.querySelectorAll('input[name="keywords"]:checked');
+            return checkedKeywords.length > 0;
+        }
+
+        // Show error message
+        function showError(fieldId, message) {
+            const errorElement = document.getElementById(fieldId + 'Error');
+            const inputElement = document.getElementById(fieldId);
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.classList.add('show');
+                inputElement.classList.add('error');
+                inputElement.classList.remove('success');
+            }
+        }
+
+        // Clear error message
+        function clearError(fieldId) {
+            const errorElement = document.getElementById(fieldId + 'Error');
+            const inputElement = document.getElementById(fieldId);
+            if (errorElement) {
+                errorElement.classList.remove('show');
+                inputElement.classList.remove('error');
+            }
+        }
+
+        // Show success state
+        function showSuccess(fieldId) {
+            const inputElement = document.getElementById(fieldId);
+            inputElement.classList.add('success');
+            inputElement.classList.remove('error');
+            clearError(fieldId);
+        }
+
+        // Test API connection
+        function testConnection() {
+            const apiKey = document.getElementById('apiKey').value;
+            const btn = document.getElementById('testConnectionBtn');
+            const resultDiv = document.getElementById('connectionResult');
+
+            // Validate API key first
+            if (!validateApiKey(apiKey)) {
+                showError('apiKey', validationRules.apiKey.message);
+                return;
+            }
+
+            clearError('apiKey');
+            btn.disabled = true;
+            btn.textContent = 'Testing...';
+
+            // Simulate API test with status indicator
+            const statusSpan = document.createElement('div');
+            statusSpan.className = 'status-indicator';
+            statusSpan.innerHTML = '<span class="status-dot testing"></span> Testing connection...';
+            resultDiv.innerHTML = '';
+            resultDiv.appendChild(statusSpan);
+            resultDiv.classList.add('show');
+
+            // Simulate API call delay
+            setTimeout(() => {
+                // Simulated success - in real scenario, this would call the actual API
+                const isSuccess = Math.random() > 0.3; // 70% success rate for demo
+
+                if (isSuccess) {
+                    showSuccess('apiKey');
+                    resultDiv.className = 'connection-result show success';
+                    resultDiv.innerHTML = '<span class="status-indicator"><span class="status-dot success"></span> Connection successful! API credentials are valid.</span>';
+                    btn.textContent = 'Test Connection';
+                    btn.disabled = false;
+                } else {
+                    showError('apiKey', 'Connection failed. Please verify your API key.');
+                    resultDiv.className = 'connection-result show error';
+                    resultDiv.innerHTML = '<span class="status-indicator"><span class="status-dot error"></span> Connection failed. Invalid API key or network error.</span>';
+                    btn.textContent = 'Test Connection';
+                    btn.disabled = false;
+                }
+            }, 2000);
+        }
+
+        // Validate on field blur
+        document.getElementById('apiKey').addEventListener('blur', function() {
+            if (this.value && !validateApiKey(this.value)) {
+                showError('apiKey', validationRules.apiKey.message);
+            } else {
+                clearError('apiKey');
+            }
+        });
+
+        document.getElementById('entityId').addEventListener('blur', function() {
+            if (this.value && !validateEntityId(this.value)) {
+                showError('entityId', validationRules.entityId.message);
+            } else {
+                clearError('entityId');
+            }
+        });
+
+        document.getElementById('notificationEmail').addEventListener('blur', function() {
+            if (this.value && !validateEmail(this.value)) {
+                showError('notificationEmail', validationRules.notificationEmail.message);
+            } else {
+                clearError('notificationEmail');
+            }
+        });
+
+        document.getElementById('amountMin').addEventListener('blur', function() {
+            if (!validateAmountRange()) {
+                showError('amount', validationRules.amountRange.message);
+            } else {
+                clearError('amount');
+            }
+        });
+
+        document.getElementById('amountMax').addEventListener('blur', function() {
+            if (!validateAmountRange()) {
+                showError('amount', validationRules.amountRange.message);
+            } else {
+                clearError('amount');
+            }
+        });
+
+        // Form submission
+        document.getElementById('samSetupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            let isValid = true;
+
+            // Validate all required fields
+            if (!validateApiKey(document.getElementById('apiKey').value)) {
+                showError('apiKey', validationRules.apiKey.message);
+                isValid = false;
+            }
+
+            if (!validateEmail(document.getElementById('notificationEmail').value)) {
+                showError('notificationEmail', validationRules.notificationEmail.message);
+                isValid = false;
+            }
+
+            if (document.getElementById('entityId').value && !validateEntityId(document.getElementById('entityId').value)) {
+                showError('entityId', validationRules.entityId.message);
+                isValid = false;
+            }
+
+            if (!document.getElementById('refreshInterval').value) {
+                showError('refreshInterval', 'Please select a refresh interval');
+                isValid = false;
+            }
+
+            if (!validateKeywords()) {
+                showError('keyword', 'Please select at least one search keyword');
+                isValid = false;
+            }
+
+            if (!validateAmountRange()) {
+                showError('amount', validationRules.amountRange.message);
+                isValid = false;
+            }
+
+            if (isValid) {
+                // Collect form data
+                const formData = {
+                    apiKey: document.getElementById('apiKey').value,
+                    entityId: document.getElementById('entityId').value,
+                    notificationEmail: document.getElementById('notificationEmail').value,
+                    keywords: Array.from(document.querySelectorAll('input[name="keywords"]:checked')).map(cb => cb.value),
+                    refreshInterval: document.getElementById('refreshInterval').value,
+                    statusFilter: document.getElementById('statusFilter').value,
+                    agencyFilter: document.getElementById('agencyFilter').value,
+                    amountMin: document.getElementById('amountMin').value,
+                    amountMax: document.getElementById('amountMax').value,
+                    pastPerformance: document.getElementById('pastPerformance').checked,
+                    securityClearance: document.getElementById('securityClearance').checked
+                };
+
+                console.log('Form submitted:', formData);
+                alert('Configuration saved successfully!');
+            }
+        });
+
+        // Reset form
+        function resetForm() {
+            document.getElementById('samSetupForm').reset();
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+            document.querySelectorAll('input, select').forEach(el => {
+                el.classList.remove('error', 'success');
+            });
+            document.getElementById('selectedTags').innerHTML = '';
+            document.getElementById('connectionResult').classList.remove('show');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeKeywords();
+        });
+    </script>
+</body>
+</html>

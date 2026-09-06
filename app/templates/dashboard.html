@@ -1,0 +1,427 @@
+<!--
+Real-Time Dashboard for Multi-Tenant SaaS RFQ Automation Platform
+- Single-click automation start
+- Live progress visualization (5 steps)
+- Real-time agent logs with color-coding
+- WebSocket support + polling fallback
+- Results summary with export
+- Dark/light mode toggle
+- Responsive design
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RFQ Automation Dashboard - SaaS Platform</title>
+
+  <!-- Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <!-- Chart.js for progress visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- Socket.IO for WebSocket -->
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8f9fa;
+      --text-primary: #212529;
+      --text-secondary: #6c757d;
+      --accent: #0d6efd;
+      --success: #198754;
+      --danger: #dc3545;
+      --warning: #ffc107;
+      --info: #0dcaf0;
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #1a1d23;
+      --bg-secondary: #25282f;
+      --text-primary: #e8e8e8;
+      --text-secondary: #a0a0a0;
+      --accent: #4dabf7;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .navbar {
+      background-color: var(--bg-secondary);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .automation-card {
+      background-color: var(--bg-secondary);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-launch {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: white;
+      font-size: 1.25rem;
+      font-weight: 600;
+      padding: 1rem 2.5rem;
+      border-radius: 50px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-launch:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+
+    .btn-launch:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .step-indicator {
+      display: flex;
+      justify-content: space-between;
+      margin: 2rem 0;
+      position: relative;
+    }
+
+    .step-indicator::before {
+      content: '';
+      position: absolute;
+      top: 25px;
+      left: 12.5%;
+      right: 12.5%;
+      height: 2px;
+      background-color: var(--text-secondary);
+      opacity: 0.3;
+      z-index: 0;
+    }
+
+    .step {
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      flex: 1;
+    }
+
+    .step-circle {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: var(--bg-primary);
+      border: 3px solid var(--text-secondary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.25rem;
+      transition: all 0.3s;
+    }
+
+    .step.active .step-circle {
+      background-color: var(--accent);
+      border-color: var(--accent);
+      color: white;
+      animation: pulse 1.5s infinite;
+    }
+
+    .step.success .step-circle {
+      background-color: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+
+    .step.failed .step-circle {
+      background-color: var(--danger);
+      border-color: var(--danger);
+      color: white;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.7); }
+      50% { box-shadow: 0 0 0 10px rgba(13, 110, 253, 0); }
+    }
+
+    .step-label {
+      margin-top: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .progress-bar-custom {
+      height: 8px;
+      background-color: rgba(0,0,0,0.1);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 1.5rem 0;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      transition: width 0.5s ease;
+      border-radius: 4px;
+    }
+
+    .logs-container {
+      background-color: #1e1e1e;
+      color: #d4d4d4;
+      border-radius: 8px;
+      padding: 1rem;
+      height: 300px;
+      overflow-y: auto;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+
+    .log-entry {
+      margin-bottom: 0.5rem;
+      padding: 0.25rem 0.5rem;
+      border-left: 3px solid transparent;
+    }
+
+    .log-entry.success { border-left-color: #4ec9b0; color: #4ec9b0; }
+    .log-entry.error { border-left-color: #f48771; color: #f48771; }
+    .log-entry.retry { border-left-color: #dcdcaa; color: #dcdcaa; }
+    .log-entry.info { border-left-color: #569cd6; color: #569cd6; }
+
+    .stat-card {
+      background-color: var(--bg-secondary);
+      border-radius: 8px;
+      padding: 1.25rem;
+      text-align: center;
+      transition: transform 0.2s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .stat-label {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .theme-toggle {
+      cursor: pointer;
+      font-size: 1.25rem;
+    }
+
+    .completion-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .completion-modal.show {
+      display: flex;
+    }
+
+    .completion-content {
+      background-color: var(--bg-primary);
+      border-radius: 16px;
+      padding: 3rem;
+      text-align: center;
+      max-width: 500px;
+      animation: slideIn 0.5s ease;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(-50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">
+        <i class="bi bi-rocket-takeoff"></i> RFQ Automation
+      </a>
+      <div class="d-flex align-items-center">
+        <span class="me-3" id="tenant-info">Loading...</span>
+        <span class="theme-toggle me-3" id="theme-toggle">
+          <i class="bi bi-moon-stars"></i>
+        </span>
+        <button class="btn btn-outline-secondary btn-sm" id="logout-btn">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-4">
+    <!-- Statistics Row -->
+    <div class="row mb-4">
+      <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-runs">0</div>
+          <div class="stat-label">Total Runs</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-success">0%</div>
+          <div class="stat-label">Success Rate</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-rfqs">0</div>
+          <div class="stat-label">RFQs Generated</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-vendors">0</div>
+          <div class="stat-label">Vendors Found</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Automation Card -->
+    <div class="automation-card">
+      <h2 class="mb-4">
+        <i class="bi bi-lightning-charge"></i> RFQ Automation
+      </h2>
+      <p class="text-muted mb-4">
+        Click the button below to automate the entire RFQ workflow: SAM.gov scraping → RFQ generation → product extraction → vendor search → submission.
+      </p>
+
+      <!-- Single Click Launch Button -->
+      <div class="text-center mb-4">
+        <button class="btn btn-launch" id="start-btn">
+          <i class="bi bi-rocket-takeoff-fill"></i> Start Automation
+        </button>
+      </div>
+
+      <!-- Progress Section (hidden initially) -->
+      <div id="progress-section" style="display: none;">
+        <!-- 5-Step Progress Indicator -->
+        <div class="step-indicator">
+          <div class="step" data-step="1">
+            <div class="step-circle">1</div>
+            <div class="step-label">SAM.gov<br>Scraping</div>
+          </div>
+          <div class="step" data-step="2">
+            <div class="step-circle">2</div>
+            <div class="step-label">RFQ<br>Generation</div>
+          </div>
+          <div class="step" data-step="3">
+            <div class="step-circle">3</div>
+            <div class="step-label">Product<br>Extraction</div>
+          </div>
+          <div class="step" data-step="4">
+            <div class="step-circle">4</div>
+            <div class="step-label">Vendor<br>Search</div>
+          </div>
+          <div class="step" data-step="5">
+            <div class="step-circle">5</div>
+            <div class="step-label">RFQ<br>Submission</div>
+          </div>
+        </div>
+
+        <!-- Overall Progress Bar -->
+        <div class="d-flex justify-content-between mb-2">
+          <span><strong>Overall Progress</strong></span>
+          <span id="progress-percent">0%</span>
+        </div>
+        <div class="progress-bar-custom">
+          <div class="progress-bar-fill" id="progress-fill" style="width: 0%;"></div>
+        </div>
+
+        <!-- Live Agent Logs -->
+        <div class="d-flex justify-content-between align-items-center mb-2 mt-4">
+          <h5><i class="bi bi-terminal"></i> Live Agent Logs</h5>
+          <div>
+            <button class="btn btn-sm btn-outline-secondary" id="clear-logs-btn">
+              <i class="bi bi-eraser"></i> Clear
+            </button>
+          </div>
+        </div>
+        <div class="logs-container" id="logs-container">
+          <div class="log-entry info">[INFO] Waiting for automation to start...</div>
+        </div>
+
+        <!-- Cancel Button -->
+        <div class="text-center mt-4">
+          <button class="btn btn-outline-danger" id="cancel-btn">
+            <i class="bi bi-x-circle"></i> Cancel Automation
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Runs -->
+    <div class="automation-card">
+      <h4 class="mb-3"><i class="bi bi-clock-history"></i> Recent Runs</h4>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Run ID</th>
+              <th>Status</th>
+              <th>Started</th>
+              <th>Duration</th>
+              <th>Results</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="recent-runs-tbody">
+            <tr><td colspan="6" class="text-center text-muted">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Completion Modal -->
+  <div class="completion-modal" id="completion-modal">
+    <div class="completion-content">
+      <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+      <h2 class="mt-3">Automation Complete!</h2>
+      <div class="my-4">
+        <div class="row">
+          <div class="col-6"><strong id="modal-solicitations">0</strong><br><small>Solicitations</small></div>
+          <div class="col-6"><strong id="modal-rfqs">0</strong><br><small>RFQs</small></div>
+          <div class="col-6 mt-3"><strong id="modal-vendors">0</strong><br><small>Vendors</small></div>
+          <div class="col-6 mt-3"><strong id="modal-submissions">0</strong><br><small>Submissions</small></div>
+        </div>
+      </div>
+      <div class="d-grid gap-2">
+        <button class="btn btn-primary" id="modal-view-btn">View Details</button>
+        <button class="btn btn-outline-secondary" id="modal-close-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/dashboard.js"></script>
+</body>
+</html>

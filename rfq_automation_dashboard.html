@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RFQ Automation Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --success-color: #198754;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --dark-bg: #1a1a1a;
+            --dark-secondary: #2d2d2d;
+            --dark-border: #404040;
+            --light-bg: #f8f9fa;
+            --light-secondary: #e9ecef;
+            --light-border: #dee2e6;
+        }
+
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--light-bg);
+            color: #333;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: #e0e0e0;
+        }
+
+        .navbar {
+            background-color: white;
+            border-bottom: 1px solid var(--light-border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        body.dark-mode .navbar {
+            background-color: var(--dark-secondary);
+            border-bottom-color: var(--dark-border);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .theme-toggle {
+            cursor: pointer;
+            font-size: 1.25rem;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(20deg);
+        }
+
+        .container-main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-title h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        body.dark-mode .header-title h1 {
+            color: #fff;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-start-automation {
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
+            border: none;
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-start-automation:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(13, 110, 253, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-start-automation:active {
+            transform: translateY(0);
+        }
+
+        .btn-start-automation.running {
+            background: linear-gradient(135deg, var(--warning-color), #ff9800);
+        }
+
+        .btn-export {
+            background-color: #6c757d;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.95rem;
+            border-radius: 0.5rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .btn-export {
+            background-color: #495057;
+        }
+
+        .btn-export:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+            color: white;
+            text-decoration: none;
+        }
+
+        .progress-container {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        body.dark-mode .progress-container {
+            background-color: var(--dark-secondary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .progress-percentage {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .progress-bar-wrapper {
+            margin-bottom: 2rem;
+        }
+
+        .progress {
+            height: 12px;
+            border-radius: 6px;
+            background-color: var(--light-secondary);
+            overflow: hidden;
+        }
+
+        body.dark-mode .progress {
+            background-color: var(--dark-border);
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, var(--primary-color), #0056b3);
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .step-indicator {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            background-color: var(--light-secondary);
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .step-indicator {
+            background-color: var(--dark-border);
+        }
+
+        .step-indicator.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .step-indicator.completed {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .step-indicator.failed {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .step-number {
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .step-name {
+            font-size: 0.875rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .step-icon {
+            font-size: 1.5rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .status-badge.pending {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+
+        body.dark-mode .status-badge.pending {
+            background-color: #3e4043;
+            color: #c3c5c7;
+        }
+
+        .status-badge.running {
+            background-color: #cfe2ff;
+            color: #084298;
+            animation: pulse 2s infinite;
+        }
+
+        .status-badge.completed {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status-badge.failed {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .logs-container {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        body.dark-mode .logs-container {
+            background-color: var(--dark-secondary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .logs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .logs-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .logs-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .logs-controls button {
+            background-color: #6c757d;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            color: white;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .logs-controls button {
+            background-color: #495057;
+        }
+
+        .logs-controls button:hover {
+            background-color: #5a6268;
+        }
+
+        .logs-display {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            overflow-y: auto;
+            max-height: 400px;
+            border: 1px solid #3e3e3e;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .logs-display::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .logs-display::-webkit-scrollbar-track {
+            background: #2d2d2d;
+            border-radius: 4px;
+        }
+
+        .logs-display::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 4px;
+        }
+
+        .logs-display::-webkit-scrollbar-thumb:hover {
+            background: #777;
+        }
+
+        .log-entry {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .log-timestamp {
+            color: #858585;
+            flex-shrink: 0;
+            min-width: 180px;
+        }
+
+        .log-level {
+            font-weight: 600;
+            flex-shrink: 0;
+            min-width: 70px;
+        }
+
+        .log-level.info {
+            color: #4ec9b0;
+        }
+
+        .log-level.success {
+            color: #6a9955;
+        }
+
+        .log-level.warning {
+            color: #dcdcaa;
+        }
+
+        .log-level.error {
+            color: #f48771;
+        }
+
+        .log-message {
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .results-container {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        body.dark-mode .results-container {
+            background-color: var(--dark-secondary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .results-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            margin-top: 0;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .result-card {
+            background-color: var(--light-secondary);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .result-card {
+            background-color: var(--dark-border);
+        }
+
+        .result-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        body.dark-mode .result-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .result-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        body.dark-mode .result-label {
+            color: #aaa;
+        }
+
+        .result-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .result-card.success .result-value {
+            color: var(--success-color);
+        }
+
+        .result-card.warning .result-value {
+            color: var(--warning-color);
+        }
+
+        .result-card.danger .result-value {
+            color: var(--danger-color);
+        }
+
+        .result-card.success {
+            border-left-color: var(--success-color);
+        }
+
+        .result-card.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        .result-card.danger {
+            border-left-color: var(--danger-color);
+        }
+
+        .error-alert {
+            background-color: #f8d7da;
+            border: 1px solid #f5c2c7;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        body.dark-mode .error-alert {
+            background-color: #3c2727;
+            border-color: #5c3333;
+            color: #e0b0b0;
+        }
+
+        .error-alert.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error-alert-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-alert-message {
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .error-alert-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-retry {
+            background-color: var(--danger-color);
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.5rem;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-retry:hover {
+            background-color: #c82333;
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-dismiss {
+            background-color: transparent;
+            border: 1px solid #666;
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.5rem;
+            color: #666;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .btn-dismiss {
+            border-color: #999;
+            color: #ccc;
+        }
+
+        .btn-dismiss:hover {
+            background-color: rgba(0,0,0,0.05);
+            color: #666;
+            text-decoration: none;
+        }
+
+        body.dark-mode .btn-dismiss:hover {
+            background-color: rgba(255,255,255,0.05);
+            color: #ccc;
+        }
+
+        .export-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .export-menu {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 150px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 0.5rem;
+            z-index: 1000;
+            right: 0;
+            top: 100%;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        body.dark-mode .export-menu {
+            background-color: var(--dark-secondary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .export-menu.show {
+            display: block;
+        }
+
+        .export-menu a {
+            color: #333;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            display: block;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        body.dark-mode .export-menu a {
+            color: #e0e0e0;
+        }
+
+        .export-menu a:hover {
+            background-color: var(--light-secondary);
+        }
+
+        body.dark-mode .export-menu a:hover {
+            background-color: var(--dark-border);
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            background-color: var(--light-secondary);
+        }
+
+        body.dark-mode .connection-status {
+            background-color: var(--dark-border);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: none;
+        }
+
+        .status-dot.connected {
+            background-color: var(--success-color);
+            animation: pulse-green 2s infinite;
+        }
+
+        .status-dot.disconnected {
+            background-color: var(--danger-color);
+        }
+
+        .status-dot.connecting {
+            background-color: var(--warning-color);
+            animation: pulse-yellow 2s infinite;
+        }
+
+        @keyframes pulse-green {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes pulse-yellow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        body.dark-mode .modal-content {
+            background-color: var(--dark-secondary);
+        }
+
+        .modal-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            margin-top: 0;
+        }
+
+        .modal-body {
+            margin-bottom: 2rem;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        @media (max-width: 768px) {
+            .container-main {
+                padding: 1rem;
+            }
+
+            .header-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .btn-start-automation {
+                flex: 1;
+                justify-content: center;
+            }
+
+            .steps-container {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            }
+
+            .step-name {
+                font-size: 0.75rem;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .logs-display {
+                max-height: 300px;
+                font-size: 0.75rem;
+            }
+
+            .progress-percentage {
+                font-size: 1.5rem;
+            }
+
+            .header-title h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #666;
+        }
+
+        body.dark-mode .no-results {
+            color: #aaa;
+        }
+
+        .no-results-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .pulse-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: currentColor;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container-fluid" style="padding: 1rem 2rem;">
+            <div class="d-flex justify-content-between align-items-center w-100">
+                <div class="logo">
+                    <i class="bi bi-rocket-takeoff"></i> RFQ Automation
+                </div>
+                <div class="d-flex gap-3 align-items-center">
+                    <div class="connection-status">
+                        <div class="status-dot connecting" id="connectionDot"></div>
+                        <span id="connectionText">Connecting...</span>
+                    </div>
+                    <div class="theme-toggle" id="themeToggle" title="Toggle dark mode">
+                        <i class="bi bi-moon-fill"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-main">
+        <div class="error-alert" id="errorAlert">
+            <div class="error-alert-title">Error</div>
+            <div class="error-alert-message" id="errorMessage"></div>
+            <div class="error-alert-actions">
+                <button class="btn-retry" id="retryBtn">Retry</button>
+                <button class="btn-dismiss" id="dismissErrorBtn">Dismiss</button>
+            </div>
+        </div>
+
+        <div class="header-section">
+            <div class="header-title">
+                <h1>Automation Dashboard</h1>
+            </div>
+            <div class="header-actions">
+                <button class="btn-start-automation" id="startBtn">
+                    <i class="bi bi-play-fill"></i>
+                    <span id="startBtnText">Start Automation</span>
+                </button>
+                <div class="export-dropdown">
+                    <button class="btn-export" id="exportBtn">
+                        <i class="bi bi-download"></i> Export
+                    </button>
+                    <div class="export-menu" id="exportMenu">
+                        <a href="#" id="exportJson"><i class="bi bi-file-earmark-code"></i> Export JSON</a>
+                        <a href="#" id="exportCsv"><i class="bi bi-file-earmark-spreadsheet"></i> Export CSV</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-header">
+                <h2 class="progress-title">Automation Progress</h2>
+                <div class="progress-percentage" id="progressPercent">0%</div>
+            </div>
+
+            <div class="progress-bar-wrapper">
+                <div class="progress">
+                    <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
+                </div>
+            </div>
+
+            <div class="steps-container" id="stepsContainer">
+                <div class="step-indicator" id="step-1">
+                    <div class="step-icon"><i class="bi bi-cloud-arrow-down"></i></div>
+                    <div class="step-number">1</div>
+                    <div class="step-name">Scraping</div>
+                </div>
+                <div class="step-indicator" id="step-2">
+                    <div class="step-icon"><i class="bi bi-file-text"></i></div>
+                    <div class="step-number">2</div>
+                    <div class="step-name">RFQ Gen</div>
+                </div>
+                <div class="step-indicator" id="step-3">
+                    <div class="step-icon"><i class="bi bi-box-seam"></i></div>
+                    <div class="step-number">3</div>
+                    <div class="step-name">Product Extract</div>
+                </div>
+                <div class="step-indicator" id="step-4">
+                    <div class="step-icon"><i class="bi bi-search"></i></div>
+                    <div class="step-number">4</div>
+                    <div class="step-name">Vendor Search</div>
+                </div>
+                <div class="step-indicator" id="step-5">
+                    <div class="step-icon"><i class="bi bi-send"></i></div>
+                    <div class="step-number">5</div>
+                    <div class="step-name">Submission</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+                <span>Current Status:</span>
+                <span class="status-badge pending" id="statusBadge">Pending</span>
+                <span id="statusMessage" style="color: #666; font-size: 0.9rem;"></span>
+            </div>
+        </div>
+
+        <div class="logs-container">
+            <div class="logs-header">
+                <h2 class="logs-title"><i class="bi bi-terminal"></i> Live Agent Logs</h2>
+                <div class="logs-controls">
+                    <button id="clearLogsBtn" title="Clear logs">
+                        <i class="bi bi-trash"></i> Clear
+                    </button>
+                    <button id="pauseLogsBtn" title="Pause logs">
+                        <i class="bi bi-pause"></i> Pause
+                    </button>
+                </div>
+            </div>
+            <div class="logs-display" id="logsDisplay">
+                <div style="color: #858585;">Waiting for automation to start...</div>
+            </div>
+        </div>
+
+        <div class="results-container">
+            <h2 class="results-title">Results Summary</h2>
+            <div class="results-grid" id="resultsGrid">
+                <div class="result-card">
+                    <div class="result-label">Solicitations Found</div>
+                    <div class="result-value" id="resultSolicitations">0</div>
+                </div>
+                <div class="result-card success">
+                    <div class="result-label">RFQs Generated</div>
+                    <div class="result-value" id="resultRfqs">0</div>
+                </div>
+                <div class="result-card warning">
+                    <div class="result-label">Vendors Found</div>
+                    <div class="result-value" id="resultVendors">0</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">RFQs Submitted</div>
+                    <div class="result-value" id="resultSubmissions">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; color: #666; margin-top: 3rem; padding: 2rem; font-size: 0.9rem;">
+            <p>Dashboard automatically updates in real-time. WebSocket connection with polling fallback enabled.</p>
+            <p id="lastUpdate">Last update: never</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        class RFQDashboard {
+            constructor() {
+                this.apiBase = '/api/v1';
+                this.wsUrl = window.location.origin.replace('http', 'ws');
+                this.socket = null;
+                this.isRunning = false;
+                this.isPaused = false;
+                this.currentRun = null;
+                this.logs = [];
+                this.pollingInterval = null;
+                this.pollingFallback = false;
+                this.darkMode = localStorage.getItem('darkMode') === 'true';
+
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.setupTheme();
+                this.connectWebSocket();
+                this.loadInitialData();
+            }
+
+            setupEventListeners() {
+                document.getElementById('startBtn').addEventListener('click', () => this.toggleAutomation());
+                document.getElementById('clearLogsBtn').addEventListener('click', () => this.clearLogs());
+                document.getElementById('pauseLogsBtn').addEventListener('click', () => this.togglePauseLogs());
+                document.getElementById('retryBtn').addEventListener('click', () => this.retryLastAction());
+                document.getElementById('dismissErrorBtn').addEventListener('click', () => this.dismissError());
+                document.getElementById('themeToggle').addEventListener('click', () => this.toggleTheme());
+                document.getElementById('exportBtn').addEventListener('click', () => this.toggleExportMenu());
+                document.getElementById('exportJson').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.exportResults('json');
+                });
+                document.getElementById('exportCsv').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.exportResults('csv');
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.export-dropdown')) {
+                        document.getElementById('exportMenu').classList.remove('show');
+                    }
+                });
+            }
+
+            setupTheme() {
+                if (this.darkMode) {
+                    document.body.classList.add('dark-mode');
+                }
+            }
+
+            toggleTheme() {
+                this.darkMode = !this.darkMode;
+                document.body.classList.toggle('dark-mode');
+                localStorage.setItem('darkMode', this.darkMode);
+            }
+
+            toggleExportMenu() {
+                document.getElementById('exportMenu').classList.toggle('show');
+            }
+
+            connectWebSocket() {
+                try {
+                    this.socket = io(this.wsUrl, {
+                        path: '/socket.io/',
+                        reconnection: true,
+                        reconnectionDelay: 1000,
+                        reconnectionDelayMax: 5000,
+                        reconnectionAttempts: 5
+                    });
+
+                    this.socket.on('connect', () => {
+                        this.updateConnectionStatus(true, false);
+                        this.log('Connected to server via WebSocket', 'info');
+                    });
+
+                    this.socket.on('disconnect', () => {
+                        this.updateConnectionStatus(false, false);
+                        this.log('Disconnected from server. Switching to polling fallback.', 'warning');
+                        this.enablePollingFallback();
+                    });
+
+                    this.socket.on('automation_progress', (data) => {
+                        this.updateProgress(data);
+                    });
+
+                    this.socket.on('agent_log', (data) => {
+                        this.addLog(data.message, data.level || 'info');
+                    });
+
+                    this.socket.on('automation_complete', (data) => {
+                        this.handleAutomationComplete(data);
+                    });
+
+                    this.socket.on('automation_error', (data) => {
+                        this.handleAutomationError(data);
+                    });
+
+                } catch (error) {
+                    this.log('WebSocket initialization failed: ' + error.message, 'error');
+                    this.enablePollingFallback();
+                }
+            }
+
+            updateConnectionStatus(connected, connecting) {
+                const dot = document.getElementById('connectionDot');
+                const text = document.getElementById('connectionText');
+
+                dot.classList.remove('connected', 'disconnected', 'connecting');
+
+                if (connecting) {
+                    dot.classList.add('connecting');
+                    text.textContent = 'Connecting...';
+                } else if (connected) {
+                    dot.classList.add('connected');
+                    text.textContent = 'Connected (WebSocket)';
+                } else {
+                    dot.classList.add('disconnected');
+                    text.textContent = 'Disconnected (Polling)';
+                }
+            }
+
+            enablePollingFallback() {
+                if (this.pollingFallback) return;
+
+                this.pollingFallback = true;
+                this.updateConnectionStatus(false, false);
+
+                this.pollingInterval = setInterval(() => {
+                    if (this.isRunning || this.currentRun) {
+                        this.pollProgress();
+                    }
+                }, 2000);
+            }
+
+            disablePollingFallback() {
+                if (this.pollingInterval) {
+                    clearInterval(this.pollingInterval);
+                    this.pollingInterval = null;
+                }
+                this.pollingFallback = false;
+            }
+
+            async toggleAutomation() {
+                const btn = document.getElementById('startBtn');
+
+                if (this.isRunning) {
+                    this.stopAutomation();
+                } else {
+                    await this.startAutomation();
+                }
+            }
+
+            async startAutomation() {
+                try {
+                    const btn = document.getElementById('startBtn');
+                    btn.disabled = true;
+                    btn.classList.add('running');
+                    document.getElementById('startBtnText').textContent = 'Running...';
+
+                    const response = await fetch(`${this.apiBase}/automation/start`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API error: ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    this.currentRun = data.run_id;
+                    this.isRunning = true;
+
+                    this.resetProgress();
+                    this.clearLogs();
+                    this.log('Automation started with ID: ' + this.currentRun, 'info');
+
+                    document.getElementById('statusBadge').textContent = 'Running';
+                    document.getElementById('statusBadge').className = 'status-badge running';
+
+                    btn.disabled = false;
+
+                } catch (error) {
+                    this.showError('Failed to start automation: ' + error.message);
+                    const btn = document.getElementById('startBtn');
+                    btn.disabled = false;
+                    btn.classList.remove('running');
+                    document.getElementById('startBtnText').textContent = 'Start Automation';
+                }
+            }
+
+            stopAutomation() {
+                this.isRunning = false;
+                const btn = document.getElementById('startBtn');
+                btn.classList.remove('running');
+                document.getElementById('startBtnText').textContent = 'Start Automation';
+                this.log('Automation stopped by user', 'warning');
+            }
+
+            async pollProgress() {
+                if (!this.currentRun) return;
+
+                try {
+                    const response = await fetch(`${this.apiBase}/automation/${this.currentRun}/progress`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.updateProgress(data);
+                    }
+                } catch (error) {
+                    console.error('Polling error:', error);
+                }
+            }
+
+            updateProgress(data) {
+                const { progress, current_step, status, results, logs } = data;
+
+                if (progress !== undefined) {
+                    document.getElementById('progressPercent').textContent = Math.round(progress) + '%';
+                    document.getElementById('progressBar').style.width = progress + '%';
+                }
+
+                if (current_step) {
+                    this.updateStepIndicators(current_step, status);
+                }
+
+                if (results) {
+                    this.updateResults(results);
+                }
+
+                if (logs && logs.length > 0) {
+                    logs.forEach(log => {
+                        this.addLog(log.message, log.level || 'info');
+                    });
+                }
+
+                this.updateTimestamp();
+            }
+
+            updateStepIndicators(currentStep, stepStatuses) {
+                const steps = [
+                    { id: 1, name: 'Scraping' },
+                    { id: 2, name: 'RFQ Gen' },
+                    { id: 3, name: 'Product Extract' },
+                    { id: 4, name: 'Vendor Search' },
+                    { id: 5, name: 'Submission' }
+                ];
+
+                steps.forEach(step => {
+                    const elem = document.getElementById(`step-${step.id}`);
+                    elem.classList.remove('active', 'completed', 'failed');
+
+                    const stepStatus = stepStatuses[step.id];
+                    if (stepStatus === 'completed') {
+                        elem.classList.add('completed');
+                    } else if (stepStatus === 'failed') {
+                        elem.classList.add('failed');
+                    } else if (step.id === currentStep) {
+                        elem.classList.add('active');
+                    }
+                });
+            }
+
+            updateResults(results) {
+                document.getElementById('resultSolicitations').textContent = results.solicitations || 0;
+                document.getElementById('resultRfqs').textContent = results.rfqs || 0;
+                document.getElementById('resultVendors').textContent = results.vendors || 0;
+                document.getElementById('resultSubmissions').textContent = results.submissions || 0;
+            }
+
+            addLog(message, level = 'info') {
+                if (this.isPaused) return;
+
+                const timestamp = new Date().toLocaleTimeString('en-US', {
+                    hour12: false,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    fractionalSecondDigits: 3
+                });
+
+                const logEntry = {
+                    timestamp,
+                    level,
+                    message
+                };
+
+                this.logs.push(logEntry);
+                if (this.logs.length > 1000) {
+                    this.logs.shift();
+                }
+
+                this.renderLogs();
+            }
+
+            renderLogs() {
+                const logsDisplay = document.getElementById('logsDisplay');
+                logsDisplay.innerHTML = this.logs.map(log => `
+                    <div class="log-entry">
+                        <div class="log-timestamp">[${log.timestamp}]</div>
+                        <div class="log-level ${log.level}">${log.level.toUpperCase().padEnd(7)}</div>
+                        <div class="log-message">${this.escapeHtml(log.message)}</div>
+                    </div>
+                `).join('');
+
+                logsDisplay.scrollTop = logsDisplay.scrollHeight;
+            }
+
+            clearLogs() {
+                this.logs = [];
+                document.getElementById('logsDisplay').innerHTML = '<div style="color: #858585;">Logs cleared</div>';
+            }
+
+            togglePauseLogs() {
+                this.isPaused = !this.isPaused;
+                const btn = document.getElementById('pauseLogsBtn');
+                if (this.isPaused) {
+                    btn.innerHTML = '<i class="bi bi-play"></i> Resume';
+                } else {
+                    btn.innerHTML = '<i class="bi bi-pause"></i> Pause';
+                }
+            }
+
+            resetProgress() {
+                document.getElementById('progressPercent').textContent = '0%';
+                document.getElementById('progressBar').style.width = '0%';
+
+                ['step-1', 'step-2', 'step-3', 'step-4', 'step-5'].forEach(id => {
+                    const elem = document.getElementById(id);
+                    elem.classList.remove('active', 'completed', 'failed');
+                });
+
+                document.getElementById('resultSolicitations').textContent = '0';
+                document.getElementById('resultRfqs').textContent = '0';
+                document.getElementById('resultVendors').textContent = '0';
+                document.getElementById('resultSubmissions').textContent = '0';
+            }
+
+            handleAutomationComplete(data) {
+                this.isRunning = false;
+                const btn = document.getElementById('startBtn');
+                btn.classList.remove('running');
+                document.getElementById('startBtnText').textContent = 'Start Automation';
+
+                document.getElementById('statusBadge').textContent = 'Completed';
+                document.getElementById('statusBadge').className = 'status-badge completed';
+
+                if (data.results) {
+                    this.updateResults(data.results);
+                }
+
+                this.log('Automation completed successfully', 'success');
+            }
+
+            handleAutomationError(data) {
+                this.isRunning = false;
+                const btn = document.getElementById('startBtn');
+                btn.classList.remove('running');
+                document.getElementById('startBtnText').textContent = 'Start Automation';
+
+                document.getElementById('statusBadge').textContent = 'Failed';
+                document.getElementById('statusBadge').className = 'status-badge failed';
+
+                this.log('Automation error: ' + data.message, 'error');
+                this.showError(data.message);
+            }
+
+            showError(message) {
+                document.getElementById('errorMessage').textContent = message;
+                document.getElementById('errorAlert').classList.add('show');
+            }
+
+            dismissError() {
+                document.getElementById('errorAlert').classList.remove('show');
+            }
+
+            retryLastAction() {
+                this.dismissError();
+                if (this.currentRun) {
+                    this.pollProgress();
+                } else {
+                    this.startAutomation();
+                }
+            }
+
+            exportResults(format) {
+                const results = {
+                    timestamp: new Date().toISOString(),
+                    solicitations: parseInt(document.getElementById('resultSolicitations').textContent),
+                    rfqs: parseInt(document.getElementById('resultRfqs').textContent),
+                    vendors: parseInt(document.getElementById('resultVendors').textContent),
+                    submissions: parseInt(document.getElementById('resultSubmissions').textContent),
+                    logs: this.logs
+                };
+
+                if (format === 'json') {
+                    this.downloadFile(JSON.stringify(results, null, 2), 'rfq_results.json', 'application/json');
+                } else if (format === 'csv') {
+                    this.downloadFile(this.convertToCSV(results), 'rfq_results.csv', 'text/csv');
+                }
+
+                document.getElementById('exportMenu').classList.remove('show');
+            }
+
+            convertToCSV(results) {
+                let csv = 'RFQ Automation Results\n';
+                csv += `Generated: ${results.timestamp}\n\n`;
+                csv += 'Metric,Value\n';
+                csv += `Solicitations Found,${results.solicitations}\n`;
+                csv += `RFQs Generated,${results.rfqs}\n`;
+                csv += `Vendors Found,${results.vendors}\n`;
+                csv += `RFQs Submitted,${results.submissions}\n`;
+                csv += '\n\nAgent Logs\n';
+                csv += 'Timestamp,Level,Message\n';
+
+                results.logs.forEach(log => {
+                    const message = log.message.replace(/"/g, '""');
+                    csv += `"${log.timestamp}","${log.level}","${message}"\n`;
+                });
+
+                return csv;
+            }
+
+            downloadFile(content, filename, type) {
+                const blob = new Blob([content], { type });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            }
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            updateTimestamp() {
+                const now = new Date();
+                document.getElementById('lastUpdate').textContent =
+                    `Last update: ${now.toLocaleTimeString()}`;
+            }
+
+            async loadInitialData() {
+                try {
+                    const response = await fetch(`${this.apiBase}/dashboard/stats`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.updateResults({
+                            solicitations: data.solicitations?.total || 0,
+                            rfqs: data.rfqs?.total || 0,
+                            vendors: data.vendors?.total || 0,
+                            submissions: data.rfqs?.sent || 0
+                        });
+                    }
+                } catch (error) {
+                    console.log('Could not load initial data:', error);
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            window.dashboard = new RFQDashboard();
+        });
+    </script>
+</body>
+</html>

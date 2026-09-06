@@ -15,7 +15,7 @@ vendor_selection:
   require_verification: false
   
 company:
-  name: "Camp Sable, LLC"
-  contact_name: "John Doe"
+  name: "CampSable LLC"
+  contact_name: "Bobby Smitty"
   email: "bobbysmitty078@gmail.com"
-  phone: "+1-555-123-4567"
+  phone: "+1 (720) 980-6080"

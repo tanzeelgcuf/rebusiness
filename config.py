@@ -32,7 +32,10 @@ TWILIO_CONFIG = {
 # OpenAI API Key - Paste your OpenAI API key here
 OPENAI_API_KEY = "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"
 
-# LLM Provider ("gemini" or "openai") - Defaulting to gemini as requested
+# Groq API Key - for fast LLM inference
+GROQ_API_KEY = "gsk_3I9g2Q4IOhyrSwTbu5W92Gs60kw_85tdUdafXMC2LLqsnUqRZ"
+
+# LLM Provider ("gemini", "openai", or "groq") - Defaulting to gemini as requested
 LLM_PROVIDER = "gemini"
 
 # Search Keywords - can remain as a list or be fetched from env if dynamic
@@ -75,4 +78,4 @@ RFQ_OUTPUT_FORMAT = "docx"
 RFQ_REMOVE_GOVERNMENT_DEADLINE = True
 RFQ_SHOW_ONLY_CAMPABLE_EMAIL = True
 RFQ_VENDOR_EMAIL = "bobbysmitty078@gmail.com"
-RFQ_COMPANY_NAME = "Camp Sable, LLC"
+RFQ_COMPANY_NAME = "CampSable LLC"

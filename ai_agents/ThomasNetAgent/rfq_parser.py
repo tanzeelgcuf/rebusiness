@@ -86,24 +86,26 @@ class RFQParser:
     def _extract_data_from_text(self, text: str) -> Dict[str, Any]:
         """
         Extract structured data from raw text using regex and heuristics.
+        Optimized for the generated RFQ markdown format.
         """
         data = {
             "products": [],
             "metadata": {}
         }
-        
+
         # 1. Extract Solicitation Number / Notice ID (more flexible patterns)
         solicitation_patterns = [
-            r'(?:Notice ID|Solicitation Number|Solicitation No\.?|RFQ Number|RFQ ID)[:]\s*([A-Za-z0-9-]+)',
-            r'(?:^|\n)\s*#\s*([A-Z0-9-]+)',  # Markdown header with ID
-            r'(?:^|\n)\s*\*\*([A-Z0-9-]+)\*\*',  # Bold ID at start
+            r'Notice ID:\s*([A-Za-z0-9-]+)',
+            r'(?:Solicitation Number|Solicitation No\.?|RFQ Number|RFQ ID)[:]\s*([A-Za-z0-9-]+)',
+            r'(?:^|\n)\s*#\s*([A-Z0-9-]+)',
+            r'(?:^|\n)\s*\*\*([A-Z0-9-]+)\*\*',
         ]
         for pattern in solicitation_patterns:
             solicitation_match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
             if solicitation_match:
                 data["metadata"]["solicitation_number"] = solicitation_match.group(1).strip()
                 break
-            
+
         # 2. Extract Deadline (more flexible patterns)
         deadline_patterns = [
             r'(?:Response is needed on or before|Quotes Due|Due Date|Deadline|Response Date)[:]\s*([A-Za-z0-9\s,:-]+)',
@@ -114,26 +116,39 @@ class RFQParser:
             if deadline_match:
                 data["metadata"]["deadline"] = deadline_match.group(1).strip()
                 break
-            
+
         # 3. Extract Products
-        # Strategy A: Look for markdown sections with product info
-        # Look for headers like "## Product Details" or "## Items Required"
-        product_section_match = re.search(r'##\s*(?:Product|Item|Service).*?\n(.*?)(?=\n##|\Z)', text, re.IGNORECASE | re.DOTALL)
-        
-        if product_section_match:
-            section_text = product_section_match.group(1)
-            # Extract from bullet points or key-value pairs
-            name_match = re.search(r'(?:Name|Description|Title)[:]\s*([^\n]+)', section_text, re.IGNORECASE)
-            qty_match = re.search(r'(?:Quantity|Qty|Amount)[:]\s*(\d+)', section_text, re.IGNORECASE)
-            
-            if name_match:
-                data["products"].append({
-                    "name": name_match.group(1).strip(),
-                    "quantity": int(qty_match.group(1)) if qty_match else 1,
-                    "specifications": self._extract_specs(section_text)
-                })
-        
-        # Strategy B: Simple extraction for single-product RFQs
+        # Strategy A: Look for "### Item Requested:" (our generated RFQ format)
+        item_section_match = re.search(r'###\s*Item Requested:\s*([^\n]+)', text, re.IGNORECASE)
+        if item_section_match:
+            product_name = item_section_match.group(1).strip()
+            quantity = 1
+            qty_match = re.search(r'(?:Quantity|Qty)[:]\s*(\d+)', text, re.IGNORECASE)
+            if qty_match:
+                quantity = int(qty_match.group(1))
+
+            data["products"].append({
+                "name": product_name,
+                "quantity": quantity,
+                "specifications": self._extract_specs(text)
+            })
+
+        # Strategy B: Look for markdown sections with product info
+        if not data["products"]:
+            product_section_match = re.search(r'##\s*(?:Product|Item|Service).*?\n(.*?)(?=\n##|\Z)', text, re.IGNORECASE | re.DOTALL)
+            if product_section_match:
+                section_text = product_section_match.group(1)
+                name_match = re.search(r'(?:Name|Description|Title)[:]\s*([^\n]+)', section_text, re.IGNORECASE)
+                qty_match = re.search(r'(?:Quantity|Qty|Amount)[:]\s*(\d+)', section_text, re.IGNORECASE)
+
+                if name_match:
+                    data["products"].append({
+                        "name": name_match.group(1).strip(),
+                        "quantity": int(qty_match.group(1)) if qty_match else 1,
+                        "specifications": self._extract_specs(section_text)
+                    })
+
+        # Strategy C: Simple extraction for single-product RFQs
         if not data["products"]:
             product_patterns = [
                 r'(?:Item Requested|Product Name|Service Name)[:]\s*([^\n]+)',
@@ -147,20 +162,23 @@ class RFQParser:
                     qty_match = re.search(r'(?:Quantity|Qty)[:]\s*(\d+)', text, re.IGNORECASE)
                     if qty_match:
                         quantity = int(qty_match.group(1))
-                        
+
                     data["products"].append({
                         "name": product_name,
                         "quantity": quantity,
                         "specifications": self._extract_specs(text)
                     })
                     break
-            
-        # Strategy C: Check CLIN table logic
+
+        # Strategy D: Parse CLIN table rows from markdown tables
         if not data["products"]:
-            # Look for markdown tables or pipe-separated CLIN data
+            data["products"] = self._parse_clin_table_rows(text)
+
+        # Strategy E: Check CLIN table logic (pipe-separated)
+        if not data["products"]:
             clin_patterns = [
-                r'(?:^|\n)\s*(\d{4})\s*[|]\s*([^|]+)\s*[|]\s*(\d+)',  # | 0001 | Widget | 10 |
-                r'(?:^|\n)\s*CLIN\s*(\d+)[:]\s*([^\n]+)',  # CLIN 001: Widget
+                r'(?:^|\n)\s*\|?\s*(\d{4})\s*\|?\s*([^|]+)\s*\|?\s*(\d+)',  # | 0001 | Widget | 10 |
+                r'(?:^|\n)\s*CLIN\s*(\d+)[:]\s*([^\n]+)',
             ]
             for pattern in clin_patterns:
                 clin_matches = re.finditer(pattern, text, re.MULTILINE)
@@ -171,39 +189,68 @@ class RFQParser:
                         "quantity": int(match.group(3)) if len(match.groups()) >= 3 else 1,
                         "specifications": {}
                     })
-        
+
         # Fallback: Extract any description if no products found
         if not data["products"]:
-            # Look for any substantial text block that might be a description
             desc_match = re.search(r'(?:Description|Summary|Overview)[:]\s*([^\n]{20,})', text, re.IGNORECASE)
             if desc_match:
                 data["products"].append({
-                    "name": desc_match.group(1).strip()[:100],  # First 100 chars
+                    "name": desc_match.group(1).strip()[:100],
                     "quantity": 1,
                     "specifications": self._extract_specs(text)
                 })
-                
+
         return data
+
+    def _parse_clin_table_rows(self, text: str) -> List[Dict[str, Any]]:
+        """Parse markdown pipe-delimited CLIN table rows."""
+        products = []
+        # Match rows like: | 0001 | Widget Assembly | 10 | EA | Base year |
+        clin_row_pattern = r'\|\s*(\d{4})\s*\|\s*([^|]+)\s*\|\s*(\d+)\s*\|\s*([^|]*)\s*\|'
+        matches = re.findall(clin_row_pattern, text)
+        for match in matches:
+            clin, description, qty, unit = match
+            products.append({
+                "clin": clin.strip(),
+                "name": description.strip(),
+                "quantity": int(qty.strip()),
+                "unit": unit.strip() if unit.strip() else "EA",
+                "specifications": self._extract_specs(text)
+            })
+        return products
 
     def _extract_specs(self, text: str) -> Dict[str, str]:
         """Extract technical specifications."""
         specs = {}
-        
+
         # Extract NSN
         nsn_match = re.search(r'NSN:\s*([\d-]+)', text)
         if nsn_match:
             specs["NSN"] = nsn_match.group(1)
-            
+
         # Extract Part Number
         pn_match = re.search(r'(?:Part Number|P/N|MPN):\s*([^\n]+)', text, re.IGNORECASE)
         if pn_match:
             specs["Part Number"] = pn_match.group(1).strip()
-            
+
         # Extract Manufacturer / CAGE
         cage_match = re.search(r'(?:CAGE Code|CAGE):\s*([A-Z0-9]+)', text, re.IGNORECASE)
         if cage_match:
             specs["CAGE"] = cage_match.group(1)
-            
+
+        # Extract standards
+        std_matches = re.findall(r'(MIL-STD-\d+|MIL-SPEC-\d+|ASTM D\d+|ISO \d+(?::\d+)?)', text)
+        if std_matches:
+            specs["Standards"] = ", ".join(set(std_matches))
+
+        # Extract quantity from CLIN table if not already set
+        total_qty = 0
+        clin_row_pattern = r'\|\s*(\d{4})\s*\|\s*([^|]+)\s*\|\s*(\d+)\s*\|'
+        for match in re.finditer(clin_row_pattern, text):
+            total_qty += int(match.group(3).strip())
+        if total_qty > 0:
+            specs["Total_CLIN_Quantity"] = str(total_qty)
+
         return specs
 
 if __name__ == "__main__":

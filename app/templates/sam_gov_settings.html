@@ -1,0 +1,268 @@
+<!--
+SAM.gov Account Connection Form
+Allows tenants to connect their own SAM.gov account with API key + Entity ID
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAM.gov Settings - RFQ Automation</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8f9fa;
+      --text-primary: #212529;
+      --text-secondary: #6c757d;
+      --accent: #0d6efd;
+    }
+    [data-theme="dark"] {
+      --bg-primary: #1a1d23;
+      --bg-secondary: #25282f;
+      --text-primary: #e8e8e8;
+      --text-secondary: #a0a0a0;
+    }
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .navbar { background-color: var(--bg-secondary); }
+    .settings-card {
+      background-color: var(--bg-secondary);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin-bottom: 1.5rem;
+    }
+    .status-connected { color: #198754; }
+    .status-error { color: #dc3545; }
+    .status-disconnected { color: #6c757d; }
+    .form-control:focus {
+      box-shadow: 0 0 0 0.2rem rgba(13,110,253,.25);
+    }
+    .api-key-input { font-family: 'Monaco', monospace; letter-spacing: 1px; }
+    .help-link { font-size: 0.875rem; color: var(--accent); }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg mb-4">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/dashboard">
+        <i class="bi bi-rocket-takeoff"></i> RFQ Automation
+      </a>
+      <div>
+        <a href="/dashboard" class="btn btn-outline-secondary btn-sm">
+          <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h2 class="mb-1"><i class="bi bi-link-45deg"></i> SAM.gov Connection</h2>
+    <p class="text-muted mb-4">
+      Connect your organization's SAM.gov account to fetch real-time solicitations tailored to your business.
+    </p>
+
+    <!-- Status Card -->
+    <div class="settings-card">
+      <h5 class="mb-3"><i class="bi bi-info-circle"></i> Connection Status</h5>
+      <div id="status-display">
+        <div class="d-flex align-items-center">
+          <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+          Loading...
+        </div>
+      </div>
+    </div>
+
+    <!-- Connection Form (shown when disconnected) -->
+    <div class="settings-card" id="connect-card">
+      <h5 class="mb-3"><i class="bi bi-key"></i> Connect Your SAM.gov Account</h5>
+      <p class="text-muted">
+        Enter your SAM.gov API key and Entity ID (UEI). Your credentials are encrypted at rest and never exposed in API responses.
+      </p>
+
+      <form id="connect-form" novalidate>
+        <div class="mb-3">
+          <label for="api_key" class="form-label">
+            SAM.gov API Key
+            <span class="text-danger">*</span>
+          </label>
+          <input
+            type="password"
+            class="form-control api-key-input"
+            id="api_key"
+            name="api_key"
+            placeholder="Enter your 32+ character SAM.gov API key"
+            minlength="32"
+            maxlength="256"
+            required
+          >
+          <div class="form-text">
+            Get your API key from
+            <a href="https://sam.gov/data-services" target="_blank" class="help-link">
+              <i class="bi bi-box-arrow-up-right"></i> sam.gov/data-services
+            </a>
+            (requires SAM.gov account login)
+          </div>
+          <div class="invalid-feedback" id="api_key_error">
+            API key must be 32-256 characters
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="entity_id" class="form-label">
+            Entity ID (UEI)
+            <span class="text-danger">*</span>
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            id="entity_id"
+            name="entity_id"
+            placeholder="12-character UEI (e.g., ABC123DEF456)"
+            pattern="[A-Z0-9]{12}"
+            minlength="12"
+            maxlength="12"
+            style="text-transform: uppercase;"
+            required
+          >
+          <div class="form-text">
+            Your Unique Entity ID from SAM.gov registration. Format: 12 alphanumeric characters.
+          </div>
+          <div class="invalid-feedback" id="entity_id_error">
+            Entity ID must be 12 alphanumeric characters
+          </div>
+        </div>
+
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" id="test_connection" checked>
+          <label class="form-check-label" for="test_connection">
+            Test connection before saving (recommended)
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="connect-btn">
+          <i class="bi bi-plug"></i> Connect SAM.gov
+        </button>
+      </form>
+    </div>
+
+    <!-- Sync Settings (shown when connected) -->
+    <div class="settings-card" id="sync-settings-card" style="display: none;">
+      <h5 class="mb-3"><i class="bi bi-arrow-repeat"></i> Sync Settings</h5>
+      <form id="sync-form" novalidate>
+        <div class="form-check form-switch mb-3">
+          <input class="form-check-input" type="checkbox" id="auto_sync_enabled">
+          <label class="form-check-label" for="auto_sync_enabled">
+            Enable automatic syncing
+          </label>
+        </div>
+
+        <div class="mb-3">
+          <label for="sync_interval_hours" class="form-label">
+            Sync interval (hours)
+          </label>
+          <input
+            type="number"
+            class="form-control"
+            id="sync_interval_hours"
+            min="1"
+            max="168"
+            value="24"
+          >
+          <div class="form-text">1-168 hours (1 hour to 1 week)</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="naics_codes" class="form-label">
+            NAICS codes (comma-separated)
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            id="naics_codes"
+            placeholder="334111, 511210, 541512"
+          >
+          <div class="form-text">Filter solicitations to your industry codes</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="keywords" class="form-label">
+            Keywords (comma-separated)
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            id="keywords"
+            placeholder="procurement, supplies, equipment"
+          >
+          <div class="form-text">Optional: filter to solicitations matching these terms</div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="min_value" class="form-label">Min value ($)</label>
+            <input type="number" class="form-control" id="min_value" min="0">
+          </div>
+          <div class="col-md-6">
+            <label for="max_value" class="form-label">Max value ($)</label>
+            <input type="number" class="form-control" id="max_value" min="0">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="save-sync-btn">
+          <i class="bi bi-save"></i> Save Sync Settings
+        </button>
+      </form>
+    </div>
+
+    <!-- Manual Sync Card (shown when connected) -->
+    <div class="settings-card" id="manual-sync-card" style="display: none;">
+      <h5 class="mb-3"><i class="bi bi-cloud-download"></i> Manual Sync</h5>
+      <p class="text-muted">Trigger an immediate sync to fetch the latest solicitations.</p>
+      <div id="sync-status-display" class="mb-3"></div>
+      <button class="btn btn-success" id="sync-btn">
+        <i class="bi bi-arrow-clockwise"></i> Sync Now
+      </button>
+    </div>
+
+    <!-- Disconnect Card (shown when connected) -->
+    <div class="settings-card border-danger" id="disconnect-card" style="display: none;">
+      <h5 class="mb-3 text-danger"><i class="bi bi-exclamation-triangle"></i> Danger Zone</h5>
+      <p class="text-muted">
+        Disconnecting will remove your stored SAM.gov credentials. You'll need to reconnect to fetch solicitations.
+      </p>
+      <button class="btn btn-outline-danger" id="disconnect-btn">
+        <i class="bi bi-x-circle"></i> Disconnect SAM.gov
+      </button>
+    </div>
+
+    <!-- Sync History Card (shown when connected) -->
+    <div class="settings-card" id="history-card" style="display: none;">
+      <h5 class="mb-3"><i class="bi bi-clock-history"></i> Recent Sync History</h5>
+      <div class="table-responsive">
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th>Started</th>
+              <th>Status</th>
+              <th>Fetched</th>
+              <th>Duration</th>
+            </tr>
+          </thead>
+          <tbody id="history-tbody">
+            <tr><td colspan="4" class="text-center text-muted">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/static/js/sam_gov_settings.js"></script>
+</body>
+</html>
