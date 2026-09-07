@@ -6,6 +6,8 @@ Database schema with tenant isolation
 from app import db
 from datetime import datetime
 import json
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import foreign
 from sqlalchemy.dialects.sqlite import JSON
 
 
@@ -150,7 +152,11 @@ class AutomationRun(db.Model):
 
     # Relationships
     agent_logs = db.relationship('AgentLoopLog', backref='automation_run', lazy='dynamic', cascade='all, delete-orphan')
-    audit_logs = db.relationship('AuditLog', backref='automation_run', lazy='dynamic', cascade='all, delete-orphan')
+    # primaryjoin with foreign() annotation: AuditLog.resource_id is polymorphic (multiple resource types)
+    audit_logs = db.relationship(
+        'AuditLog', backref='automation_run', lazy='dynamic', cascade='all, delete-orphan',
+        primaryjoin="and_(AutomationRun.id == foreign(AuditLog.resource_id), AuditLog.resource_type=='automation_run')"
+    )
 
     def __repr__(self):
         return f'<AutomationRun {self.id} ({self.status})>'

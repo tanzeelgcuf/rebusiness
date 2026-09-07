@@ -4,7 +4,7 @@ User registration, login, and token management
 """
 
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import db
 from app.models import Tenant, User
@@ -108,17 +108,20 @@ def signup():
             }
         )
 
-        # Generate tokens
-        access_token = create_access_token(identity={
+        # Generate tokens (JWT v4 requires string identity; put dict in additional_claims)
+        additional_claims = {
             'tenant_id': tenant.id,
             'user_id': user.id,
             'role': user.role
-        })
-        refresh_token = create_refresh_token(identity={
-            'tenant_id': tenant.id,
-            'user_id': user.id,
-            'role': user.role
-        })
+        }
+        access_token = create_access_token(
+            identity=str(user.id),
+            additional_claims=additional_claims
+        )
+        refresh_token = create_refresh_token(
+            identity=str(user.id),
+            additional_claims=additional_claims
+        )
 
         return jsonify({
             'tenant': {
@@ -186,17 +189,20 @@ def login():
             }
         )
 
-        # Generate tokens
-        access_token = create_access_token(identity={
+        # Generate tokens (JWT v4 requires string identity; put dict in additional_claims)
+        additional_claims = {
             'tenant_id': user.tenant_id,
             'user_id': user.id,
             'role': user.role
-        })
-        refresh_token = create_refresh_token(identity={
-            'tenant_id': user.tenant_id,
-            'user_id': user.id,
-            'role': user.role
-        })
+        }
+        access_token = create_access_token(
+            identity=str(user.id),
+            additional_claims=additional_claims
+        )
+        refresh_token = create_refresh_token(
+            identity=str(user.id),
+            additional_claims=additional_claims
+        )
 
         # Get tenant
         tenant = Tenant.query.get(user.tenant_id)
@@ -236,14 +242,18 @@ def refresh():
         JSON with new access token
     """
     try:
-        claims = get_jwt_identity()
+        claims = get_jwt()
 
-        # Generate new access token
-        access_token = create_access_token(identity={
-            'tenant_id': claims['tenant_id'],
-            'user_id': claims['user_id'],
-            'role': claims['role']
-        })
+        # Generate new access token (JWT v4: string identity + additional_claims)
+        additional_claims = {
+            'tenant_id': claims.get('tenant_id'),
+            'user_id': claims.get('user_id'),
+            'role': claims.get('role')
+        }
+        access_token = create_access_token(
+            identity=str(claims.get('user_id') or claims.get('sub')),
+            additional_claims=additional_claims
+        )
 
         logger.info(
             f"Token refreshed",
@@ -273,7 +283,7 @@ def get_current_user():
         JSON with user and tenant information
     """
     try:
-        claims = get_jwt_identity()
+        claims = get_jwt()
 
         user = User.query.filter_by(
             id=claims['user_id'],
@@ -319,13 +329,13 @@ def logout():
         JSON with logout confirmation
     """
     try:
-        claims = get_jwt_identity()
+        claims = get_jwt()
 
         logger.info(
             f"User logged out",
             extra={
-                'tenant_id': claims['tenant_id'],
-                'user_id': claims['user_id']
+                'tenant_id': claims.get('tenant_id'),
+                'user_id': claims.get('user_id')
             }
         )
 

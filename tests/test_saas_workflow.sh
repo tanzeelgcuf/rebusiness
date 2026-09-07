@@ -18,7 +18,7 @@
 
 set -e
 
-BASE_URL="${1:-http://localhost:5000}"
+BASE_URL="${1:-http://localhost:5005}"
 API_BASE="$BASE_URL/api/v1"
 
 # Color codes
@@ -132,10 +132,10 @@ extract_json() {
 
 log_section "PRE-FLIGHT CHECKS"
 
-# Check if server is up
-if ! curl -s -f "$BASE_URL/api/v1/health" > /dev/null 2>&1; then
+# Check if server is up (use public /health endpoint)
+if ! curl -s -f "$BASE_URL/health" > /dev/null 2>&1; then
     log_error "Server not reachable at $BASE_URL"
-    log_info "Start the server with: python run.py"
+    log_info "Start the server with: PORT=5002 python run.py"
     exit 1
 fi
 log_success "Server is reachable"

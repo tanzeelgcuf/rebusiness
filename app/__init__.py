@@ -52,17 +52,23 @@ def create_app(config_name='development'):
     @app.before_request
     def tenant_context():
         """Extract tenant context from JWT token before each request"""
-        from flask_jwt_extended import get_jwt_identity
+        from flask_jwt_extended import verify_jwt_in_request, get_jwt
 
-        # Some routes don't require auth (login, signup)
-        if request.path in ['/api/v1/auth/login', '/api/v1/auth/signup', '/health']:
+        # Some routes don't require auth (login, signup, refresh, health)
+        if request.path in [
+            '/api/v1/auth/login', '/api/v1/auth/signup', '/api/v1/auth/refresh',
+            '/health', '/api/v1/health'
+        ]:
             return
 
+        # Verify JWT if present (does not block requests without tokens)
         try:
-            claims = get_jwt_identity()
+            verify_jwt_in_request(optional=True)  # Populates get_jwt if valid token
+            claims = get_jwt()
             if claims:
+                # JWT v4: identity (sub) is the user_id string; tenant_id/role are in additional_claims
                 g.tenant_id = claims.get('tenant_id')
-                g.user_id = claims.get('user_id')
+                g.user_id = claims.get('user_id') or claims.get('sub')
                 g.user_role = claims.get('role', 'viewer')
 
                 if not g.tenant_id:
@@ -111,9 +117,13 @@ def create_app(config_name='development'):
     def health_check():
         return jsonify({"status": "healthy"}), 200
 
+    @app.route('/api/v1/health', methods=['GET'])
+    def api_v1_health_check():
+        return jsonify({"status": "healthy", "api_version": "v1"}), 200
+
     # Register blueprints
     with app.app_context():
-        from app.api.v1 import automation, dashboard, rfqs, vendors, auth
+        from app.api.v1 import automation, dashboard, rfqs, vendors, auth, sam_gov
 
         # Register auth blueprint (no @tenant_required)
         app.register_blueprint(auth.auth_bp, url_prefix='/api/v1/auth')
@@ -123,6 +133,8 @@ def create_app(config_name='development'):
         app.register_blueprint(dashboard.dashboard_bp, url_prefix='/api/v1/dashboard')
         app.register_blueprint(rfqs.rfqs_bp, url_prefix='/api/v1/rfqs')
         app.register_blueprint(vendors.vendors_bp, url_prefix='/api/v1/vendors')
+        # sam_gov has its own url_prefix='/api/v1/sam-gov' so register with no extra prefix
+        app.register_blueprint(sam_gov.sam_gov_bp)
 
     # Create database tables
     with app.app_context():

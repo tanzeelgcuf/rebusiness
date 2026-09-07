@@ -212,14 +212,14 @@ def connect_sam_gov():
             )
             db.session.add(creds)
 
-        # Audit log
+        # Audit log (AuditLog doesn't have user_id; store in details instead)
         audit = AuditLog(
             tenant_id=g.tenant_id,
-            user_id=g.user_id,
             action='sam_gov_connected',
             resource_type='sam_gov_credentials',
             resource_id=str(creds.id),
             details={
+                'user_id': g.user_id,
                 'entity_id': entity_id,
                 'api_key_last4': last4,
                 'tested': test_first,
@@ -265,11 +265,10 @@ def disconnect_sam_gov():
         # Audit log (before deletion)
         audit = AuditLog(
             tenant_id=g.tenant_id,
-            user_id=g.user_id,
             action='sam_gov_disconnected',
             resource_type='sam_gov_credentials',
             resource_id=str(creds.id),
-            details={'entity_id': creds.entity_id}
+            details={'user_id': g.user_id, 'entity_id': creds.entity_id}
         )
         db.session.add(audit)
 
@@ -340,10 +339,9 @@ def test_sam_gov():
         # Audit
         audit = AuditLog(
             tenant_id=g.tenant_id,
-            user_id=g.user_id,
             action='sam_gov_test',
             resource_type='sam_gov_credentials',
-            details={'success': result['success'], 'latency_ms': result.get('latency_ms')}
+            details={'user_id': g.user_id, 'success': result['success'], 'latency_ms': result.get('latency_ms')}
         )
         db.session.add(audit)
         db.session.commit()
@@ -554,11 +552,10 @@ def update_settings():
         # Audit
         audit = AuditLog(
             tenant_id=g.tenant_id,
-            user_id=g.user_id,
             action='sam_gov_settings_updated',
             resource_type='tenant',
             resource_id=str(g.tenant_id),
-            details=sam_gov_settings,
+            details={'user_id': g.user_id, **sam_gov_settings},
         )
         db.session.add(audit)
         db.session.commit()
@@ -641,10 +638,10 @@ def trigger_sync():
         # Audit
         audit = AuditLog(
             tenant_id=g.tenant_id,
-            user_id=g.user_id,
             action='sam_gov_sync_triggered',
             resource_type='sam_gov_sync',
             resource_id=str(sync.id),
+            details={'user_id': g.user_id},
         )
         db.session.add(audit)
         db.session.commit()

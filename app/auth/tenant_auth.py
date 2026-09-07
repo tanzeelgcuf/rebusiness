@@ -5,7 +5,7 @@ Multi-tenant JWT handling and access control
 
 from functools import wraps
 from flask import g, abort, request
-from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
+from flask_jwt_extended import verify_jwt_in_request, get_jwt
 from app.models import User
 import logging
 
@@ -35,8 +35,8 @@ def tenant_required(f):
             # Verify JWT exists and is valid
             verify_jwt_in_request()
 
-            # Extract claims
-            claims = get_jwt_identity()
+            # Extract claims (JWT v4: get_jwt() returns dict including additional_claims)
+            claims = get_jwt()
 
             if not isinstance(claims, dict):
                 logger.warning("Invalid JWT format: claims not a dict")

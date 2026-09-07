@@ -9,7 +9,7 @@ from flask import Blueprint
 api_v1_bp = Blueprint('api_v1', __name__)
 
 # Import route modules to register them
-from app.api.v1 import automation, dashboard, rfqs, vendors
+from app.api.v1 import automation, dashboard, rfqs, vendors, sam_gov
 
 # Sub-blueprints are auto-registered via their own bp definitions
 # which get registered in app/__init__.py
