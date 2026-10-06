@@ -54,11 +54,12 @@ def create_app(config_name='development'):
         """Extract tenant context from JWT token before each request"""
         from flask_jwt_extended import verify_jwt_in_request, get_jwt
 
-        # Some routes don't require auth (login, signup, refresh, health)
+        # Some routes don't require auth (login, signup, refresh, health, dashboard UI, static assets)
         if request.path in [
             '/api/v1/auth/login', '/api/v1/auth/signup', '/api/v1/auth/refresh',
-            '/health', '/api/v1/health'
-        ]:
+            '/health', '/api/v1/health',
+            '/dashboard', '/sam-gov/settings'
+        ] or request.path.startswith('/static/'):
             return
 
         # Verify JWT if present (does not block requests without tokens)
@@ -125,6 +126,10 @@ def create_app(config_name='development'):
     with app.app_context():
         from app.api.v1 import automation, dashboard, rfqs, vendors, auth, sam_gov
 
+        # Configure Celery so .delay() from API process publishes to the right broker
+        from app.tasks.automation_tasks import init_celery
+        init_celery(app)
+
         # Register auth blueprint (no @tenant_required)
         app.register_blueprint(auth.auth_bp, url_prefix='/api/v1/auth')
 
@@ -135,6 +140,15 @@ def create_app(config_name='development'):
         app.register_blueprint(vendors.vendors_bp, url_prefix='/api/v1/vendors')
         # sam_gov has its own url_prefix='/api/v1/sam-gov' so register with no extra prefix
         app.register_blueprint(sam_gov.sam_gov_bp)
+
+        # Serve dashboard UI pages
+        from flask import render_template
+        def dashboard_page():
+            return render_template('dashboard.html')
+        def sam_gov_settings_page():
+            return render_template('sam_gov_settings.html')
+        app.add_url_rule('/dashboard', 'dashboard_page', dashboard_page)
+        app.add_url_rule('/sam-gov/settings', 'sam_gov_settings_page', sam_gov_settings_page)
 
     # Create database tables
     with app.app_context():

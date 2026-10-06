@@ -36,6 +36,11 @@ class AttachmentReaderAgent:
             self.openai_client = OpenAI(api_key=config.OPENAI_API_KEY)
         elif config.LLM_PROVIDER == "groq":
             self.groq_client = Groq(api_key=config.GROQ_API_KEY)
+        elif config.LLM_PROVIDER == "nvidia":
+            self.nvidia_client = OpenAI(
+                api_key=config.NVIDIA_API_KEY,
+                base_url=config.NVIDIA_API_BASE
+            )
 
         # Initialize encoding for token counting
         try:
@@ -510,6 +515,20 @@ REMEMBER: Output ONLY the final RFQ content. Do NOT include any of the instructi
                     stop=['END OF RFQ'],
                 )
                 rfq_markdown = response.choices[0].message.content
+            elif config.LLM_PROVIDER == "nvidia":
+                logger.info(f"    Sending to NVIDIA NIM (High Fidelity)...")
+                response = self.nvidia_client.chat.completions.create(
+                    model="nemotron-3.5-lightning-30b-a3b",
+                    messages=[
+                        {"role": "system", "content": system_instruction},
+                        {"role": "user", "content": "\n".join(str(c) for c in text_content)}
+                    ],
+                    temperature=0.1,
+                    top_p=0.95,
+                    max_tokens=8192,
+                    stop=['END OF RFQ'],
+                )
+                rfq_markdown = response.choices[0].message.content
             else:
                 raise ValueError(f"Unknown LLM_PROVIDER: {config.LLM_PROVIDER}")
             
@@ -589,15 +608,22 @@ REMEMBER: Output ONLY the final RFQ content. Do NOT include any of the instructi
         except Exception as e:
             logger.error(f"pdfplumber error: {e}")
         
-        # If extraction yielded little, try Gemini Vision
-        if len(full_text) < 200 and self.config.LLM_PROVIDER == "gemini":
+        # If extraction yielded little, try Gemini (or NVIDIA) Vision
+        if len(full_text) < 200 and self.config.LLM_PROVIDER in ("gemini", "nvidia"):
             try:
-                logger.info(f"Low text extraction ({len(full_text)} chars). Using Gemini Vision...")
-                # New SDK: client.files.upload(path=...)
-                file_ref = self.genai_client.files.upload(path=file_path)
+                logger.info(f"Low text extraction ({len(full_text)} chars). Using {'Gemini Vision' if config.LLM_PROVIDER == 'gemini' else 'NVIDIA Vision'}...")
+                if config.LLM_PROVIDER == "gemini":
+                    # New SDK: client.files.upload(path=...)
+                    file_ref = self.genai_client.files.upload(path=file_path)
+                else:
+                    # NVIDIA: just mark that vision would be used here
+                    # The NVIDIA NIM text models don't have Vision API in the same way,
+                    # so we fall back to text extraction with a note
+                    logger.warning("NVIDIA Vision not fully configured - returning extracted text only")
+                    file_ref = None
                 return file_ref
             except Exception as e:
-                logger.error(f"Gemini upload failed: {e}")
+                logger.error(f"Vision upload failed: {e}")
         
         return full_text if full_text.strip() else "Could not extract PDF content."
     

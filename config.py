@@ -22,6 +22,9 @@ SMTP_CONFIG = {
     "sender_email": os.getenv("SENDER_EMAIL")
 }
 
+# SAM.gov search keywords for solicitation discovery
+SAM_GOV_SEARCH_KEYWORDS = ['procurement', 'supplies', 'office supplies', 'medical supplies', 'construction materials']
+
 # Twilio Configuration for sending SMS and handling calls - fetched from environment variables
 TWILIO_CONFIG = {
     "account_sid": os.getenv("TWILIO_ACCOUNT_SID"),
@@ -35,7 +38,19 @@ OPENAI_API_KEY = "sk-proj-G83gUr1-u8sTsXgknyYambU26lZZ64VmDQw3G6joRPQVfqgNZmoHOg
 # Groq API Key - for fast LLM inference
 GROQ_API_KEY = "gsk_3I9g2Q4IOhyrSwTbu5W92Gs60kw_85tdUdafXMC2LLqsnUqRZ"
 
-# LLM Provider ("gemini", "openai", or "groq") - Defaulting to gemini as requested
+# NVIDIA NIM API Configuration
+NVIDIA_API_KEY = "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"
+NVIDIA_API_BASE = "https://integrate.api.nvidia.com/v1"
+NVIDIA_MODELS = {
+    "nemotron-3.5-lightning-30b-a3b": "nvidia_nim/nvidia/nemotron-3.5-lightning-30b-a3b",
+    "nemotron-3-super-120b-a12b": "nvidia_nim/nvidia/nemotron-3-super-120b-a12b",
+    "muse-glimmer-30b": "nvidia_nim/meta/muse-glimmer-30b",
+    "glm-5.3": "nvidia_nim/z-ai/glm-5.3",
+    "kimi-k3": "nvidia_nim/moonshotai/kimi-k3",
+}
+drop_params = True
+
+# LLM Provider ("gemini", "openai", "groq", or "nvidia") - Defaulting to gemini as requested
 LLM_PROVIDER = "gemini"
 
 # Search Keywords - can remain as a list or be fetched from env if dynamic

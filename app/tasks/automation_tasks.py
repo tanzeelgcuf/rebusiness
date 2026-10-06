@@ -28,7 +28,14 @@ celery_app.Task = ContextTask
 
 def init_celery(app):
     """Initialize Celery with Flask app configuration"""
-    celery_app.conf.update(app.config)
+    celery_app.conf.update(
+        broker_url=app.config.get('CELERY_BROKER_URL'),
+        result_backend=app.config.get('CELERY_RESULT_BACKEND'),
+        task_serializer=app.config.get('CELERY_TASK_SERIALIZER', 'json'),
+        result_serializer=app.config.get('CELERY_RESULT_SERIALIZER', 'json'),
+        accept_content=app.config.get('CELERY_ACCEPT_CONTENT', ['json']),
+        timezone=app.config.get('CELERY_TIMEZONE', 'UTC'),
+    )
 
     # Task base name
     class ContextTask(Task):
@@ -330,3 +337,13 @@ def health_check():
     """Periodic health check task"""
     logger.info("Celery health check completed")
     return {'status': 'healthy', 'timestamp': str(__import__('datetime').datetime.utcnow())}
+
+@celery_app.task(name='debug.import_test')
+def debug_import_test():
+    import os, sys
+    return {
+        'cwd': os.getcwd(),
+        'sys_path': sys.path[:5],
+        'ai_agents_found': os.path.isdir(os.path.join(os.path.dirname(__file__), '../../ai_agents')),
+        'can_import': None
+    }

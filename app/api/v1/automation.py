@@ -7,6 +7,7 @@ from flask import Blueprint, jsonify, request, g
 from app import db
 from app.models import AutomationRun, AgentLoopLog, AuditLog
 from app.auth.tenant_auth import tenant_required
+from app.tasks.automation_tasks import run_automation_workflow
 from datetime import datetime
 import logging
 
@@ -58,9 +59,8 @@ def start_automation():
         db.session.add(audit_log)
         db.session.commit()
 
-        # Queue background job (will implement Celery later)
-        # For now, return run_id for polling
-        # TODO: queue_automation_workflow.delay(automation_run.id, g.tenant_id)
+        # Queue background job
+        run_automation_workflow.delay(automation_run.id, g.tenant_id)
 
         return jsonify({
             'run_id': automation_run.id,

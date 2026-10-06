@@ -5,9 +5,14 @@ Background job processor for RFQ automation
 """
 
 import os
+import sys
 import logging
 from app import create_app
 from app.tasks.automation_tasks import celery_app, init_celery
+
+# Celery's app loader strips cwd from sys.path after importing this module,
+# which breaks lazy imports (ai_agents, config) at task execution time.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # Setup logging
 logging.basicConfig(
@@ -19,6 +24,9 @@ logger = logging.getLogger(__name__)
 # Create Flask app and initialize Celery
 app = create_app(config_name=os.getenv('FLASK_ENV', 'development'))
 init_celery(app)
+
+# Alias required by 'celery -A celery_worker.celery' (docker-compose command + healthcheck)
+celery = celery_app
 
 if __name__ == '__main__':
     logger.info("Starting Celery worker...")
